@@ -68,6 +68,10 @@ public class ItemSplitService {
 		}
 
 		if (targetItem == null) {
+			if (destStorage.isFull()) {
+				PacketSendUtility.sendPacket(player, destStorage.getStorageIsFullMessage());
+				return;
+			}
 			long oldItemCount = sourceItem.getItemCount() - splitAmount;
 			if (sourceItem.getItemCount() < splitAmount || oldItemCount == 0) {
 				return;

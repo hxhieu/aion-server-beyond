@@ -25270,6 +25270,13 @@ public final class SM_SYSTEM_MESSAGE extends AionServerPacket {
 	}
 
 	/**
+	 * The cabinet is full.
+	 */
+	public static SM_SYSTEM_MESSAGE STR_HOUSING_WAREHOUSE_TOO_MANY_ITEMS_WAREHOUSE() {
+		return new SM_SYSTEM_MESSAGE(1401239);
+	}
+
+	/**
 	 * Only house owners and their friends may enter.
 	 */
 	public static SM_SYSTEM_MESSAGE STR_HOUSING_TELEPORT_CANT_USE() {
