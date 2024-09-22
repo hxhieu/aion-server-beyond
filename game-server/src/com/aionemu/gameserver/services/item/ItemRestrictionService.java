@@ -19,9 +19,8 @@ public class ItemRestrictionService {
 	/**
 	 * Check if item can be moved from storage by player
 	 */
-	public static boolean isItemRestrictedFrom(Player player, Item item, byte storage) {
-		StorageType type = StorageType.getStorageTypeById(storage);
-		switch (type) {
+	public static boolean isItemRestrictedFrom(Player player, Item item, StorageType storageType) {
+		switch (storageType) {
 			case LEGION_WAREHOUSE:
 				if (!LegionService.getInstance().getLegionMember(player.getObjectId()).hasRights(LegionPermissionsMask.WH_WITHDRAWAL)
 					|| !LegionConfig.LEGION_WAREHOUSE || !player.isLegionMember()) {
@@ -37,9 +36,8 @@ public class ItemRestrictionService {
 	/**
 	 * Check if item can be moved to storage by player
 	 */
-	public static boolean isItemRestrictedTo(Player player, Item item, byte storage) {
-		StorageType type = StorageType.getStorageTypeById(storage);
-		switch (type) {
+	public static boolean isItemRestrictedTo(Player player, Item item, StorageType storageType) {
+		switch (storageType) {
 			case REGULAR_WAREHOUSE:
 				if (!item.isStorableInWarehouse()) {
 					// You cannot store this in the warehouse.
