@@ -2929,7 +2929,7 @@
 			<property>gameserver.event.arcade.enable = true</property>
 		</config_properties>
 		<event_drops>
-			<gd_rule rule_name="Global Arcade Token" level_based_chance_reduction="true" chance="0.1">
+			<gd_rule rule_name="Global Arcade Token" level_based_chance_reduction="true" chance="0.4">
 				<gd_ratings>
 					<gd_rating rating="NORMAL" />
 					<gd_rating rating="ELITE" />
