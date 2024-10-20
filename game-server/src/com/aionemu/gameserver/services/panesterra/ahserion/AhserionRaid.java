@@ -61,7 +61,7 @@ public class AhserionRaid {
 		if (!panesterraTeams.isEmpty()) {
 			for (PanesterraTeam team : panesterraTeams.values()) {
 				team.setIsEliminated(true);
-				team.moveTeamMembersToFortressPosition();
+				team.moveTeamMembersToOriginPosition();
 			}
 			panesterraTeams.clear();
 		}
@@ -213,7 +213,7 @@ public class AhserionRaid {
 		if (faction != PanesterraFaction.BALAUR && (panesterraTeams.get(faction) == null || panesterraTeams.get(faction).isEliminated()))
 			return;
 
-		List<SpawnGroup> ahserionSpawns = DataManager.SPAWNS_DATA.getAhserionSpawnByTeamId(faction.getId());
+		List<SpawnGroup> ahserionSpawns = DataManager.SPAWNS_DATA.getAhserionSpawnByTeamId(faction.ordinal());
 		if (ahserionSpawns == null)
 			return;
 
@@ -257,7 +257,7 @@ public class AhserionRaid {
 		PanesterraTeam eliminatedTeam = panesterraTeams.remove(eliminatedFaction);
 		if (eliminatedTeam != null) {
 			eliminatedTeam.setIsEliminated(true);
-			eliminatedTeam.moveTeamMembersToFortressPosition();
+			eliminatedTeam.moveTeamMembersToOriginPosition();
 			sendConsolationReward(eliminatedTeam);
 		}
 		deleteNpcs(eliminatedFaction, npcId + 1);
@@ -282,11 +282,11 @@ public class AhserionRaid {
 		for (PanesterraFaction faction : panesterraTeams.keySet()) {
 			if (faction != null && faction != winnerFaction) {
 				panesterraTeams.get(faction).setIsEliminated(true);
-				panesterraTeams.get(faction).moveTeamMembersToFortressPosition();
+				panesterraTeams.get(faction).moveTeamMembersToOriginPosition();
 			}
 		}
 		ahserion.getPosition().getWorldMapInstance().forEachNpc(npc -> npc.getController().deleteIfAliveOrCancelRespawn());
-		SpawnEngine.spawnObject(SpawnEngine.newSingleTimeSpawn(400030000, 804680 + winnerFaction.getId(), 509.239f, 513.011f, 675.089f, (byte) 48), 1); // Pasha
+		spawnStage(10, winnerFaction); // Quest Npc "Pasha"
 		ThreadPoolManager.getInstance().schedule(this::stop, 900000); // 15min
 	}
 
@@ -311,17 +311,17 @@ public class AhserionRaid {
 	}
 
 	public PanesterraTeam getPanesterraFactionTeam(Player player) {
-		for (PanesterraTeam faction : panesterraTeams.values()) {
-			if (faction.isTeamMember(player.getObjectId()))
-				return faction;
+		for (PanesterraTeam team : panesterraTeams.values()) {
+			if (team.isTeamMember(player.getObjectId()))
+				return team;
 		}
 		return null;
 	}
 
 	public boolean teleportToTeamStartPosition(Player player) {
 		PanesterraTeam team = getPanesterraFactionTeam(player);
-		if (team != null && !team.isEliminated() && team.getStartPosition() != null) {
-			TeleportService.teleportTo(player, team.getStartPosition());
+		if (team != null && !team.isEliminated()) {
+			team.movePlayerToStartPosition(player);
 			return true;
 		}
 		return false;
@@ -331,13 +331,15 @@ public class AhserionRaid {
 	 * Validates players position
 	 */
 	public void onPlayerLogin(Player player) {
-		if (player.isStaff() || player.getPosition().getMapId() != 400030000)
+		if (player.isStaff() || player.getWorldId() != 400030000)
 			return;
 		PanesterraTeam team = getPanesterraFactionTeam(player);
 		if (team == null)
 			TeleportService.moveToBindLocation(player);
 		else if (team.isEliminated())
-			TeleportService.teleportTo(player, team.getFortressPosition());
+			team.movePlayerToOriginPosition(player);
+		else 
+			player.setPanesterraFaction(team.getFaction());
 	}
 
 	public int getTeamMemberCountByFaction(PanesterraFaction faction) {

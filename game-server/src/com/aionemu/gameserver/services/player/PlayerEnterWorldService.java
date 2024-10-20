@@ -57,6 +57,7 @@ import com.aionemu.gameserver.services.craft.RelinquishCraftStatus;
 import com.aionemu.gameserver.services.event.EventService;
 import com.aionemu.gameserver.services.instance.InstanceService;
 import com.aionemu.gameserver.services.mail.MailService;
+import com.aionemu.gameserver.services.panesterra.PanesterraService;
 import com.aionemu.gameserver.services.panesterra.ahserion.AhserionRaid;
 import com.aionemu.gameserver.services.reward.VeteranRewardService;
 import com.aionemu.gameserver.services.teleport.BindPointTeleportService;
@@ -252,6 +253,7 @@ public final class PlayerEnterWorldService {
 		TeleportService.sendObeliskBindPoint(player);
 		TeleportService.sendKiskBindPoint(player);
 
+		PanesterraService.getInstance().onEnterPanesterra(player);
 		AhserionRaid.getInstance().onPlayerLogin(player);
 
 		// ----------------------------- Retail sequence -----------------------------
@@ -372,7 +374,8 @@ public final class PlayerEnterWorldService {
 	@SuppressWarnings("lossy-conversions")
 	private static void updateEnergyOfRepose(Player player, long secondsOffline) {
 		player.getCommonData().updateMaxRepose();
-		if (player.getCommonData().isReadyForReposeEnergy() && secondsOffline > 4 * 3600) { // more than 4 hours offline: start counting Repose Energy addition
+		if (player.getCommonData().isReadyForReposeEnergy() && secondsOffline > 4 * 3600) { // more than 4 hours offline: start counting Repose Energy
+																																												// addition
 			double hours = secondsOffline / 3600d;
 			// 48 hours offline = 100% Repose Energy (~1% each 30mins source: http://forums.na.aiononline.com/na/showthread.php?t=105940)
 			long addReposeEnergy = Math.round((hours / 48) * player.getCommonData().getMaxReposeEnergy());

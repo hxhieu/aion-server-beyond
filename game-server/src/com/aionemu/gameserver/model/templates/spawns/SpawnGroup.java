@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.aionemu.commons.taskmanager.AbstractLockManager;
 import com.aionemu.commons.utils.Rnd;
-import com.aionemu.gameserver.model.Race;
+import com.aionemu.gameserver.model.base.BaseOccupier;
 import com.aionemu.gameserver.model.siege.SiegeModType;
 import com.aionemu.gameserver.model.siege.SiegeRace;
 import com.aionemu.gameserver.model.templates.event.EventTemplate;
@@ -26,7 +26,7 @@ import com.aionemu.gameserver.spawnengine.SpawnHandlerType;
  */
 public class SpawnGroup extends AbstractLockManager {
 
-	private int worldId;
+	private final int worldId;
 	private int npcId;
 	private int pool;
 	private byte difficultId;
@@ -53,13 +53,13 @@ public class SpawnGroup extends AbstractLockManager {
 		}
 	}
 
-	public SpawnGroup(int worldId, Spawn spawn, int id, Race race) {
+	public SpawnGroup(int worldId, Spawn spawn, int id, BaseOccupier occupier) {
 		this.worldId = worldId;
 		initializing(spawn);
 		for (SpawnSpotTemplate template : spawn.getSpawnSpotTemplates()) {
 			BaseSpawnTemplate spawnTemplate = new BaseSpawnTemplate(this, template);
 			spawnTemplate.setId(id);
-			spawnTemplate.setBaseRace(race);
+			spawnTemplate.setOccupier(occupier);
 			spots.add(spawnTemplate);
 		}
 	}

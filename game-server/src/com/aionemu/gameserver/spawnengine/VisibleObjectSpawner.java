@@ -31,7 +31,7 @@ import com.aionemu.gameserver.model.templates.spawns.vortexspawns.VortexSpawnTem
 import com.aionemu.gameserver.network.aion.serverpackets.SM_PLAYER_STATE;
 import com.aionemu.gameserver.services.BaseService;
 import com.aionemu.gameserver.services.RiftService;
-import com.aionemu.gameserver.services.base.Base;
+import com.aionemu.gameserver.model.base.Base;
 import com.aionemu.gameserver.skillengine.effect.SummonOwner;
 import com.aionemu.gameserver.skillengine.model.SkillTemplate;
 import com.aionemu.gameserver.utils.PacketSendUtility;
@@ -48,17 +48,12 @@ import com.aionemu.gameserver.world.knownlist.PlayerAwareKnownList;
 public class VisibleObjectSpawner {
 
 	private static final Logger log = LoggerFactory.getLogger(VisibleObjectSpawner.class);
-
-	/**
-	 * @param spawn
-	 * @param instanceIndex
-	 * @return
-	 */
+	
 	protected static VisibleObject spawnNpc(SpawnTemplate spawn, int instanceIndex) {
 		int npcId = spawn.getNpcId();
 		NpcTemplate npcTemplate = DataManager.NPC_DATA.getNpcTemplate(npcId);
 		if (npcTemplate == null) {
-			log.error("No template for NPC " + String.valueOf(npcId));
+			log.error("No template for NPC {}", npcId);
 			return null;
 		}
 		Npc npc = new Npc(new NpcController(), spawn, npcTemplate);
@@ -89,7 +84,7 @@ public class VisibleObjectSpawner {
 		NpcTemplate npcTemplate = DataManager.NPC_DATA.getNpcTemplate(npcId);
 
 		if (npcTemplate == null) {
-			log.error("No template for Base NPC " + String.valueOf(npcId));
+			log.error("No template for Base NPC {}", npcId);
 			return null;
 		}
 
@@ -97,7 +92,7 @@ public class VisibleObjectSpawner {
 		if (base == null) // inactive base
 			return null;
 
-		if (spawn.getBaseRace() != base.getRace()) // avoid respawn of previous owner race spawns
+		if (spawn.getOccupier() != base.getOccupier()) // avoid respawn of previous owner race spawns
 			return null;
 
 		Npc npc = new Npc(new NpcController(), spawn, npcTemplate);
@@ -116,7 +111,7 @@ public class VisibleObjectSpawner {
 		int npcId = spawn.getNpcId();
 		NpcTemplate npcTemplate = DataManager.NPC_DATA.getNpcTemplate(npcId);
 		if (npcTemplate == null) {
-			log.error("No template for NPC " + String.valueOf(npcId));
+			log.error("No template for NPC {}", npcId);
 			return null;
 		}
 		Npc npc;
@@ -140,7 +135,7 @@ public class VisibleObjectSpawner {
 
 		NpcTemplate npcTemplate = DataManager.NPC_DATA.getNpcTemplate(spawn.getNpcId());
 		if (npcTemplate == null) {
-			log.error("No template for NPC " + String.valueOf(spawn.getNpcId()));
+			log.error("No template for NPC {}", spawn.getNpcId());
 			return null;
 		}
 		Npc npc = new SiegeNpc(new NpcController(), spawn, npcTemplate);
@@ -157,7 +152,7 @@ public class VisibleObjectSpawner {
 
 		NpcTemplate npcTemplate = DataManager.NPC_DATA.getNpcTemplate(spawn.getNpcId());
 		if (npcTemplate == null) {
-			log.error("No template for NPC " + String.valueOf(spawn.getNpcId()));
+			log.error("No template for NPC {}", spawn.getNpcId());
 			return null;
 		}
 		Npc npc = new Npc(new NpcController(), spawn, npcTemplate);

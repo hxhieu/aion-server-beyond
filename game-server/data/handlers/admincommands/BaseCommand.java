@@ -1,12 +1,9 @@
 package admincommands;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
-import com.aionemu.gameserver.model.Race;
-import com.aionemu.gameserver.model.base.BaseLocation;
+import com.aionemu.gameserver.model.base.Base;
+import com.aionemu.gameserver.model.base.BaseOccupier;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.services.BaseService;
-import com.aionemu.gameserver.services.base.Base;
 import com.aionemu.gameserver.spawnengine.SpawnHandlerType;
 import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.utils.chathandlers.AdminCommand;
@@ -14,104 +11,100 @@ import com.aionemu.gameserver.utils.chathandlers.AdminCommand;
 public class BaseCommand extends AdminCommand {
 
 	private static final String COMMAND_LIST = "list";
+	private static final String COMMAND_START = "start";
+	private static final String COMMAND_STOP = "stop";
 	private static final String COMMAND_CAPTURE = "capture";
 	private static final String COMMAND_ASSAULT = "assault";
 
 	public BaseCommand() {
 		super("base");
+
+		// @formatter:off
+		setSyntaxInfo(
+			"<list> - Lists all available base locations with their respective occupier",
+			"<capture> [id] [occupier] - Captures the specified base with the specified new occupier.",
+			"<assault> [id] - Spawns attacker NPCs for the specified base if available."
+		);
+		// @formatter:on
 	}
 
 	@Override
 	public void execute(Player player, String... params) {
-
 		if (params.length == 0) {
-			showHelp(player);
+			sendInfo(player, "Not enough parameters.");
 			return;
 		}
 
-		if (COMMAND_LIST.equalsIgnoreCase(params[0]))
-			handleList(player, params);
-		else if (COMMAND_CAPTURE.equals(params[0]))
-			capture(player, params);
-		else if (COMMAND_ASSAULT.equals(params[0]))
-			assault(player, params);
-	}
-
-	protected boolean isValidBaseLocationId(Player player, int baseId) {
-		if (!BaseService.getInstance().getBaseLocations().keySet().contains(baseId)) {
-			PacketSendUtility.sendMessage(player, "Id " + baseId + " is invalid");
-			return false;
-		}
-		return true;
-	}
-
-	protected void handleList(Player player, String[] params) {
-		if (params.length != 1) {
-			showHelp(player);
-			return;
-		}
-
-		for (BaseLocation base : BaseService.getInstance().getBaseLocations().values()) {
-			PacketSendUtility.sendMessage(player, "Base:" + base.getId() + " belongs to " + base.getRace());
+		switch (params[0].toLowerCase()) {
+			case COMMAND_LIST -> showBaseLocationList(player, params);
+			case COMMAND_START -> startBase(player, params);
+			case COMMAND_STOP -> stopBase(player, params);
+			case COMMAND_CAPTURE -> captureBase(player, params);
+			case COMMAND_ASSAULT -> assaultBase(player, params);
 		}
 	}
 
-	protected void capture(Player player, String[] params) {
-		if (params.length < 3 || !NumberUtils.isNumber(params[1])) {
-			showHelp(player);
-			return;
-		}
-
-		int baseId = NumberUtils.toInt(params[1]);
-		if (!isValidBaseLocationId(player, baseId))
-			return;
-
-		// check if params2 is race
-		Race race = null;
-		try {
-			race = Race.valueOf(params[2].toUpperCase());
-		}
-		catch (IllegalArgumentException e) {
-			// ignore
-		}
-
-		// check if can capture
-		if (race == null) {
-			PacketSendUtility.sendMessage(player, params[2] + " is not valid race");
-			showHelp(player);
-			return;
-		}
-
-		// capture
-		Base<?> base = BaseService.getInstance().getActiveBase(baseId);
-		if (base != null) {
-			BaseService.getInstance().capture(baseId, race);
-		}
+	protected void showBaseLocationList(Player player, String[] params) {
+		BaseService.getInstance().getBaseLocations().values()
+			.forEach(loc -> PacketSendUtility.sendMessage(player, "Base: %d belongs to %s".formatted(loc.getId(), loc.getOccupier())));
 	}
 
-	protected void assault(Player player, String[] params) {
-		if (params.length < 3 || !NumberUtils.isNumber(params[1])) {
-			showHelp(player);
+	private void startBase(Player player, String[] params) {
+		int baseId = parseBaseId(player, params);
+		if (baseId == 0)
+			return;
+
+		if (BaseService.getInstance().isActive(baseId)) {
+			sendInfo(player, "Unnecessary, it is already active. [id=%d]".formatted(baseId));
+			return;
+		}
+		BaseService.getInstance().start(baseId);
+	}
+
+	private void stopBase(Player player, String[] params) {
+		int baseId = parseBaseId(player, params);
+		if (baseId == 0)
+			return;
+
+		if (!BaseService.getInstance().isActive(baseId)) {
+			sendInfo(player, "Unnecessary, it is not active. [id=%d]".formatted(baseId));
+			return;
+		}
+		BaseService.getInstance().stop(baseId);
+	}
+
+	protected void captureBase(Player player, String[] params) {
+		int baseId = parseBaseId(player, params);
+		if (baseId == 0)
+			return;
+
+		if (!BaseService.getInstance().isActive(baseId)) {
+			sendInfo(player, "[id=%d] cannot only be captured if it is active".formatted(baseId));
 			return;
 		}
 
-		int baseId = NumberUtils.toInt(params[1]);
-		if (!isValidBaseLocationId(player, baseId))
+		BaseOccupier occupier = getOccupier(params[2].toUpperCase());
+		if (occupier == null) {
+			sendInfo(player, params[2] + " is not a valid occupier");
+			return;
+		}
+
+		BaseService.getInstance().capture(baseId, occupier);
+	}
+
+	protected void assaultBase(Player player, String[] params) {
+		int baseId = parseBaseId(player, params);
+		if (baseId == 0)
 			return;
 
-		// check if params2 is race
-		Race race = null;
-		try {
-			race = Race.valueOf(params[2].toUpperCase());
-		}
-		catch (IllegalArgumentException e) {
-			// ignore
+		if (!BaseService.getInstance().isActive(baseId)) {
+			sendInfo(player, "[id=%d] cannot only be assaulted if it is active".formatted(baseId));
+			return;
 		}
 
-		// check if race is valid
-		if (race == null) {
-			PacketSendUtility.sendMessage(player, params[2] + " is not valid race");
-			showHelp(player);
+		BaseOccupier occupier = getOccupier(params[2].toUpperCase());
+		if (occupier == null) {
+			sendInfo(player, params[2] + " is not a valid occupier");
 			return;
 		}
 
@@ -119,15 +112,39 @@ public class BaseCommand extends AdminCommand {
 		Base<?> base = BaseService.getInstance().getActiveBase(baseId);
 		if (base != null) {
 			if (base.isUnderAssault())
-				PacketSendUtility.sendMessage(player, "Assault already started!");
+				PacketSendUtility.sendMessage(player, "Assault is already active!");
 			else
-				base.spawnBySpawnHandler(SpawnHandlerType.ATTACKER, race);
+				base.spawnBySpawnHandler(SpawnHandlerType.ATTACKER, occupier);
 		}
 	}
 
-	protected void showHelp(Player player) {
-		PacketSendUtility.sendMessage(player, "AdminCommand //base Help\n" + "//base list\n"
-			+ "//base capture <Id> <Race (ELYOS,ASMODIANS,NPC)>\n" + "//base assault <Id> <delaySec>");
+	private int parseBaseId(Player admin, String[] params) {
+		if (params.length < 2) {
+			sendInfo(admin, "Not enough parameters");
+			return 0;
+		}
+
+		int baseId;
+		try {
+			baseId = Integer.parseInt(params[1]);
+		} catch (NumberFormatException e) {
+			sendInfo(admin, "This baseId is not a number.");
+			return 0;
+		}
+
+		if (!BaseService.getInstance().getBaseLocations().containsKey(baseId)) {
+			sendInfo(admin, "This baseId does not exist.");
+			return 0;
+		}
+
+		return baseId;
 	}
 
+	private BaseOccupier getOccupier(String param) {
+		try {
+			return BaseOccupier.valueOf(param);
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
 }

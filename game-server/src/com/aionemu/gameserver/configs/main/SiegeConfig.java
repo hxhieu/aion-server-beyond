@@ -36,6 +36,9 @@ public class SiegeConfig {
 	@Property(key = "gameserver.siege.difficulty.multiplier", defaultValue = "1")
 	public static float SIEGE_DIFFICULTY_MULTIPLIER;
 
+	@Property(key = "gameserver.siege.panesterra.maxplayers", defaultValue = "100")
+	public static int PANESTERRA_MAX_PLAYERS_PER_TEAM;
+
 	@Property(key = "gameserver.siege.panesterra.ahserion.maxplayers", defaultValue = "100")
 	public static int AHSERION_MAX_PLAYERS_PER_TEAM;
 

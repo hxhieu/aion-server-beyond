@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.model.Race;
+import com.aionemu.gameserver.model.base.BaseOccupier;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.gameobjects.siege.SiegeNpc;
 import com.aionemu.gameserver.model.siege.AgentLocation;
@@ -42,9 +43,6 @@ public class AgentSiege extends Siege<AgentLocation> {
 
 	/**
 	 * Set race for both deathListeners with opposite race.
-	 * This will handle better siege end, later.
-	 * 
-	 * @param siegeLocation
 	 */
 	public AgentSiege(AgentLocation siegeLocation) {
 		super(siegeLocation);
@@ -82,8 +80,8 @@ public class AgentSiege extends Siege<AgentLocation> {
 		despawnSiegeNpcs();
 		if (winner == null)
 			return;
-		Race winnerRace = winner == SiegeRace.ELYOS ? Race.ELYOS : Race.ASMODIANS;
-		BaseService.getInstance().capture(6113, winnerRace);
+		BaseOccupier winnerType = winner == SiegeRace.ELYOS ? BaseOccupier.ELYOS : BaseOccupier.ASMODIANS;
+		BaseService.getInstance().capture(6113, winnerType);
 		SiegeRace looser = winner == SiegeRace.ELYOS ? SiegeRace.ASMODIANS : SiegeRace.ELYOS;
 		sendRewardsToParticipants(getSiegeCounter().getRaceCounter(winner), SiegeResult.OCCUPY);
 		sendRewardsToParticipants(getSiegeCounter().getRaceCounter(looser), SiegeResult.FAIL);
@@ -135,12 +133,12 @@ public class AgentSiege extends Siege<AgentLocation> {
 		switch (target.getRace()) {
 			case GHENCHMAN_LIGHT:
 				if (veille != null)
-					throw new SiegeException("Tried to init veille twice!");
+					throw new SiegeException("Tried to init Veille twice!");
 				veille = target;
 				break;
 			case GHENCHMAN_DARK:
 				if (masta != null)
-					throw new SiegeException("Tried to init masta twice!");
+					throw new SiegeException("Tried to init Mastarius twice!");
 				masta = target;
 				break;
 			default:

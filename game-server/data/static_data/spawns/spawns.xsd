@@ -31,16 +31,16 @@
 	</xs:complexType>
 	<xs:complexType name="BaseSpawn">
 		<xs:sequence>
-			<xs:element name="simple_race" type="SimpleRaceTemplate" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="occupier_template" type="BaseOccupierTemplate" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:int"/>
 		<xs:attribute name="world" type="xs:int"/>
 	</xs:complexType>
-	<xs:complexType name="SimpleRaceTemplate">
+	<xs:complexType name="BaseOccupierTemplate">
 		<xs:sequence>
 			<xs:element name="spawn" type="Spawn" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attribute name="race" type="Race" use="required" />
+		<xs:attribute name="occupier" type="BaseOccupier" use="required" />
 	</xs:complexType>
 	<xs:complexType name="RiftSpawn">
 		<xs:sequence>
@@ -106,19 +106,19 @@
 		</xs:sequence>
 		<xs:attribute name="mod" type="SiegeModType"/>
 	</xs:complexType>
-	<xs:complexType name="MercenarySpawn">		
+	<xs:complexType name="MercenarySpawn">
 		<xs:sequence>
 			<xs:element name="mercenary_race" type="MercenaryRace" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="siege_id" type="xs:int"/>
 	</xs:complexType>
-	<xs:complexType name="MercenaryRace">		
+	<xs:complexType name="MercenaryRace">
 		<xs:sequence>
 			<xs:element name="mercenary_zone" type="MercenaryZone" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="race" type="Race"/>
 	</xs:complexType>
-	<xs:complexType name="MercenaryZone">		
+	<xs:complexType name="MercenaryZone">
 		<xs:sequence>
 			<xs:element name="spawn" type="Spawn" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
@@ -135,6 +135,8 @@
 		<xs:attribute name="handler" type="SpawnHandlerType"/>
 		<xs:attribute name="custom" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="difficult_id" type="xs:byte"/>
+		<xs:attribute name="initial_spawn_time" type="xs:int" use="optional"/>
+		<xs:attribute name="condition" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="SpawnSpotTemplate">
 		<xs:sequence>
@@ -198,7 +200,7 @@
 			<xs:enumeration value="BOSS"/>
 			<xs:enumeration value="FLAG"/>
 			<xs:enumeration value="GUARDIAN"/>
-			<xs:enumeration value="MERCHANT"/>			
+			<xs:enumeration value="MERCHANT"/>
 			<xs:enumeration value="OUTRIDER"/>
 			<xs:enumeration value="OUTRIDER_ENHANCED"/>
 			<xs:enumeration value="RIFT"/>

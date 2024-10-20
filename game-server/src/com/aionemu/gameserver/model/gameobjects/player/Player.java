@@ -71,6 +71,7 @@ import com.aionemu.gameserver.questEngine.model.QuestStatus;
 import com.aionemu.gameserver.services.DuelService;
 import com.aionemu.gameserver.services.ExchangeService;
 import com.aionemu.gameserver.services.HousingService;
+import com.aionemu.gameserver.services.panesterra.ahserion.PanesterraFaction;
 import com.aionemu.gameserver.skillengine.condition.ChainCondition;
 import com.aionemu.gameserver.skillengine.effect.RebirthEffect;
 import com.aionemu.gameserver.skillengine.model.ChainSkills;
@@ -78,6 +79,7 @@ import com.aionemu.gameserver.skillengine.model.Skill;
 import com.aionemu.gameserver.skillengine.model.SkillTemplate;
 import com.aionemu.gameserver.skillengine.task.CraftingTask;
 import com.aionemu.gameserver.utils.PacketSendUtility;
+import com.aionemu.gameserver.world.WorldMapType;
 import com.aionemu.gameserver.world.WorldPosition;
 
 /**
@@ -155,7 +157,7 @@ public class Player extends Creature {
 	private long hitTimeBoostExpireTimeMillis;
 	private float hitTimeBoostCastSpeed;
 	private ChainSkills chainSkills;
-	private Map<AttackStatus, Long> lastCounterSkill = new HashMap<>();
+	private final Map<AttackStatus, Long> lastCounterSkill = new HashMap<>();
 
 	private long prisonEndTimeMillis = 0;
 	private long gatherRestrictionMillis;
@@ -194,9 +196,14 @@ public class Player extends Creature {
 	private int robotId;
 	private boolean isInFfaTeamMode;
 	private int customStates;
+	private PanesterraFaction panesterraFaction;
 
-	private AtomicInteger fearCount = new AtomicInteger(), sleepCount = new AtomicInteger(), paralyzeCount = new AtomicInteger();
-	private AtomicLong cumulativeFearResistExpirationTime = new AtomicLong(), cumulativeSleepResistExpirationTime = new AtomicLong(), cumulativeParalyzeResistExpirationTime = new AtomicLong();
+	private final AtomicInteger fearCount = new AtomicInteger();
+	private final AtomicInteger sleepCount = new AtomicInteger();
+	private final AtomicInteger paralyzeCount = new AtomicInteger();
+	private final AtomicLong cumulativeFearResistExpirationTime = new AtomicLong();
+	private final AtomicLong cumulativeSleepResistExpirationTime = new AtomicLong();
+	private final AtomicLong cumulativeParalyzeResistExpirationTime = new AtomicLong();
 
 	public Player(PlayerAccountData playerAccountData, Account account) {
 		super(playerAccountData.getPlayerCommonData().getPlayerObjId(), new PlayerController(), null, playerAccountData.getPlayerCommonData(),
@@ -329,7 +336,7 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * Sets whether or not this player is looking for a group
+	 * Sets whether this player is looking for a group
 	 * 
 	 * @param lookingForGroup
 	 */
@@ -532,10 +539,6 @@ public class Player extends Creature {
 		storage.setOwner(this);
 	}
 
-	/**
-	 * @param storageType
-	 * @return
-	 */
 	public IStorage getStorage(int storageType) {
 		if (storageType == StorageType.CUBE.getId())
 			return inventory;
@@ -703,9 +706,7 @@ public class Player extends Creature {
 	 * @return true if a player has a store opened
 	 */
 	public boolean hasStore() {
-		if (getStore() != null)
-			return true;
-		return false;
+		return getStore() != null;
 	}
 
 	/**
@@ -845,23 +846,14 @@ public class Player extends Creature {
 		this.flyController = flyController;
 	}
 
-	/**
-	 * @param craftingTask
-	 */
 	public void setCraftingTask(CraftingTask craftingTask) {
 		this.craftingTask = craftingTask;
 	}
 
-	/**
-	 * @return
-	 */
 	public CraftingTask getCraftingTask() {
 		return craftingTask;
 	}
 
-	/**
-	 * @param flightTeleportId
-	 */
 	public void setFlightTeleportId(int flightTeleportId) {
 		this.flightTeleportId = flightTeleportId;
 	}
@@ -873,17 +865,11 @@ public class Player extends Creature {
 		return flightTeleportId;
 	}
 
-	/**
-	 * @param flightDistance
-	 */
 	public void setFlightDistance(int flightDistance) {
 		this.flightDistance = flightDistance;
 
 	}
 
-	/**
-	 * @param path
-	 */
 	public void setCurrentFlypath(FlyPathEntry path) {
 		this.flyLocationId = path;
 		if (path != null)
@@ -899,9 +885,6 @@ public class Player extends Creature {
 		return flightDistance;
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isUsingFlyTeleport() {
 		return isInState(CreatureState.FLYING) && flightTeleportId != 0;
 	}
@@ -928,12 +911,10 @@ public class Player extends Creature {
 
 	@Override
 	public boolean isEnemyFrom(Npc enemy) {
-		switch (enemy.getType(this)) {
-			case AGGRESSIVE:
-			case ATTACKABLE:
-				return true;
-		}
-		return false;
+		return switch (enemy.getType(this)) {
+			case AGGRESSIVE, ATTACKABLE -> true;
+			default -> false;
+		};
 	}
 
 	/**
@@ -950,16 +931,19 @@ public class Player extends Creature {
 		if (equals(enemy))
 			return false;
 		if (isInCustomState(CustomPlayerState.ENEMY_OF_ALL_PLAYERS) || enemy.isInCustomState(CustomPlayerState.ENEMY_OF_ALL_PLAYERS)) {
-			return !isInFfaTeamMode() || !enemy.isInFfaTeamMode() || !isInSameTeam(enemy);
+			return !isInFfaTeamMode || !enemy.isInFfaTeamMode() || !isInSameTeam(enemy);
+		}
+		if (panesterraFaction != null && WorldMapType.isPanesterraMap(getWorldId())) {
+			return panesterraFaction != enemy.getPanesterraFaction();
 		}
 		return canPvP(enemy) || isDueling(enemy);
 	}
 
 	public boolean isAggroIconTo(Player enemy) {
 		if (isInCustomState(CustomPlayerState.ENEMY_OF_ALL_PLAYERS) || enemy.isInCustomState(CustomPlayerState.ENEMY_OF_ALL_PLAYERS)) {
-			return !isInFfaTeamMode() || !enemy.isInFfaTeamMode() || !isInSameTeam(enemy);
+			return !isInFfaTeamMode || !enemy.isInFfaTeamMode() || !isInSameTeam(enemy);
 		}
-		return enemy.getRace() != getRace();
+		return isHostileInPanesterra(enemy) || enemy.getRace() != getRace();
 	}
 
 	public void setInFfaTeamMode(boolean isInFfaTeamMode) {
@@ -970,9 +954,16 @@ public class Player extends Creature {
 		return isInFfaTeamMode;
 	}
 
+	private boolean isHostileInPanesterra(Player enemy) {
+		if (panesterraFaction != null && WorldMapType.isPanesterraMap(getWorldId())) {
+			return panesterraFaction != enemy.getPanesterraFaction();
+		}
+		return false;
+	}
+
 	private boolean canPvP(Player enemy) {
 		int worldId = enemy.getWorldId();
-		if (!enemy.getRace().equals(getRace())) {
+		if (enemy.getRace() != getRace() || isHostileInPanesterra(enemy)) {
 			return isInsidePvPZone() && enemy.isInsidePvPZone();
 		} else if (worldId == 110010000 || worldId == 120010000 || isInInstance()) {
 			return isInsideZoneType(ZoneType.PVP) && enemy.isInsideZoneType(ZoneType.PVP) && !isInSameTeam(enemy);
@@ -997,14 +988,13 @@ public class Player extends Creature {
 		if (super.canSee(object))
 			return true;
 
-		if (object instanceof Creature) {
-			if (((Creature) object).getMaster() instanceof Player) { // player or a summon's master
-				Player player = (Player) ((Creature) object).getMaster();
+		if (object instanceof Creature creature) {
+			if (creature.getMaster() instanceof Player player) { // player or a summon's master
 				if (isInSameTeam(player) && !isDueling(player))
 					return true;
 			}
-			if (object instanceof Kisk && ((Kisk) object).getOwnerRace() == getRace()) // invisible kisks can be seen from players of the same race
-				return true;
+			// invisible kisks can be seen from players of the same race
+			return object instanceof Kisk && ((Kisk) object).getOwnerRace() == getRace();
 		}
 
 		return false;
@@ -1080,11 +1070,6 @@ public class Player extends Creature {
 		return itemCoolDowns;
 	}
 
-	/**
-	 * @param delayId
-	 * @param time
-	 * @param useDelay
-	 */
 	public void addItemCoolDown(int delayId, long time, int useDelay) {
 		itemCoolDowns.put(delayId, new ItemCooldown(time, useDelay));
 	}
@@ -1280,7 +1265,7 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * @param the
+	 * @param value
 	 *          Resurrection Positional State to set
 	 */
 	public void setResPosState(boolean value) {
@@ -1288,7 +1273,7 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * @param the
+	 * @param value
 	 *          Resurrection Positional X value to set
 	 */
 	public void setResPosX(float value) {
@@ -1303,7 +1288,7 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * @param the
+	 * @param value
 	 *          Resurrection Positional Y value to set
 	 */
 	public void setResPosY(float value) {
@@ -1318,7 +1303,7 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * @param the
+	 * @param value
 	 *          Resurrection Positional Z value to set
 	 */
 	public void setResPosZ(float value) {
@@ -1333,14 +1318,10 @@ public class Player extends Creature {
 	}
 
 	public boolean isInSiegeWorld() {
-		switch (getWorldId()) {
-			case 210050000:
-			case 220070000:
-			case 400010000:
-				return true;
-			default:
-				return false;
-		}
+		return switch (getWorldId()) {
+			case 210050000, 220070000, 400010000 -> true;
+			default -> false;
+		};
 	}
 
 	public boolean hasPermission(byte perm) {
@@ -1463,8 +1444,7 @@ public class Player extends Creature {
 
 	/**
 	 * Stone Use Order determined by highest inventory slot. :( If player has two types, wrong one might be used.
-	 * 
-	 * @param player
+	 *
 	 * @return selfRezItem
 	 */
 	public Item getSelfRezStone() {
@@ -1480,7 +1460,6 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * @param stoneItemId
 	 * @return stoneItem or null
 	 */
 	private Item getReviveStone(int stoneId) {
@@ -1729,17 +1708,20 @@ public class Player extends Creature {
 
 	public void incrementFearCountAndUpdateExpirationTime(long duration) {
 		fearCount.incrementAndGet();
-		cumulativeFearResistExpirationTime.set(System.currentTimeMillis() + duration + 1000); // +1s to compensate for hittime and differences between retail
+		// +1s to compensate for hittime and differences between retail
+		cumulativeFearResistExpirationTime.set(System.currentTimeMillis() + duration + 1000);
 	}
 
 	public void incrementSleepCountAndUpdateExpirationTime(long duration) {
 		sleepCount.incrementAndGet();
-		cumulativeSleepResistExpirationTime.set(System.currentTimeMillis() + duration + 1000); // +1s to compensate for hittime and differences between retail
+		// +1s to compensate for hittime and differences between retail
+		cumulativeSleepResistExpirationTime.set(System.currentTimeMillis() + duration + 1000);
 	}
 
 	public void incrementParalyzeCountAndUpdateExpirationTime(long duration) {
 		paralyzeCount.incrementAndGet();
-		cumulativeParalyzeResistExpirationTime.set(System.currentTimeMillis() + duration + 1000); // +1s to compensate for hittime and differences between retail
+		// +1s to compensate for hittime and differences between retail
+		cumulativeParalyzeResistExpirationTime.set(System.currentTimeMillis() + duration + 1000);
 	}
 
 	public int getFearCount() {
@@ -1791,5 +1773,13 @@ public class Player extends Creature {
 			return false;
 		}
 		return true;
+	}
+
+	public PanesterraFaction getPanesterraFaction() {
+		return panesterraFaction;
+	}
+
+	public void setPanesterraFaction(PanesterraFaction panesterraFaction) {
+		this.panesterraFaction = panesterraFaction;
 	}
 }

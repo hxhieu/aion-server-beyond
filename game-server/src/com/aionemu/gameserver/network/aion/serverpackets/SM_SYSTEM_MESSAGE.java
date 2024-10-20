@@ -27275,6 +27275,20 @@ public final class SM_SYSTEM_MESSAGE extends AionServerPacket {
 	public static SM_SYSTEM_MESSAGE STR_MSG_ENCHANT_ITEM_SUCCEEDED_20(String playerName, String value1) {
 		return new SM_SYSTEM_MESSAGE(1402285, playerName, value1);
 	}
+	
+	/**
+	 * Only players ranked in the top 100 can enter.
+	 */
+	public static SM_SYSTEM_MESSAGE STR_MSG_TELEPOTER_GAB1_USER03() {
+		return new SM_SYSTEM_MESSAGE(1402291);
+	}
+	
+	/**
+	 * Only players level 65 or over can enter.
+	 */
+	public static SM_SYSTEM_MESSAGE STR_MSG_TELEPOTER_GAB1_USER04() {
+		return new SM_SYSTEM_MESSAGE(1402364);
+	}
 
 	/**
 	 * Destroyer Kunax has appeared in the Slaying Arena
@@ -27295,6 +27309,13 @@ public final class SM_SYSTEM_MESSAGE extends AionServerPacket {
 	 */
 	public static SM_SYSTEM_MESSAGE STR_MSG_FORTRESS_RE_FIRESPAWN_B() {
 		return new SM_SYSTEM_MESSAGE(1402369);
+	}
+
+	/**
+	 * Only the commander-in-chief can enter.
+	 */
+	public static SM_SYSTEM_MESSAGE STR_MSG_TELEPOTER_GAB1_USER05() {
+		return new SM_SYSTEM_MESSAGE(1402370);
 	}
 
 	/**
@@ -27409,6 +27430,13 @@ public final class SM_SYSTEM_MESSAGE extends AionServerPacket {
 	 */
 	public static SM_SYSTEM_MESSAGE STR_MSG_SVS_DIRECT_PORTAL_OPEN_NOTICE() {
 		return new SM_SYSTEM_MESSAGE(1402418);
+	}
+
+	/**
+	 * Only officers 1-star or higher can enter the fortress.
+	 */
+	public static SM_SYSTEM_MESSAGE STR_MSG_TELEPOTER_GAB1_USER07() {
+		return new SM_SYSTEM_MESSAGE(1402420);
 	}
 
 	/**

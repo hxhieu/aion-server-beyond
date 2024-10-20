@@ -52,6 +52,7 @@ public class Info extends AdminCommand {
 				Pet pet = player.getPet();
 				sendInfo(admin, (pet != null ? "Pet Id: " + pet.getObjectTemplate().getTemplateId() + ", ObjectId: " + pet.getObjectId() + "\n\t" : "")
 					+ "Town ID: " + TownService.getInstance().getTownResidence(player));
+				sendInfo(admin, "Current Panesterra Faction: %s".formatted(player.getPanesterraFaction()));
 				PlayerGameStats pgs = player.getGameStats();
 				sendInfo(admin,
 					"[Stats]"
@@ -178,8 +179,7 @@ public class Info extends AdminCommand {
 		int aDmg = 0, eDmg = 0, tDmg = creature.getAggroList().getTotalDamage();
 		for (AggroInfo ai : creature.getAggroList().getList()) {
 			String name = ai.getAttacker().getName();
-			if (ai.getAttacker() instanceof Creature) {
-				Creature attacker = ((Creature) ai.getAttacker());
+			if (ai.getAttacker() instanceof Creature attacker) {
 				Creature master = attacker.getMaster();
 				if (master.getRace() == Race.ASMODIANS)
 					aDmg += ai.getDamage();

@@ -73,7 +73,7 @@ public class SpawnsData extends AbstractLockManager {
 			try {
 				if (mapSpawns == null) {
 					mapSpawns = new HashMap<>();
-						allSpawnMaps.put(map.getMapId(), mapSpawns);
+					allSpawnMaps.put(map.getMapId(), mapSpawns);
 				}
 
 				List<Integer> customs = new ArrayList<>();
@@ -100,9 +100,9 @@ public class SpawnsData extends AbstractLockManager {
 				if (!baseSpawnMaps.containsKey(baseId)) {
 					baseSpawnMaps.put(baseId, new ArrayList<>());
 				}
-				for (BaseSpawn.SimpleRaceTemplate simpleRace : baseSpawn.getBaseRaceTemplates()) {
+				for (BaseSpawn.BaseOccupierTemplate simpleRace : baseSpawn.getOccupierTemplates()) {
 					for (Spawn spawn : simpleRace.getSpawns()) {
-						SpawnGroup spawnGroup = new SpawnGroup(map.getMapId(), spawn, baseId, simpleRace.getBaseRace());
+						SpawnGroup spawnGroup = new SpawnGroup(map.getMapId(), spawn, baseId, simpleRace.getOccupier());
 						baseSpawnMaps.get(baseId).add(spawnGroup);
 					}
 				}
@@ -166,7 +166,7 @@ public class SpawnsData extends AbstractLockManager {
 			}
 
 			for (AhserionsFlightSpawn ahserionSpawn : map.getAhserionSpawns()) {
-				int teamId = ahserionSpawn.getFaction().getId();
+				int teamId = ahserionSpawn.getFaction().ordinal();
 				if (!ahserionSpawnMaps.containsKey(teamId)) {
 					ahserionSpawnMaps.put(teamId, new ArrayList<>());
 				}
@@ -184,13 +184,10 @@ public class SpawnsData extends AbstractLockManager {
 		}
 		allNpcIds = allSpawnMaps.values().stream().flatMap(spawn -> spawn.keySet().stream()).collect(Collectors.toSet());
 		allNpcIds.addAll(baseSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
-		allNpcIds
-			.addAll(siegeSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
+		allNpcIds.addAll(siegeSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
 		allNpcIds.addAll(riftSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
-		allNpcIds
-			.addAll(vortexSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
-		allNpcIds
-			.addAll(ahserionSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
+		allNpcIds.addAll(vortexSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
+		allNpcIds.addAll(ahserionSpawnMaps.values().stream().flatMap(group -> group.stream().map(SpawnGroup::getNpcId)).collect(Collectors.toSet()));
 	}
 
 	public void clearTemplates() {
@@ -295,7 +292,6 @@ public class SpawnsData extends AbstractLockManager {
 				oldGroup.getSpawnSpotTemplates().set(oldSpotIndex, spot);
 		} else if (!delete)
 			oldGroup.getSpawnSpotTemplates().add(spot);
-
 
 		xml.getParentFile().mkdir();
 		try {
