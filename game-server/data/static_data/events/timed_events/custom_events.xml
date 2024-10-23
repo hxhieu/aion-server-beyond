@@ -48,11 +48,14 @@
 			<property>gameserver.rates.skill_xp.crafting = 10</property>
 		</config_properties>
 	</event>
-	<event name="Increased Rates C" start="2024-07-26T00:00:00" end="2024-07-28T23:59:59">
-		<login_message>Benefit from increased gathering counts until July 28th!</login_message>
-		<config_properties>
-			<property>gameserver.rates.gathering.count = 4</property>
-		</config_properties>
+	<event name="Increased Drop Rates" start="2024-10-08T00:00:00" end="2024-10-10T23:59:59">
+		<login_message>Benefit from increased drop rates until October 10th!</login_message>
+		<buffs>
+			<!-- [Event] Marvelous Item Energy (Drop Boost +20%) -->
+			<buff skill_ids="10822" permanent="true">
+				<trigger condition="ENTER_MAP" />
+			</buff>
+		</buffs>
 	</event>
 	<event name="Kill Collector" start="2024-07-08T00:00:00" end="2024-08-04T23:59:59">
 		<config_properties>
@@ -2929,15 +2932,30 @@
 			<property>gameserver.event.arcade.enable = true</property>
 		</config_properties>
 		<event_drops>
-			<gd_rule rule_name="Global Arcade Token" level_based_chance_reduction="true" chance="0.4">
+			<gd_rule rule_name="Global Arcade Token" level_based_chance_reduction="true" chance="1.2" dynamic_chance="true">
 				<gd_ratings>
 					<gd_rating rating="NORMAL" />
 					<gd_rating rating="ELITE" />
-					<gd_rating rating="HERO" />
-					<gd_rating rating="LEGENDARY" />
 				</gd_ratings>
 				<gd_items>
 					<gd_item id="188053863" /><!-- [Event] Arcade Token Bundle (1) -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Global Arcade Token (Hero)" level_based_chance_reduction="true" chance="100">
+				<gd_ratings>
+					<gd_rating rating="HERO" />
+				</gd_ratings>
+				<gd_items>
+					<gd_item id="188053863" /><!-- [Event] Arcade Token Bundle (1) -->
+					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Global Arcade Token (Legendary)" level_based_chance_reduction="true" chance="100" member_limit="12">
+				<gd_ratings>
+					<gd_rating rating="LEGENDARY" />
+				</gd_ratings>
+				<gd_items>
+					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
 				</gd_items>
 			</gd_rule>
 			<gd_rule rule_name="Instance Boss Arcade Token" chance="100">
