@@ -255,6 +255,6 @@ public class CustomConfig {
 	@Property(key = "gameserver.rates.godstone.activation.rate", defaultValue = "1.0")
 	public static float GODSTONE_ACTIVATION_RATE;
 
-	@Property(key = "gameserver.rates.godstone.evaluation.cooldown_millis", defaultValue = "500")
+	@Property(key = "gameserver.rates.godstone.evaluation.cooldown_millis", defaultValue = "750")
 	public static int GODSTONE_EVALUATION_COOLDOWN_MILLIS;
 }
