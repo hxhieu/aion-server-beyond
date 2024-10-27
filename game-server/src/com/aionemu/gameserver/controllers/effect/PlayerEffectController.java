@@ -56,6 +56,13 @@ public class PlayerEffectController extends EffectController {
 			updatePlayerIconsAndGroup(null);
 	}
 
+	/**
+	 * Removes non-storable effects and their conditional effects (like Aethertech buffs)
+	 */
+	public void removeNonStorableEffectsForLogout() {
+		getAllEffects().stream().filter(e -> !e.canSaveOnLogout()).forEach(e -> e.endEffect(false));
+	}
+
 	private void updatePlayerIconsAndGroup(Effect effect) {
 		if (effect == null || !effect.isPassive()) {
 			updatePlayerEffectIcons(effect);

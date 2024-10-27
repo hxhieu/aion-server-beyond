@@ -26,7 +26,6 @@ import com.aionemu.gameserver.questEngine.QuestEngine;
 import com.aionemu.gameserver.questEngine.model.QuestEnv;
 import com.aionemu.gameserver.services.*;
 import com.aionemu.gameserver.services.conquerorAndProtectorSystem.ConquerorAndProtectorService;
-import com.aionemu.gameserver.services.drop.DropService;
 import com.aionemu.gameserver.services.findgroup.FindGroupService;
 import com.aionemu.gameserver.services.instance.InstanceService;
 import com.aionemu.gameserver.services.summons.SummonsService;
@@ -92,9 +91,6 @@ public class PlayerLeaveWorldService {
 		GMService.getInstance().onPlayerLogout(player);
 		KiskService.getInstance().onLogout(player);
 
-		if (player.isLooting())
-			DropService.getInstance().closeDropList(player, player.getLootingNpcOid());
-
 		if (player.isDead()) {
 			if (player.isInInstance() || player.getWorldId() == 400030000)
 				PlayerReviveService.instanceRevive(player);
@@ -103,7 +99,7 @@ public class PlayerLeaveWorldService {
 		} else if (DuelService.getInstance().isDueling(player)) {
 			DuelService.getInstance().loseDuel(player);
 		}
-		// store current effects
+		player.getEffectController().removeNonStorableEffectsForLogout();
 		PlayerEffectsDAO.storePlayerEffects(player);
 		PlayerCooldownsDAO.storePlayerCooldowns(player);
 		ItemCooldownsDAO.storeItemCooldowns(player);
