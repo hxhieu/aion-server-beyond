@@ -177,7 +177,8 @@ public class CM_MOVE extends AionClientPacket {
 			 * Sending a move packet with the current server-side position works around this client bug and the client will not move you to your target's
 			 * position.
 			 */
-			sendPacket(type == 0 ? new SM_FORCED_MOVE(player, player) : new SM_MOVE(player));
+			boolean moveForcefully = type == 0 || (type & MovementMask.MANUAL) == MovementMask.MANUAL && (type & MovementMask.POSITION) == MovementMask.POSITION;
+			sendPacket(moveForcefully ? new SM_FORCED_MOVE(player, player) : new SM_MOVE(player));
 			return true;
 		}
 		return false;
