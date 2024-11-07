@@ -25,17 +25,11 @@ public class SecurityConfig {
 	@Property(key = "gameserver.security.antihack.punish", defaultValue = "0")
 	public static int PUNISH;
 
-	@Property(key = "gameserver.security.noanimation", defaultValue = "false")
-	public static boolean NO_ANIMATION;
-
-	@Property(key = "gameserver.security.noanimation.kick", defaultValue = "false")
-	public static boolean NO_ANIMATION_KICK;
-
-	@Property(key = "gameserver.security.noanimation.value", defaultValue = "0.1")
-	public static float NO_ANIMATION_VALUE;
-
-	@Property(key = "gameserver.security.motion.time.enable", defaultValue = "true")
-	public static boolean MOTION_TIME;
+	/**
+	 * Check for no-animation hacks (prevents premature skill executions and logs suspicious players to audit log)
+	 */
+	@Property(key = "gameserver.security.check_animations", defaultValue = "true")
+	public static boolean CHECK_ANIMATIONS;
 
 	@Property(key = "gameserver.security.captcha.enable", defaultValue = "false")
 	public static boolean CAPTCHA_ENABLE;

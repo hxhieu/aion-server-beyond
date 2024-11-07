@@ -200,6 +200,8 @@ public class PositionUtil {
 		if (!centerToCenter) {
 			distance -= object.getObjectTemplate().getBoundRadius().getMaxOfFrontAndSide();
 			distance -= object2.getObjectTemplate().getBoundRadius().getMaxOfFrontAndSide();
+			if (distance < 0)
+				distance = 0;
 		}
 		return distance;
 	}
@@ -273,15 +275,19 @@ public class PositionUtil {
 		return isInRange(attacker, target, range, false);
 	}
 
+	public static float calculateMaxCoveredDistance(Creature creature, long movementDurationMillis) {
+		if (movementDurationMillis <= 0)
+			return 0;
+		int metersPerSecondInThousands = creature.getGameStats().getMovementSpeed().getCurrent();
+		return metersPerSecondInThousands * movementDurationMillis / 1_000_000f;
+	}
+
 	private static float calculateMaxDistanceOffset(Creature creature) {
 		float offset = CreatureMoveController.MOVE_CHECK_OFFSET;
 		long lastMove = creature.getMoveController().getLastMoveUpdate();
 		if (lastMove > 0) {
-			int metersPerSecondInThousands = creature.getGameStats().getMovementSpeed().getCurrent();
 			long msSinceLastMove = Math.min(1000, System.currentTimeMillis() - lastMove); // cap ms to avoid huge atk ranges during lags
-			if (msSinceLastMove > 0) {
-				offset += metersPerSecondInThousands * msSinceLastMove / 1000000f;
-			}
+			offset += calculateMaxCoveredDistance(creature, msSinceLastMove);
 		}
 		return offset;
 	}

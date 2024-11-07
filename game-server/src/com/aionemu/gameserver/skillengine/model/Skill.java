@@ -13,12 +13,14 @@ import com.aionemu.gameserver.ai.event.AIEventType;
 import com.aionemu.gameserver.ai.handler.ShoutEventHandler;
 import com.aionemu.gameserver.ai.manager.SkillAttackManager;
 import com.aionemu.gameserver.configs.main.CustomConfig;
+import com.aionemu.gameserver.configs.main.GSConfig;
 import com.aionemu.gameserver.configs.main.SecurityConfig;
 import com.aionemu.gameserver.controllers.attack.AttackStatus;
 import com.aionemu.gameserver.controllers.observer.ActionObserver;
 import com.aionemu.gameserver.controllers.observer.ObserverType;
 import com.aionemu.gameserver.controllers.observer.StartMovingListener;
 import com.aionemu.gameserver.dataholders.DataManager;
+import com.aionemu.gameserver.dataholders.MotionData.AnimationTimes;
 import com.aionemu.gameserver.model.PlayerClass;
 import com.aionemu.gameserver.model.gameobjects.Creature;
 import com.aionemu.gameserver.model.gameobjects.Item;
@@ -79,15 +81,13 @@ public class Skill {
 	 */
 	private int baseCastDuration;
 	private int castDuration;
-	private int hitTime;// from CM_CASTSPELL
-	private int serverTime;// time when effect is applied
-	private int animationTime;
+	private int clientHitTime; // from CM_CASTSPELL
+	private int hitTime; // time when effect is applied
+	private float castSpeedForAnimationBoostAndChargeSkills; // cast speed can boost the animation time of the current skill and the hit time of the following skill
 	private long castStartTime;
-	private boolean instantSkill = false;
 	private String chainCategory = null;
 	private int chainUsageDuration = 0;
 	private volatile boolean isMultiCast = false;
-	private float[] chargeTimes;
 	private int hate;
 	private volatile ActionObserver firstTargetDieObserver;
 
@@ -165,7 +165,7 @@ public class Skill {
 				}
 			}
 
-			if (skillMethod == SkillMethod.ITEM && castDuration > 0 && player.getMoveController().isInMove()) {
+			if (skillMethod == SkillMethod.ITEM && baseCastDuration > 0 && player.getMoveController().isInMove()) {
 				PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_ITEM_CANCELED());
 				return false;
 			}
@@ -237,7 +237,7 @@ public class Skill {
 	 * @return true if usage is successful
 	 */
 	public boolean useSkill() {
-		return useSkill(true, true);
+		return useSkill(SecurityConfig.CHECK_ANIMATIONS, true);
 	}
 
 	public boolean useNoAnimationSkill() {
@@ -255,15 +255,8 @@ public class Skill {
 		if (checkproperties && !canUseSkill(CastState.CAST_START))
 			return false;
 
-		calculateAndSetCastDuration();
-
-		if (SecurityConfig.MOTION_TIME) {
-			// must be after calculateskillduration
-			if (checkAnimation && !checkAnimationTime()) {
-				log.debug("check animation time failed");
-				return false;
-			}
-		}
+		updateCastDurationAndSpeed();
+		updateHitTime(checkAnimation);
 
 		// notify skill use observers
 		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM || skillMethod == SkillMethod.CHARGE)
@@ -317,10 +310,10 @@ public class Skill {
 		return cooldown;
 	}
 
-	protected void calculateAndSetCastDuration() {
+	protected void updateCastDurationAndSpeed() {
+		castSpeedForAnimationBoostAndChargeSkills = 1 - effector.getGameStats().getStat(StatEnum.BOOST_CASTING_TIME, 1000).getBonus() / 1000f;
 		// ap & cash revival stones, or 2nd+ time of multicast-skill activation
-		if (getSkillId() == 10802
-			|| isMulticast() && effector instanceof Player && ((Player) effector).getChainSkills().getCurrentChainCount(chainCategory) > 0) {
+		if (getSkillId() == 10802 || getMultiCastCount() > 0) {
 			castDuration = 0;
 			return;
 		}
@@ -341,12 +334,13 @@ public class Skill {
 
 		int boostValue;
 		boolean noBaseDurationCap = false;
-		boolean isPhysicalCharge = skillMethod == SkillMethod.CHARGE && (effector instanceof Player)
-			&& (((Player) effector).getPlayerClass().isPhysicalClass() || ((Player) effector).getPlayerClass() == PlayerClass.RIDER
-				|| ((Player) effector).getPlayerClass() == PlayerClass.GUNNER);
-
+		boolean isPhysicalCharge = skillMethod == SkillMethod.CHARGE && effector instanceof Player player
+			&& (player.getPlayerClass().isPhysicalClass() || player.getPlayerClass() == PlayerClass.RIDER || player.getPlayerClass() == PlayerClass.GUNNER);
 		if (skillTemplate.getType() == SkillType.MAGICAL || skillMethod == SkillMethod.CHARGE) {
-			if (!isPhysicalCharge) {
+			if (isPhysicalCharge) {
+				castDuration = (int) effector.getGameStats().getPositiveStat(StatEnum.ATTACK_SPEED, baseCastDuration);
+				castSpeedForAnimationBoostAndChargeSkills = (float) castDuration / baseCastDuration;
+			} else {
 				castDuration = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME, baseCastDuration);
 				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SKILL, baseCastDuration);
 				switch (skillTemplate.getSubType()) {
@@ -377,8 +371,6 @@ public class Skill {
 						break;
 				}
 				castDuration -= baseCastDuration - boostValue;
-			} else {
-				castDuration = (int) effector.getGameStats().getPositiveStat(StatEnum.ATTACK_SPEED, baseCastDuration);
 			}
 		}
 
@@ -398,62 +390,51 @@ public class Skill {
 			castDuration = 0;
 	}
 
-	private boolean checkAnimationTime() {
-		if (!(effector instanceof Player player) || skillMethod != SkillMethod.CAST && skillMethod != SkillMethod.CHARGE)// TODO item skills?
-			return true;
+	protected void updateHitTime(boolean checkAnimation) {
+		hitTime = clientHitTime;
+		if (!checkAnimation || !(effector instanceof Player player) || skillMethod != SkillMethod.CAST && skillMethod != SkillMethod.CHARGE && skillMethod != SkillMethod.ITEM)
+			return;
 
-		if (player.getTransformModel().isActive() && player.getTransformModel().getType() == TransformType.FORM1)
-			return true;
-
-		Motion motion = getSkillTemplate().getMotion();
-		if (motion == null || motion.getName() == null) // skills like Remove Shock (283) or Feint (912)
-			return true; // some skills, like Blind Side (3467) or scroll/food buffs have no motion
-
-		MotionTime motionTime = DataManager.MOTION_DATA.getMotionTime(motion.getName());
-		if (motionTime == null) // no warning here (already sent on server startup to avoid permanent spam, see DataManager.SKILL_DATA.validateMotions())
-			return true;
-
-		WeaponTypeWrapper weapons = new WeaponTypeWrapper(player.getEquipment().getMainHandWeaponType(), player.getEquipment().getOffHandWeaponType());
-		int clientTime = hitTime;
-		int serverHitTime = 0;
-		int motionId = 1;
-		if (isMulticast() && player.getChainSkills().getCurrentChainCount(chainCategory) > 0) {
-			motionId = player.getChainSkills().getCurrentChainCount(chainCategory) + 1;
-		}
-		Times time = motionTime.getTimesFor(player.getRace(), player.getGender(), weapons, player.isInRobotMode(), motionId);
-		if (time != null) {
-			float atkSpeed = player.getGameStats().getAttackSpeed().getCurrent() / (float) player.getGameStats().getAttackSpeed().getBase();
-
-			float castSpeed = player.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME, 1000) / 1000f;
-			if (castSpeed < 0.3f)
-				castSpeed = 0.3f;
-
-			float speedModifier = Math.min(atkSpeed, castSpeed);
-			animationTime = (int) (time.getMaxTime() * motion.getSpeed() * speedModifier * 10);
-			serverHitTime = (int) Math.ceil((player.isInRobotMode() ? time.getMaxTime() : time.getMinTime()) * motion.getSpeed() * speedModifier * 10);
+		float animationTimeUntilFirstHit = DataManager.MOTION_DATA.calculateAnimationTimeUntilFirstHit(player, this);
+		int toleranceMillis = 1;
+		if (skillTemplate.getAmmoSpeed() != 0) {
+			float distance = (float) PositionUtil.getDistance(player, firstTarget);
+			if (player.getMoveController().isInMove() || firstTarget.getMoveController().isInMove()) // subtract the run distance until ammo is actually fired
+				distance -= PositionUtil.calculateMaxCoveredDistance(player, Math.round(animationTimeUntilFirstHit));
+			float distanceTolerance = getDistanceTolerance(player, firstTarget);
+			float ammoTime = Math.max(0, distance / skillTemplate.getAmmoSpeed() * 1000);
+			toleranceMillis += Math.max(0, (int) Math.ceil(distanceTolerance / skillTemplate.getAmmoSpeed() * 1000));
+			animationTimeUntilFirstHit += ammoTime;
 		}
 
-		long ammoTime = 0;
-		if (getSkillTemplate().getAmmoSpeed() != 0) {
-			double distance = PositionUtil.getDistance(effector, firstTarget);
-			ammoTime = Math.round(distance / getSkillTemplate().getAmmoSpeed() * 1000);// checked with client
+		int motionDelay = skillTemplate.getMotion() == null ? 0 : skillTemplate.getMotion().getDelay();
+		int serverHitTime = motionDelay + Math.round(animationTimeUntilFirstHit);
+		if (serverHitTime > clientHitTime) {
+			hitTime = serverHitTime;
+			if (isSuspiciousClientHitTime(clientHitTime, serverHitTime, toleranceMillis)) {
+				AuditLogger.log(player,
+					"modified hit time for skill %d (client < server: %d/%d). [allowAnimationBoostByCastSpeed=%s]".formatted(getSkillId(), clientHitTime,
+						serverHitTime, allowAnimationBoostByCastSpeed()));
+			}
 		}
+	}
 
-		int finalTime = Math.round(motion.getDelay() + (serverHitTime + ammoTime) * 0.98f); // client sends rounded times, too
+	private float getDistanceTolerance(Player player, Creature target) {
+		long nowMillis = System.currentTimeMillis();
+		// even when not yet moving on server side, the player can just have started to move before casting (CM_MOVE is sent after CM_CASTSPELL)
+		long maxMovementMillis = player.getMoveController().isInMove() ? 1000 : 200;
+		long movementMillis = Math.min(maxMovementMillis, nowMillis - player.getMoveController().getLastMoveUpdate());
+		float distanceTolerance = PositionUtil.calculateMaxCoveredDistance(player, movementMillis);
+		if (target.getMoveController().isInMove())
+			distanceTolerance += PositionUtil.calculateMaxCoveredDistance(target, nowMillis - target.getMoveController().getLastMoveUpdate());
+		return distanceTolerance;
+	}
 
-		if (motion.isInstantSkill() && clientTime == 0) {
-			this.serverTime = (int) ammoTime;
-		} else if (clientTime < finalTime) {
-			AuditLogger.log(player, "Modified skill time for client skill: " + getSkillId() + " (clientTime < finalTime: " + clientTime + "/" + finalTime
-				+ "). Player is in move: " + player.getMoveController().isInMove());
-			this.serverTime = finalTime;
-		} else {
-			this.serverTime = clientTime;
-		}
-
-		if (skillMethod != SkillMethod.CHARGE)
-			player.setNextSkillUse(System.currentTimeMillis() + castDuration + (long) (animationTime * 0.8f));
-
+	private boolean isSuspiciousClientHitTime(int clientHitTime, int serverHitTime, int tolerance) {
+		if (clientHitTime == 0 && (itemTemplate != null || skillTemplate.getMotion() != null && skillTemplate.getMotion().isInstantSkill()))
+			return false; // effects apply immediately (damage too, though visually delayed)
+		if (clientHitTime >= serverHitTime - tolerance)
+			return false;
 		return true;
 	}
 
@@ -477,22 +458,12 @@ public class Skill {
 	private void startCast() {
 		int targetObjId = firstTarget != null ? firstTarget.getObjectId() : 0;
 		boolean needsCast = itemTemplate != null && itemTemplate.isCombatActivated();
-		float castSpeed = baseCastDuration != 0 ? (float) castDuration / baseCastDuration
-			: effector.getGameStats().getReverseStat(StatEnum.BOOST_CASTING_TIME, 1000).getCurrent() / 1000f;
-		if (skillMethod == SkillMethod.CHARGE) {
-			SkillChargeCondition chargeCondition = skillTemplate.getSkillChargeCondition();
-			if (chargeCondition != null) {
-				ChargeSkillEntry skillCharge = DataManager.SKILL_CHARGE_DATA.getChargedSkillEntry(chargeCondition.getValue());
-				chargeTimes = new float[skillCharge.getSkills().size()];
-				for (int i = 0; i < skillCharge.getSkills().size(); i++)
-					chargeTimes[i] = skillCharge.getSkills().get(i).getTime() * castSpeed;
-			}
-		}
 		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.CHARGE || needsCast) {
 			switch (targetType) {
 				case 0: // PlayerObjectId as Target
 					PacketSendUtility.broadcastPacketAndReceive(effector,
-						new SM_CASTSPELL(effector, skillTemplate.getSkillId(), skillLevel, targetType, targetObjId, castDuration, castSpeed, isMagical()));
+						new SM_CASTSPELL(effector, skillTemplate.getSkillId(), skillLevel, targetType, targetObjId, castDuration,
+							castSpeedForAnimationBoostAndChargeSkills, allowAnimationBoostByCastSpeed()));
 					if (effector instanceof Npc) {
 						ShoutEventHandler.onCast((NpcAI) effector.getAi(), firstTarget);
 					}
@@ -500,14 +471,18 @@ public class Skill {
 
 				case 3: // Target not in sight?
 					PacketSendUtility.broadcastPacketAndReceive(effector,
-						new SM_CASTSPELL(effector, skillTemplate.getSkillId(), skillLevel, targetType, targetObjId, castDuration, castSpeed, isMagical()));
+						new SM_CASTSPELL(effector, skillTemplate.getSkillId(), skillLevel, targetType, targetObjId, castDuration,
+							castSpeedForAnimationBoostAndChargeSkills, allowAnimationBoostByCastSpeed()));
 					break;
 
 				case 1: // XYZ as Target
 					PacketSendUtility.broadcastPacketAndReceive(effector,
-						new SM_CASTSPELL(effector, skillTemplate.getSkillId(), skillLevel, targetType, x, y, z, castDuration, castSpeed, isMagical()));
+						new SM_CASTSPELL(effector, skillTemplate.getSkillId(), skillLevel, targetType, x, y, z, castDuration,
+							castSpeedForAnimationBoostAndChargeSkills, allowAnimationBoostByCastSpeed()));
 					break;
 			}
+			if (effector instanceof Player player)
+				player.setNextSkillUse(System.currentTimeMillis() + GSConfig.MIN_SKILL_CAST_INTERVAL_MILLIS);
 		} else if (skillMethod == SkillMethod.ITEM && castDuration > 0) {
 			PacketSendUtility.broadcastPacketAndReceive(effector, new SM_ITEM_USAGE_ANIMATION(effector.getObjectId(), firstTarget.getObjectId(),
 				itemObjectId, itemTemplate.getTemplateId(), castDuration, 0, 0));
@@ -569,11 +544,6 @@ public class Skill {
 			}
 		}
 
-		// set instantSkill, must be before calculate effect
-		Motion motion = skillTemplate.getMotion();
-		if (motion != null && motion.isInstantSkill() || hitTime == 0)
-			instantSkill = true;
-
 		endCondCheck();
 
 		// Perform necessary actions (use mp,dp items etc)
@@ -633,7 +603,7 @@ public class Skill {
 		if (effector instanceof Player playerEffector) {
 			if (skillTemplate.isStance() && !blockedStance && skillMethod == SkillMethod.CAST)
 				playerEffector.getController().startStance(skillTemplate.getSkillId());
-			if (isMulticast() && playerEffector.getChainSkills().getCurrentChainCount(chainCategory) > 0)
+			if (getMultiCastCount() > 0)
 				setCooldowns = false;
 
 			// Check Chain Skill Trigger Rate, only for chain skills and only for player
@@ -659,16 +629,30 @@ public class Skill {
 		if (!blockedPenaltySkill)
 			startPenaltySkill();
 
-		if (instantSkill)
+		if (isInstantSkill())
 			applyEffect(effects);
 		else
 			ThreadPoolManager.getInstance().schedule(() -> applyEffect(effects), hitTime);
 
-		if (skillMethod == SkillMethod.PENALTY || skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM || skillMethod == SkillMethod.CHARGE)
-			sendCastspellEnd(dashStatus, effects);
+		if (skillMethod == SkillMethod.PENALTY || skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM || skillMethod == SkillMethod.CHARGE) {
+			boolean sentCastSpellResultPacket = sendCastSpellEnd(dashStatus, effects);
+			if (sentCastSpellResultPacket && skillMethod != SkillMethod.PENALTY && effector instanceof Player player) {
+				// animation times must be calculated after applyEffect of instant skills in order to honor speed buffs from this skill
+				AnimationTimes animation = DataManager.MOTION_DATA.calculateAnimationTimesAfterLastHit(player, this);
+				long nowMillis = System.currentTimeMillis();
+				if (animation != null && allowAnimationBoostByCastSpeed()) {
+					int latencyToleranceMillis = 50; // animation starts after client receives SM_CASTSPELL_RESULT, so add a few milliseconds
+					player.setHitTimeBoost(nowMillis + animation.fullDurationMillis() + latencyToleranceMillis, getCastSpeedForAnimationBoostAndChargeSkills());
+				} else {
+					player.setHitTimeBoost(0, 0);
+				}
+				if (animation != null) // Math.max because nextSkillUse set from startCast() must not be undercut
+					player.setNextSkillUse(Math.max(player.getNextSkillUse(), nowMillis + animation.lastHitMillis()));
+			}
+		}
 
-		if (getSkillTemplate().isDeityAvatar() && effector instanceof Player) {
-			AbyssService.announceAbyssSkillUsage((Player) effector, getSkillTemplate().getL10n());
+		if (skillTemplate.isDeityAvatar() && effector instanceof Player player) {
+			AbyssService.announceAbyssSkillUsage(player, skillTemplate.getL10n());
 		}
 
 		effector.getAi().onEndUseSkill(skillTemplate, skillLevel);
@@ -707,34 +691,29 @@ public class Skill {
 		addResistedEffectHateAndNotifyFriends(effects);
 	}
 
-	private void sendCastspellEnd(int dashStatus, List<Effect> effects) {
-		boolean needsCast = itemTemplate != null && itemTemplate.isCombatActivated();
-		AIEventType et = null;
-		if (skillMethod == SkillMethod.PENALTY || skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.CHARGE || needsCast) {
-			if (this.getSkillTemplate().getSubType() == SkillSubType.ATTACK) {
-				et = AIEventType.CREATURE_NEEDS_HELP;
-			}
+	private boolean sendCastSpellEnd(int dashStatus, List<Effect> effects) {
+		boolean sentCastSpellPacket = false;
+		if (itemTemplate != null && !itemTemplate.isCombatActivated()) {
+			PacketSendUtility.broadcastPacketAndReceive(effector,
+				new SM_ITEM_USAGE_ANIMATION(effector.getObjectId(), firstTarget.getObjectId(), itemObjectId, itemTemplate.getTemplateId(), 0, 1, 0));
+		} else {
+			AIEventType et = skillTemplate.getSubType() == SkillSubType.ATTACK ? AIEventType.CREATURE_NEEDS_HELP : null;
 			switch (targetType) {
 				case 0: // PlayerObjectId as Target
 				case 3: // Target not in sight?
-					PacketSendUtility.broadcastPacketAndReceive(effector, new SM_CASTSPELL_RESULT(this, effects, serverTime, chainSuccess, dashStatus), et);
+					PacketSendUtility.broadcastPacketAndReceive(effector, new SM_CASTSPELL_RESULT(this, effects, hitTime, chainSuccess, dashStatus), et);
+					sentCastSpellPacket = true;
 					break;
 				case 1: // XYZ as Target
 					PacketSendUtility.broadcastPacketAndReceive(effector,
-						new SM_CASTSPELL_RESULT(this, effects, serverTime, chainSuccess, dashStatus, targetType), et);
+						new SM_CASTSPELL_RESULT(this, effects, hitTime, chainSuccess, dashStatus, targetType), et);
+					sentCastSpellPacket = true;
 					break;
 			}
-			if (skillMethod == SkillMethod.ITEM && effector instanceof Player) {
-				PacketSendUtility.sendPacket((Player) effector, SM_SYSTEM_MESSAGE.STR_USE_ITEM(getItemTemplate().getL10n()));
-			}
-		} else if (skillMethod == SkillMethod.ITEM) {
-
-			// TODO: Find out when SM_CASTSPELL_RESULT should be sent with dashStatus = 2, and no SM_ITEM_USAGE_ANIMATION
-			PacketSendUtility.broadcastPacketAndReceive(effector,
-				new SM_ITEM_USAGE_ANIMATION(effector.getObjectId(), firstTarget.getObjectId(), itemObjectId, itemTemplate.getTemplateId(), 0, 1, 0));
-			if (effector instanceof Player)
-				PacketSendUtility.sendPacket((Player) effector, SM_SYSTEM_MESSAGE.STR_USE_ITEM(getItemTemplate().getL10n()));
 		}
+		if (skillMethod == SkillMethod.ITEM && effector instanceof Player player)
+			PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_USE_ITEM(getItemTemplate().getL10n()));
+		return sentCastSpellPacket;
 	}
 
 	/**
@@ -961,23 +940,27 @@ public class Skill {
 		return h;
 	}
 
-	/**
-	 * @return Returns the time.
-	 */
+	public void setClientHitTime(int time) {
+		this.clientHitTime = time;
+	}
+
 	public int getHitTime() {
 		return hitTime;
 	}
 
-	public void setHitTime(int time) {
-		this.hitTime = time;
+	public float getCastSpeedForAnimationBoostAndChargeSkills() {
+		return castSpeedForAnimationBoostAndChargeSkills;
 	}
 
-	public int getAnimationTime() {
-		return animationTime;
-	}
-
-	public void setAnimationTime(int animationTime) {
-		this.animationTime = animationTime;
+	/**
+	 * The game client allows to boost the animation time of a skill via cast speed:<br>
+	 * - only half of the {@link #castSpeedForAnimationBoostAndChargeSkills cast speed boost} is considered and only if this boost exceeds the attack speed boost
+	 * - animation time considers the current cast speed boost<br>
+	 * - hit time considers cast speed boost of the previously cast skill
+	 * - hit time will only be boosted if the current skill if cast before the animation of the previous skill finishes<br>
+	 */
+	public boolean allowAnimationBoostByCastSpeed() {
+		return isMagical();
 	}
 
 	/**
@@ -1068,8 +1051,8 @@ public class Skill {
 
 	}
 
-	private boolean isMulticast() {
-		return this.isMultiCast;
+	public int getMultiCastCount() {
+		return isMultiCast && effector instanceof Player p ? p.getChainSkills().getCurrentChainCount(chainCategory) : 0;
 	}
 
 	public void setIsMultiCast(boolean isMultiCast) {
@@ -1080,15 +1063,8 @@ public class Skill {
 		return castStartTime;
 	}
 
-	public float[] getChargeTimes() {
-		return chargeTimes;
-	}
-
-	/**
-	 * @return the instantSkill
-	 */
 	public boolean isInstantSkill() {
-		return instantSkill;
+		return hitTime == 0 || skillTemplate.getMotion() != null && skillTemplate.getMotion().isInstantSkill();
 	}
 
 	public int getHate() {

@@ -113,7 +113,9 @@ public class PlayerMoveController extends PlayableMoveController<Player> {
 	}
 
 	public void setHasMovedByRandomMoveLocEffect(Skill skill) {
-		this.lastRandomMoveLocEffectTimeMillis = System.currentTimeMillis() + skill.getAnimationTime(); // Power: Emergency Teleport I ports after animation finished
+		// delayMillis is required because instant skills (like Power: Emergency Teleport I) are not scheduled with hitTime in endCast
+		int delayMillis = skill.isInstantSkill() ? skill.getHitTime() : 0;
+		this.lastRandomMoveLocEffectTimeMillis = System.currentTimeMillis() + delayMillis;
 	}
 
 	public boolean hasMovedByRandomMoveLocEffect() {

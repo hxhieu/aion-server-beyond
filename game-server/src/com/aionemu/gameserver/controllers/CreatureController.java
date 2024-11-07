@@ -448,13 +448,12 @@ public abstract class CreatureController<T extends Creature> extends VisibleObje
 		return false;
 	}
 
-	public boolean useChargeSkill(int skillId, int skillLevel, int time, int animationTime, VisibleObject firstTarget) {
+	public boolean useChargeSkill(int skillId, int skillLevel, int time, int motionId, VisibleObject firstTarget) {
 		try {
 			Player creature = (Player) getOwner();
-			ChargeSkill skill = SkillEngine.getInstance().getChargeSkill(creature, skillId, skillLevel, firstTarget);
+			ChargeSkill skill = SkillEngine.getInstance().getChargeSkill(creature, skillId, skillLevel, motionId, firstTarget);
 			if (skill != null) {
-				skill.setHitTime(time);
-				skill.setAnimationTime(animationTime);
+				skill.setClientHitTime(time);
 				return skill.useSkill();
 			}
 		} catch (Exception ex) {

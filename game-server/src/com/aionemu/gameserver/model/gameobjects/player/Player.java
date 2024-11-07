@@ -150,6 +150,8 @@ public class Player extends Creature {
 	private final Cooldowns craftCooldowns;
 	private final Cooldowns houseObjectCooldowns;
 	private long nextSkillUse;
+	private long hitTimeBoostExpireTimeMillis;
+	private float hitTimeBoostCastSpeed;
 	private ChainSkills chainSkills;
 	private Map<AttackStatus, Long> lastCounterSkill = new HashMap<>();
 
@@ -1208,6 +1210,19 @@ public class Player extends Creature {
 
 	public void setNextSkillUse(long nextSkillUse) {
 		this.nextSkillUse = nextSkillUse;
+	}
+
+	public boolean isHitTimeBoosted() {
+		return System.currentTimeMillis() <= hitTimeBoostExpireTimeMillis;
+	}
+
+	public float getHitTimeBoostCastSpeed() {
+		return hitTimeBoostCastSpeed;
+	}
+
+	public void setHitTimeBoost(long expireTimeMillis, float castSpeed) {
+		hitTimeBoostExpireTimeMillis = expireTimeMillis;
+		hitTimeBoostCastSpeed = castSpeed;
 	}
 
 	/**

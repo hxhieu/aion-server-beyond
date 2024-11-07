@@ -66,6 +66,12 @@ public class GSConfig {
 	@Property(key = "gameserver.character.reentry.time", defaultValue = "20")
 	public static int CHARACTER_REENTRY_TIME;
 
+	/**
+	 * Minimum time in milliseconds between two skill casts. The game client will enforce wait times accordingly.
+	 */
+	@Property(key = "gameserver.min_skill_cast_interval_millis", defaultValue = "350")
+	public static int MIN_SKILL_CAST_INTERVAL_MILLIS;
+
 	@Property(key = "gameserver.item_wrap_limit", defaultValue = "0")
 	public static int ITEM_WRAP_LIMIT;
 

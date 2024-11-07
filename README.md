@@ -43,6 +43,7 @@ The following is a very incomplete list of some notable things we have worked on
 - Fixed the event engine and added new features like automatic buffs or config overrides
 - Removed, merged or reworked many chat commands, implemented descriptions, common error handling and a permission aware `.help` command
 - Implemented true invisibility against anti hide hacks
+- Fixed motion validation to combat no-animation hacks
 - Fixed many stat and skill related issues with players and NPCs
 - Implemented more AI handler events and controls like queueing of skills
 - Fixed countless core bugs of various severities, like wrong chance calculations, login problems or even client crashes

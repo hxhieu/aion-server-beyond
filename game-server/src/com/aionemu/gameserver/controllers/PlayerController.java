@@ -383,6 +383,7 @@ public class PlayerController extends CreatureController<Player> {
 		else if (getOwner().isInState(CreatureState.DEAD))
 			getOwner().unsetState(CreatureState.DEAD);
 		getOwner().setState(CreatureState.ACTIVE);
+		getOwner().setHitTimeBoost(0, 0);
 	}
 
 	@Override
@@ -447,21 +448,6 @@ public class PlayerController extends CreatureController<Player> {
 		lastAttackedMillis = System.currentTimeMillis();
 	}
 
-	public void useSkill(int skillId, int targetType, float x, float y, float z, int time) {
-		Player player = getOwner();
-
-		Skill skill = SkillEngine.getInstance().getSkillFor(player, skillId, player.getTarget());
-
-		if (skill != null) {
-			if (!PlayerRestrictions.canUseSkill(player, skill))
-				return;
-
-			skill.setTargetType(targetType, x, y, z);
-			skill.setHitTime(time);
-			skill.useSkill();
-		}
-	}
-
 	public void useSkill(SkillTemplate template, int targetType, float x, float y, float z, int clientHitTime, int skillLevel) {
 		Player player = getOwner();
 		Skill skill = SkillEngine.getInstance().getSkillFor(player, template, player.getTarget());
@@ -477,7 +463,7 @@ public class PlayerController extends CreatureController<Player> {
 				return;
 
 			skill.setTargetType(targetType, x, y, z);
-			skill.setHitTime(clientHitTime);
+			skill.setClientHitTime(clientHitTime);
 			skill.useSkill();
 		}
 	}
@@ -521,7 +507,10 @@ public class PlayerController extends CreatureController<Player> {
 		castingSkill.cancelCast();
 		player.removeSkillCoolDown(castingSkill.getSkillTemplate().getCooldownId());
 		player.setCasting(null);
-		player.setNextSkillUse(0);
+		if (castingSkill.allowAnimationBoostByCastSpeed())
+			player.setHitTimeBoost(Long.MAX_VALUE, castingSkill.getCastSpeedForAnimationBoostAndChargeSkills()); // yes, this is retail client behavior
+		else
+			player.setHitTimeBoost(0, 0);
 		if (castingSkill.getSkillMethod() == SkillMethod.CAST || castingSkill.getSkillMethod() == SkillMethod.CHARGE) {
 			PacketSendUtility.broadcastPacket(player, new SM_SKILL_CANCEL(player, castingSkill.getSkillTemplate().getSkillId()), true);
 			if (message != null)
