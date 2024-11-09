@@ -29,14 +29,14 @@ public class AbyssRankDAO {
 
 	private static final Logger log = LoggerFactory.getLogger(AbyssRankDAO.class);
 
-	private static final String SELECT_QUERY = "SELECT daily_ap, weekly_ap, ap, daily_gp, weekly_gp, gp, rank, daily_kill, weekly_kill, all_kill, max_rank, last_kill, last_ap, last_gp, last_update FROM abyss_rank WHERE player_id = ?";
-	private static final String INSERT_QUERY = "INSERT INTO abyss_rank (player_id, daily_ap, weekly_ap, ap, rank, daily_kill, weekly_kill, all_kill, max_rank, last_kill, last_ap, last_update, daily_gp, weekly_gp, gp, last_gp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	private static final String UPDATE_QUERY = "UPDATE abyss_rank SET  daily_ap = ?, weekly_ap = ?, ap = ?, rank = ?, daily_kill = ?, weekly_kill = ?, all_kill = ?, max_rank = ?, last_kill = ?, last_ap = ?, last_update = ?, daily_gp = ?, weekly_gp = ?, gp = ?, last_gp = ? WHERE player_id = ?";
-	private static final String DECREASE_GP_DAILY = "UPDATE abyss_rank SET gp = gp - ? WHERE rank = ?";
+	private static final String SELECT_QUERY = "SELECT daily_ap, weekly_ap, ap, daily_gp, weekly_gp, gp, `rank`, daily_kill, weekly_kill, all_kill, max_rank, last_kill, last_ap, last_gp, last_update FROM abyss_rank WHERE player_id = ?";
+	private static final String INSERT_QUERY = "INSERT INTO abyss_rank (player_id, daily_ap, weekly_ap, ap, `rank`, daily_kill, weekly_kill, all_kill, max_rank, last_kill, last_ap, last_update, daily_gp, weekly_gp, gp, last_gp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String UPDATE_QUERY = "UPDATE abyss_rank SET  daily_ap = ?, weekly_ap = ?, ap = ?, `rank` = ?, daily_kill = ?, weekly_kill = ?, all_kill = ?, max_rank = ?, last_kill = ?, last_ap = ?, last_update = ?, daily_gp = ?, weekly_gp = ?, gp = ?, last_gp = ? WHERE player_id = ?";
+	private static final String DECREASE_GP_DAILY = "UPDATE abyss_rank SET gp = gp - ? WHERE `rank` = ?";
 	private static final String DECREASE_GP_QUERY = "UPDATE abyss_rank SET gp = gp - ? WHERE player_id = ?";
 	private static final String INCREASE_GP_QUERY = "UPDATE abyss_rank SET gp = gp + ? WHERE player_id = ?";
 	private static final String INCREASE_GP_QUERY_WITH_STATS = "UPDATE abyss_rank SET gp = gp + ?, daily_gp = daily_gp + ?, weekly_gp = weekly_gp + ? WHERE player_id = ?";
-	private static final String UPDATE_RANK = "UPDATE abyss_rank SET rank = ? WHERE player_id = ?";
+	private static final String UPDATE_RANK = "UPDATE abyss_rank SET `rank` = ? WHERE player_id = ?";
 	private static final String SELECT_RANKING_LIST_PLAYERS = "SELECT a.rank_pos, a.old_rank_pos, p.id, p.name, p.race, p.exp, a.rank, a.ap, a.gp, p.title_id, p.player_class, p.gender, l.name FROM abyss_rank a JOIN players p ON a.player_id = p.id LEFT JOIN legion_members lm ON lm.player_id = p.id LEFT JOIN legions l ON l.id = lm.legion_id WHERE a.rank_pos > 0";
 	private static final String SELECT_RANKING_LIST_LEGIONS = "SELECT l.rank_pos, l.old_rank_pos, l.id, l.name, p.race, l.level, l.contribution_points FROM legions l, legion_members lm, players p WHERE lm.rank = 'BRIGADE_GENERAL' AND lm.player_id = p.id AND lm.legion_id = l.id AND l.rank_pos > 0 GROUP BY id";
 	private static final String SELECT_RANKING_LIST_PLAYERS_GP = "SELECT a.rank_pos, a.player_id, a.gp FROM abyss_rank a, players p WHERE a.player_id = p.id AND p.race = ? AND a.rank_pos > 0 ORDER by a.rank_pos";
@@ -45,7 +45,7 @@ public class AbyssRankDAO {
 	private static final String RESET_RANKING_LIST_PLAYERS = "UPDATE abyss_rank a SET a.old_rank_pos = a.rank_pos, a.rank_pos = 0 WHERE a.rank_pos > 0";
 	private static final String RESET_RANKING_LIST_LEGIONS = "UPDATE legions l SET l.old_rank_pos = l.rank_pos, l.rank_pos = 0 WHERE l.rank_pos > 0";
 	private static final String UPDATE_RANKING_LIST_PLAYERS_POSITIONS = "UPDATE abyss_rank SET rank_pos = @a:=@a+1 WHERE gp > 0 AND player_id IN (SELECT id FROM players WHERE race = ? AND (@minLastOnline IS NULL OR last_online >= @minLastOnline)) ORDER BY gp DESC LIMIT ?";
-	private static final String UPDATE_RANKING_LIST_LEGIONS_POSITIONS = "UPDATE legions SET rank_pos = @a:=@a+1 WHERE id IN (SELECT legion_id FROM legion_members lm, players WHERE rank = 'BRIGADE_GENERAL' AND players.id = lm.player_id and players.race = ?) ORDER BY contribution_points DESC LIMIT ?";
+	private static final String UPDATE_RANKING_LIST_LEGIONS_POSITIONS = "UPDATE legions SET rank_pos = @a:=@a+1 WHERE id IN (SELECT legion_id FROM legion_members lm, players WHERE `rank` = 'BRIGADE_GENERAL' AND players.id = lm.player_id and players.race = ?) ORDER BY contribution_points DESC LIMIT ?";
 
 	public static AbyssRank loadAbyssRank(int playerId) {
 		AbyssRank abyssRank = null;
