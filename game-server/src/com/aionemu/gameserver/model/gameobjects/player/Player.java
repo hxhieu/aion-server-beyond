@@ -74,6 +74,7 @@ import com.aionemu.gameserver.services.HousingService;
 import com.aionemu.gameserver.skillengine.condition.ChainCondition;
 import com.aionemu.gameserver.skillengine.effect.RebirthEffect;
 import com.aionemu.gameserver.skillengine.model.ChainSkills;
+import com.aionemu.gameserver.skillengine.model.Skill;
 import com.aionemu.gameserver.skillengine.model.SkillTemplate;
 import com.aionemu.gameserver.skillengine.task.CraftingTask;
 import com.aionemu.gameserver.utils.PacketSendUtility;
@@ -150,6 +151,7 @@ public class Player extends Creature {
 	private final Cooldowns craftCooldowns;
 	private final Cooldowns houseObjectCooldowns;
 	private long nextSkillUse;
+	private SkillTemplate lastSkill;
 	private long hitTimeBoostExpireTimeMillis;
 	private float hitTimeBoostCastSpeed;
 	private ChainSkills chainSkills;
@@ -1210,6 +1212,18 @@ public class Player extends Creature {
 
 	public void setNextSkillUse(long nextSkillUse) {
 		this.nextSkillUse = nextSkillUse;
+	}
+
+	@Override
+	public void setCasting(Skill castingSkill) {
+		Skill lastSkill = getCastingSkill();
+		super.setCasting(castingSkill);
+		if (lastSkill != null)
+			this.lastSkill = lastSkill.getSkillTemplate();
+	}
+
+	public SkillTemplate getLastSkill() {
+		return lastSkill;
 	}
 
 	public boolean isHitTimeBoosted() {

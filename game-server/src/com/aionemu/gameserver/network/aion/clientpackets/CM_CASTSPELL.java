@@ -97,7 +97,8 @@ public class CM_CASTSPELL extends AionClientPacket {
 		player.getController().cancelUseItem();
 
 		if (player.getNextSkillUse() > receiveTime) {
-			AuditLogger.log(player, "tried to use skill " + spellid + " " + (player.getNextSkillUse() - receiveTime) + " ms too early");
+			int lastSkillId = player.getLastSkill().getSkillId(); // lastSkill cannot be null, as nextSkillUse is zero on the first cast
+			AuditLogger.log(player, "tried to use skill " + spellid + " " + (player.getNextSkillUse() - receiveTime) + " ms too early. Previous skill: " + lastSkillId);
 			if (player.getNextSkillUse() > System.currentTimeMillis()) {
 				sendPacket(SM_SYSTEM_MESSAGE.STR_SKILL_NOT_READY());
 				return;

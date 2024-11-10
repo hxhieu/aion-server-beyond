@@ -411,10 +411,11 @@ public class Skill {
 		int serverHitTime = motionDelay + Math.round(animationTimeUntilFirstHit);
 		if (serverHitTime > clientHitTime) {
 			hitTime = serverHitTime;
-			if (isSuspiciousClientHitTime(clientHitTime, serverHitTime, toleranceMillis)) {
+			if (isSuspiciousClientHitTime(clientHitTime, serverHitTime, toleranceMillis, player)) {
+				List<String> uncertainties = collectUncertaintyFactorsForHitTime(player, toleranceMillis);
+				String uncertaintyFactors = uncertainties.isEmpty() ? "" : " Uncertainty factors: " + String.join(", ", uncertainties);
 				AuditLogger.log(player,
-					"modified hit time for skill %d (client < server: %d/%d). [allowAnimationBoostByCastSpeed=%s]".formatted(getSkillId(), clientHitTime,
-						serverHitTime, allowAnimationBoostByCastSpeed()));
+					"modified hit time for skill %d (client < server: %d/%d).%s".formatted(getSkillId(), clientHitTime, serverHitTime, uncertaintyFactors));
 			}
 		}
 	}
@@ -430,12 +431,23 @@ public class Skill {
 		return distanceTolerance;
 	}
 
-	private boolean isSuspiciousClientHitTime(int clientHitTime, int serverHitTime, int tolerance) {
-		if (clientHitTime == 0 && (itemTemplate != null || skillTemplate.getMotion() != null && skillTemplate.getMotion().isInstantSkill()))
-			return false; // effects apply immediately (damage too, though visually delayed)
+	private boolean isSuspiciousClientHitTime(int clientHitTime, int serverHitTime, int tolerance, Player player) {
 		if (clientHitTime >= serverHitTime - tolerance)
 			return false;
+		if (clientHitTime == 0 && (itemTemplate != null || skillTemplate.getMotion() != null && skillTemplate.getMotion().isInstantSkill()))
+			return false; // effects apply immediately (damage too, though visually delayed)
+		if (clientHitTime == 0 && player.isInRobotMode() && DataManager.SKILL_CHARGE_DATA.isChargeSkill(player.getLastSkill()))
+			return false; // AT sends no hitTime when casting a non-instant skill within the animation time of a previous charge skill, like 2640
 		return true;
+	}
+
+	private List<String> collectUncertaintyFactorsForHitTime(Player player, int toleranceMillis) {
+		List<String> uncertainties = new ArrayList<>();
+		if (allowAnimationBoostByCastSpeed() && !player.isHitTimeBoosted())
+			uncertainties.add("cast speed");
+		if (skillTemplate.getAmmoSpeed() != 0)
+			uncertainties.add("movement (calculated tolerance: " + toleranceMillis + " ms)");
+		return uncertainties;
 	}
 
 	private void startPenaltySkill() {
