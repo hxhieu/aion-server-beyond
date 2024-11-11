@@ -339,7 +339,6 @@ public class Skill {
 		if (skillTemplate.getType() == SkillType.MAGICAL || skillMethod == SkillMethod.CHARGE) {
 			if (isPhysicalCharge) {
 				castDuration = (int) effector.getGameStats().getPositiveStat(StatEnum.ATTACK_SPEED, baseCastDuration);
-				castSpeedForAnimationBoostAndChargeSkills = (float) castDuration / baseCastDuration;
 			} else {
 				castDuration = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME, baseCastDuration);
 				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SKILL, baseCastDuration);
@@ -388,6 +387,9 @@ public class Skill {
 
 		if (castDuration < 0)
 			castDuration = 0;
+
+		if (skillTemplate.isCharge())
+			castSpeedForAnimationBoostAndChargeSkills = Math.max(0.3f, (float) castDuration / baseCastDuration);
 	}
 
 	protected void updateHitTime(boolean checkAnimation) {
