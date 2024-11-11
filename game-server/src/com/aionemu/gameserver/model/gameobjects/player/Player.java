@@ -1227,7 +1227,11 @@ public class Player extends Creature {
 	}
 
 	public boolean isHitTimeBoosted() {
-		return System.currentTimeMillis() <= hitTimeBoostExpireTimeMillis;
+		return isHitTimeBoosted(System.currentTimeMillis());
+	}
+
+	public boolean isHitTimeBoosted(long timeMillis) {
+		return timeMillis <= hitTimeBoostExpireTimeMillis;
 	}
 
 	public float getHitTimeBoostCastSpeed() {
