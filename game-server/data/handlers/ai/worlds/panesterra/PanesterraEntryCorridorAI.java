@@ -4,7 +4,6 @@ import static com.aionemu.gameserver.model.DialogAction.SETPRO1;
 
 import java.util.stream.Stream;
 
-import com.aionemu.commons.utils.Rnd;
 import com.aionemu.gameserver.ai.AIName;
 import com.aionemu.gameserver.model.gameobjects.Npc;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
@@ -14,9 +13,7 @@ import com.aionemu.gameserver.services.SiegeService;
 import com.aionemu.gameserver.services.event.EventService;
 import com.aionemu.gameserver.services.panesterra.PanesterraService;
 import com.aionemu.gameserver.services.panesterra.ahserion.PanesterraFaction;
-import com.aionemu.gameserver.services.teleport.TeleportService;
 import com.aionemu.gameserver.utils.PacketSendUtility;
-import com.aionemu.gameserver.world.WorldPosition;
 
 import ai.GeneralNpcAI;
 
@@ -48,7 +45,7 @@ public class PanesterraEntryCorridorAI extends GeneralNpcAI {
 	public boolean onDialogSelect(Player player, int dialogActionId, int questId, int extendedRewardIndex) {
 		if (dialogActionId == SETPRO1 && canTeleport(player)) {
 			// teleportToFortress(player);
-			teleportToEventLocation(player);
+			PanesterraService.getInstance().teleportToEventLocation(player);
 		}
 		return true;
 	}
@@ -79,23 +76,5 @@ public class PanesterraEntryCorridorAI extends GeneralNpcAI {
 	private void teleportToFortress(Player player) {
 		// TODO
 		player.setPanesterraFaction(PanesterraFaction.getByFortressId(relatedFortressId));
-	}
-
-	private void teleportToEventLocation(Player player) {
-		switch (player.getRace()) {
-			case ELYOS -> {
-				// North + South
-				WorldPosition pos = Rnd.nextBoolean() ? new WorldPosition(400020000, 11.173f, 1024.187f, 1428.60f, (byte) 0)
-					: new WorldPosition(400020000, 2037.754f, 1023.808f, 1428.60f, (byte) 0);
-				TeleportService.teleportTo(player, pos);
-			}
-			case ASMODIANS -> {
-				// West + East
-				WorldPosition pos = Rnd.nextBoolean() ? new WorldPosition(400020000, 1023.702f, 10.531f, 1428.60f, (byte) 90)
-					: new WorldPosition(400020000, 1024.310f, 2036.593f, 1428.60f, (byte) 90);
-				TeleportService.teleportTo(player, pos);
-			}
-		}
-		PanesterraService.getInstance().onEnterPanesterra(player);
 	}
 }

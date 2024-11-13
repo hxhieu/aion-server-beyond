@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import com.aionemu.commons.utils.Rnd;
+import com.aionemu.gameserver.world.WorldPosition;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,6 +276,38 @@ public class PanesterraService {
 	public PanesterraTeam getTeam(PanesterraFaction faction) {
 		return activeFactionTeams.get(faction);
 	}
+	
+	// TODO: Event START
+	public boolean reviveInEventLocation(Player player) {
+		if (!WorldMapType.isPanesterraMap(player.getWorldId()))
+			return false;
+
+		teleportToEventLocation(player);
+		return true;
+	}
+	
+	public void teleportToEventLocation(Player player) {
+		teleport(player);
+		PanesterraService.getInstance().onEnterPanesterra(player);
+	}
+	
+	private void teleport(Player player) {
+		switch (player.getRace()) {
+			case ELYOS -> {
+				// North + South
+				WorldPosition pos = Rnd.nextBoolean() ? new WorldPosition(400020000, 11.173f, 1024.187f, 1428.60f, (byte) 0)
+					: new WorldPosition(400020000, 2037.754f, 1023.808f, 1428.60f, (byte) 0);
+				TeleportService.teleportTo(player, pos);
+			}
+			case ASMODIANS -> {
+				// West + East
+				WorldPosition pos = Rnd.nextBoolean() ? new WorldPosition(400020000, 1023.702f, 10.531f, 1428.60f, (byte) 90)
+					: new WorldPosition(400020000, 1024.310f, 2036.593f, 1428.60f, (byte) 90);
+				TeleportService.teleportTo(player, pos);
+			}
+		}
+	}
+	// TODO: Event END
 
 	public static PanesterraService getInstance() {
 		return SingletonHolder.INSTANCE;
