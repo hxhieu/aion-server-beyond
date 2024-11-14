@@ -35,13 +35,8 @@ public class ItemStorage {
 		return limit;
 	}
 
-	public boolean setLimit(int limit) {
-		if (getCubeItems().size() > limit) {
-			return false;
-		}
-
+	public void setLimit(int limit) {
 		this.limit = limit;
-		return true;
 	}
 
 	public int getRowLength() {

@@ -371,8 +371,8 @@ public abstract class Storage implements IStorage {
 		return this.itemStorage.getFreeSlots();
 	}
 
-	public boolean setLimit(int limit) {
-		return this.itemStorage.setLimit(limit);
+	public void setLimit(int limit) {
+		itemStorage.setLimit(limit);
 	}
 
 	@Override
