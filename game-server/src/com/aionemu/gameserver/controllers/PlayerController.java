@@ -63,6 +63,7 @@ import com.aionemu.gameserver.utils.PositionUtil;
 import com.aionemu.gameserver.utils.ThreadPoolManager;
 import com.aionemu.gameserver.utils.audit.AuditLogger;
 import com.aionemu.gameserver.world.MapRegion;
+import com.aionemu.gameserver.world.WorldMapType;
 import com.aionemu.gameserver.world.WorldType;
 import com.aionemu.gameserver.world.geo.GeoService;
 import com.aionemu.gameserver.world.zone.ZoneInstance;
@@ -318,7 +319,8 @@ public class PlayerController extends CreatureController<Player> {
 				player.getCommonData().calculateExpLoss();
 		}
 
-		if (sendDiePacket && !player.getController().hasTask(TaskId.TELEPORT)) // don't show res options if the player is about to get teleported (see ResurrectBaseEffect)
+		if (sendDiePacket && !player.getController().hasTask(TaskId.TELEPORT)) // don't show res options if the player is about to get teleported (see
+																																						// ResurrectBaseEffect)
 			sendDieFromCreature(lastAttacker);
 
 		QuestEngine.getInstance().onDie(new QuestEnv(null, player, 0));
@@ -352,7 +354,7 @@ public class PlayerController extends CreatureController<Player> {
 
 	private void sendDieFromCreature(Creature lastAttacker) {
 		Player player = getOwner();
-		if (player.getWorldId() == 400030000) {
+		if (WorldMapType.isPanesterraMap(player.getWorldId())) {
 			PacketSendUtility.sendPacket(player, new SM_DIE(player, 6));
 			return;
 		}
