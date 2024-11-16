@@ -3637,7 +3637,7 @@
 					<spot x="957.31146" y="1533.2417" z="1523.4377" h="103" />
 				</spawn>
 				<!-- Cakes Inner Fortress Area -->
-				<spawn npc_id="701983" respawn_time="900" pool="5">
+				<spawn npc_id="701983" respawn_time="720" pool="5">
 					<spot x="983.3415" y="991.6242" z="1553.2124" h="9" />
 					<spot x="1065.294" y="1057.0938" z="1553.1906" h="83" />
 					<spot x="1101.096" y="1087.0659" z="1552.1055" h="91" />
