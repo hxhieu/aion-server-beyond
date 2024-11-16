@@ -254,12 +254,10 @@ public class PlayerLifeStats extends CreatureLifeStats<Player> {
 				if (costFp != null) {
 					flightReduceValue = costFp;
 					flightReducePeriod = 1;
-				} else if (owner.isInsideZoneType(ZoneType.FLY)) {
-					flightReduceValue = 1;
-					flightReducePeriod = owner.isInGlidingState() ? 2 : 1;
 				} else {
-					flightReduceValue = 2;
-					flightReducePeriod = 1;
+					boolean isInFlyArea = owner.isInsideZoneType(ZoneType.FLY) && !owner.isInsideZoneType(ZoneType.NO_FLY);
+					flightReduceValue = isInFlyArea ? 1 : 2;
+					flightReducePeriod = isInFlyArea && owner.isInGlidingState() ? 2 : 1;
 				}
 				if (flyReduceTask == null) {
 					if (costFp != null) {

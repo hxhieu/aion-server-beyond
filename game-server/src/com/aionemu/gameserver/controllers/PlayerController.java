@@ -38,6 +38,7 @@ import com.aionemu.gameserver.model.summons.UnsummonType;
 import com.aionemu.gameserver.model.templates.QuestTemplate;
 import com.aionemu.gameserver.model.templates.flypath.FlyPathEntry;
 import com.aionemu.gameserver.model.templates.panels.SkillPanel;
+import com.aionemu.gameserver.model.templates.zone.ZoneType;
 import com.aionemu.gameserver.network.aion.serverpackets.*;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_ATTACK_STATUS.LOG;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_ATTACK_STATUS.TYPE;
@@ -210,7 +211,7 @@ public class PlayerController extends CreatureController<Player> {
 					PacketSendUtility.broadcastPacket(player, new SM_EMOTION(player, EmotionType.STOP_FLY), true);
 				} else {
 					player.getFlyController().endFly(true);
-					if (player.isSpawned()) // not spawned means leaving by teleporter
+					if (player.isSpawned() && !player.isInsideZoneType(ZoneType.FLY)) // not spawned means leaving by teleporter
 						AuditLogger.log(player, "left fly zone in fly state at " + player.getPosition());
 				}
 			} else if (player.isInGlidingState()) {
@@ -220,11 +221,7 @@ public class PlayerController extends CreatureController<Player> {
 	}
 
 	public void onEnterFlyArea() {
-		if (!getOwner().hasAccess(AdminConfig.FREE_FLIGHT)) {
-			if (getOwner().isFlying()) {
-				getOwner().getLifeStats().triggerFpReduce();
-			}
-		}
+		getOwner().getLifeStats().triggerFpReduce();
 	}
 
 	/**
@@ -655,12 +652,12 @@ public class PlayerController extends CreatureController<Player> {
 		Player player = getOwner();
 		if (player.isInPlayerMode(PlayerMode.WINDSTREAM)) {
 			player.unsetPlayerMode(PlayerMode.WINDSTREAM);
-			player.getLifeStats().triggerFpReduce();
 			player.unsetState(CreatureState.FLYING);
 			player.unsetFlyState(FlyState.FLYING);
 			player.setFlyState(FlyState.GLIDING);
 			player.setState(CreatureState.ACTIVE);
 			player.setState(CreatureState.GLIDING);
+			player.getLifeStats().triggerFpReduce();
 			player.getGameStats().updateStatsAndSpeedVisually();
 		} else {
 			player.unsetState(CreatureState.FLYING);

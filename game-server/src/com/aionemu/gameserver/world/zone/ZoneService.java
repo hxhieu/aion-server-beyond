@@ -125,6 +125,9 @@ public final class ZoneService implements GameEngine {
 				case FLY:
 					instance = new FlyZoneInstance(mapId, area);
 					break;
+				case NO_FLY:
+					instance = new NoFlyZoneInstance(mapId, area);
+					break;
 				case FORT:
 					instance = new SiegeZoneInstance(mapId, area);
 					SiegeLocation siege = DataManager.SIEGE_LOCATION_DATA.getSiegeLocations().get(area.getZoneTemplate().getSiegeId().get(0));
