@@ -186,7 +186,7 @@ public final class PlayerEnterWorldService {
 
 		World.getInstance().storeObject(player);
 
-		// change players position if he isn't allowed to spawn in the current zone
+		// change player position if he isn't allowed to spawn in the current zone
 		if (validateFortressZone(player)) // only check vortex zone if fortress check was ok (otherwise, the player is already set to bind point)
 			validateVortexZone(player);
 
@@ -230,7 +230,7 @@ public final class PlayerEnterWorldService {
 			player.getTitleList().setBonusTitle(pcd.getBonusTitleId());
 		}
 		client.sendPacket(new SM_MOTION(player.getMotions().getMotions().values()));
-		client.sendPacket(new SM_AFTER_TIME_CHECK_4_7_5());// it is also send after enter world check
+		client.sendPacket(new SM_AFTER_TIME_CHECK_4_7_5());// it is also sent after enter world check
 
 		byte[] uiSettings = player.getPlayerSettings().getUiSettings();
 		byte[] shortcuts = player.getPlayerSettings().getShortcuts();
@@ -254,7 +254,6 @@ public final class PlayerEnterWorldService {
 		TeleportService.sendKiskBindPoint(player);
 
 		PanesterraService.getInstance().onEnterPanesterra(player);
-		AhserionRaid.getInstance().onPlayerLogin(player);
 
 		// ----------------------------- Retail sequence -----------------------------
 		client.sendPacket(new SM_PLAYER_SPAWN(player));

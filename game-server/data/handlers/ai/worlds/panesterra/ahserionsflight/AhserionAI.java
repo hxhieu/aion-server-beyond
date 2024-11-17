@@ -15,6 +15,7 @@ import com.aionemu.gameserver.model.gameobjects.Npc;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.stats.calc.Stat2;
 import com.aionemu.gameserver.model.stats.container.StatEnum;
+import com.aionemu.gameserver.services.panesterra.PanesterraService;
 import com.aionemu.gameserver.services.panesterra.ahserion.AhserionRaid;
 import com.aionemu.gameserver.services.panesterra.ahserion.PanesterraFaction;
 import com.aionemu.gameserver.services.panesterra.ahserion.PanesterraTeam;
@@ -121,7 +122,7 @@ public class AhserionAI extends AggressiveNpcAI {
 	private void handleBaseAssault() {
 		if (getOwner().getWorldId() == 400030000 && AhserionRaid.getInstance().isStarted()) {
 			for (PanesterraFaction faction : PanesterraFaction.values()) {
-				PanesterraTeam team = AhserionRaid.getInstance().getFactionTeam(faction);
+				PanesterraTeam team = PanesterraService.getInstance().getTeam(faction);
 				if (team != null && !team.isEliminated())
 					AhserionRaid.getInstance().spawnStage(5, faction);
 			}
@@ -152,7 +153,7 @@ public class AhserionAI extends AggressiveNpcAI {
 			// Only players can attack Ahserion on this map.
 			for (AggroInfo ai : getOwner().getAggroList().getFinalDamageList(false)) {
 				if (ai.getAttacker() instanceof Player) {
-					PanesterraTeam team = AhserionRaid.getInstance().getPanesterraFactionTeam((Player) ai.getAttacker());
+					PanesterraTeam team = PanesterraService.getInstance().getTeam((Player) ai.getAttacker());
 					if (team != null && !team.isEliminated()) {
 						PanesterraFaction faction = team.getFaction();
 						panesterraDamage.merge(faction, ai.getDamage(), Integer::sum);
@@ -172,7 +173,7 @@ public class AhserionAI extends AggressiveNpcAI {
 		int maxDmg = 0;
 		for (PanesterraFaction faction : PanesterraFaction.values()) {
 			Integer dmg = panesterraDamage.get(faction);
-			if (dmg != null && !AhserionRaid.getInstance().getFactionTeam(faction).isEliminated()) {
+			if (dmg != null && !PanesterraService.getInstance().getTeam(faction).isEliminated()) {
 				if (dmg > maxDmg) {
 					maxDmg = dmg;
 					winner = faction;

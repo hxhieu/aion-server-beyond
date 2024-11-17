@@ -119,7 +119,7 @@ public class PlayerReviveService {
 			TeleportService.teleportToEvent(player);
 		} else if (WorldMapType.getWorld(player.getWorldId()) == WorldMapType.BELUS) {
 			PanesterraService.getInstance().reviveInEventLocation(player);
-		} else if (player.getWorldId() != 400030000 || !AhserionRaid.getInstance().teleportToTeamStartPosition(player)) {
+		} else if (!PanesterraService.getInstance().teleportToStartPosition(player)) {
 			WorldPosition resPos = null;
 			for (VortexLocation loc : VortexService.getInstance().getVortexLocations().values()) {
 				if (loc.isInsideActiveVotrex(player) && player.getRace().equals(loc.getInvadersRace())) {

@@ -12,6 +12,7 @@ import com.aionemu.gameserver.model.gameobjects.Npc;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.templates.npc.NpcTemplateType;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_SYSTEM_MESSAGE;
+import com.aionemu.gameserver.services.panesterra.PanesterraService;
 import com.aionemu.gameserver.services.panesterra.ahserion.AhserionRaid;
 import com.aionemu.gameserver.services.panesterra.ahserion.PanesterraFaction;
 import com.aionemu.gameserver.services.panesterra.ahserion.PanesterraTeam;
@@ -102,8 +103,8 @@ public class AhserionTankControllerAI extends AhserionConstructAI {
 		// Only players or balaur can attack the controller, there are no other npcs on this map
 		for (AggroInfo ai : getOwner().getAggroList().getFinalDamageList(false)) {
 			PanesterraFaction faction = null;
-			if (ai.getAttacker() instanceof Player) {
-				PanesterraTeam team = AhserionRaid.getInstance().getPanesterraFactionTeam((Player) ai.getAttacker());
+			if (ai.getAttacker() instanceof Player player) {
+				PanesterraTeam team = PanesterraService.getInstance().getTeam(player);
 				if (team != null && !team.isEliminated())
 					faction = team.getFaction();
 			} else
@@ -124,7 +125,7 @@ public class AhserionTankControllerAI extends AhserionConstructAI {
 		int maxDmg = panesterraDamage.getOrDefault(PanesterraFaction.BALAUR, 0);
 		for (PanesterraFaction faction : PanesterraFaction.values()) {
 			Integer dmg = panesterraDamage.get(faction);
-			PanesterraTeam team = AhserionRaid.getInstance().getFactionTeam(faction);
+			PanesterraTeam team = PanesterraService.getInstance().getTeam(faction);
 			if (dmg != null && team != null && !team.isEliminated()) {
 				if (dmg > maxDmg) {
 					maxDmg = dmg;

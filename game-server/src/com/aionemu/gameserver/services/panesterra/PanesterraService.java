@@ -29,6 +29,8 @@ import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.world.World;
 import com.aionemu.gameserver.world.WorldMapType;
 
+import static com.aionemu.gameserver.services.panesterra.ahserion.PanesterraFaction.*;
+
 /**
  * Workflow for Panesterra sieges:
  * 1. Stop all outer bases
@@ -90,14 +92,10 @@ public class PanesterraService {
 	public void stopFortressSiege(FortressLocation loc) {
 		// Remove Teams
 		switch (loc.getLocationId()) {
-			case 10111 -> removeTeams(PanesterraFaction.IVY_TEMPLE, PanesterraFaction.HIGHLAND_TEMPLE, PanesterraFaction.ALPINE_TEMPLE,
-				PanesterraFaction.GRANDWEIR_TEMPLE);
-			case 10211 -> removeTeams(PanesterraFaction.NOERREN_TEMPLE, PanesterraFaction.BOREALIS_TEMPLE, PanesterraFaction.MYRKREN_TEMPLE,
-				PanesterraFaction.GLUMVEILEN_TEMPLE);
-			case 10311 -> removeTeams(PanesterraFaction.MEMORIA_TEMPLE, PanesterraFaction.SYBILLINE_TEMPLE, PanesterraFaction.AUSTERITY_TEMPLE,
-				PanesterraFaction.SERENITY_TEMPLE);
-			case 10411 -> removeTeams(PanesterraFaction.NECROLUCE_TEMPLE, PanesterraFaction.ESMERAUDUS_TEMPLE, PanesterraFaction.VOLTAIC_TEMPLE,
-				PanesterraFaction.ILLUMINATUS_TEMPLE);
+			case 10111 -> removeTeams(IVY_TEMPLE, HIGHLAND_TEMPLE, ALPINE_TEMPLE, GRANDWEIR_TEMPLE);
+			case 10211 -> removeTeams(NOERREN_TEMPLE, BOREALIS_TEMPLE, MYRKREN_TEMPLE, GLUMVEILEN_TEMPLE);
+			case 10311 -> removeTeams(MEMORIA_TEMPLE, SYBILLINE_TEMPLE, AUSTERITY_TEMPLE, SERENITY_TEMPLE);
+			case 10411 -> removeTeams(NECROLUCE_TEMPLE, ESMERAUDUS_TEMPLE, VOLTAIC_TEMPLE, ILLUMINATUS_TEMPLE);
 		}
 		// Change base states
 		SiegeRelatedBases relatedBases = loc.getTemplate().getSiegeRelatedBases();
@@ -156,48 +154,68 @@ public class PanesterraService {
 			log.error("Ahserion raid cannot be started while any Panesterra fortress is under siege.");
 			return;
 		}
+		createTeams(-1);
+		SpawnEngine.spawnObject(SpawnEngine.newSingleTimeSpawn(110070000, 802223, 485.692f, 401.079f, 127.789f, (byte) 0), 1);
+		SpawnEngine.spawnObject(SpawnEngine.newSingleTimeSpawn(120080000, 802225, 400.772f, 231.517f, 93.113f, (byte) 30), 1);
 		AhserionRaid.getInstance().start();
 	}
 
 	public void stopAhserionRaid() {
 		AhserionRaid.getInstance().stop();
+		if (!activeFactionTeams.isEmpty()) {
+			for (PanesterraTeam team : activeFactionTeams.values()) {
+				team.setIsEliminated(true);
+				team.moveTeamMembersToOriginPosition();
+			}
+			activeFactionTeams.clear();
+		}
 	}
 
-	public void handleTeamElimination(PanesterraFaction faction) {
+	public PanesterraTeam handleTeamElimination(PanesterraFaction faction) {
 		PanesterraTeam team = activeFactionTeams.get(faction);
 		if (team == null)
-			return; // Using the //base command
+			return null; // Using the //base command
 
 		team.setIsEliminated(true);
 		team.moveTeamMembersToOriginPosition();
+		return team;
 	}
 
 	private void createTeams(int siegeId) {
-		// TODO: Ahserion Teams
 		switch (siegeId) {
-			case 10111 -> {
-				activeFactionTeams.put(PanesterraFaction.IVY_TEMPLE, new PanesterraTeam(PanesterraFaction.IVY_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.HIGHLAND_TEMPLE, new PanesterraTeam(PanesterraFaction.HIGHLAND_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.ALPINE_TEMPLE, new PanesterraTeam(PanesterraFaction.ALPINE_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.GRANDWEIR_TEMPLE, new PanesterraTeam(PanesterraFaction.GRANDWEIR_TEMPLE));
+			case -1 -> { // Transidium Annex
+				if (SiegeService.getInstance().getSiegeLocation(10111).getRace() != SiegeRace.BALAUR)
+					activeFactionTeams.put(BELUS, new PanesterraTeam(BELUS));
+				if (SiegeService.getInstance().getSiegeLocation(10211).getRace() != SiegeRace.BALAUR)
+					activeFactionTeams.put(ASPIDA, new PanesterraTeam(ASPIDA));
+				if (SiegeService.getInstance().getSiegeLocation(10311).getRace() != SiegeRace.BALAUR)
+					activeFactionTeams.put(ATANATOS, new PanesterraTeam(ATANATOS));
+				if (SiegeService.getInstance().getSiegeLocation(10411).getRace() != SiegeRace.BALAUR)
+					activeFactionTeams.put(DISILLON, new PanesterraTeam(DISILLON));
 			}
-			case 10211 -> {
-				activeFactionTeams.put(PanesterraFaction.NOERREN_TEMPLE, new PanesterraTeam(PanesterraFaction.NOERREN_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.BOREALIS_TEMPLE, new PanesterraTeam(PanesterraFaction.BOREALIS_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.MYRKREN_TEMPLE, new PanesterraTeam(PanesterraFaction.MYRKREN_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.GLUMVEILEN_TEMPLE, new PanesterraTeam(PanesterraFaction.GLUMVEILEN_TEMPLE));
+			case 10111 -> { // Belus
+				activeFactionTeams.put(IVY_TEMPLE, new PanesterraTeam(IVY_TEMPLE));
+				activeFactionTeams.put(HIGHLAND_TEMPLE, new PanesterraTeam(HIGHLAND_TEMPLE));
+				activeFactionTeams.put(ALPINE_TEMPLE, new PanesterraTeam(ALPINE_TEMPLE));
+				activeFactionTeams.put(GRANDWEIR_TEMPLE, new PanesterraTeam(GRANDWEIR_TEMPLE));
 			}
-			case 10311 -> {
-				activeFactionTeams.put(PanesterraFaction.MEMORIA_TEMPLE, new PanesterraTeam(PanesterraFaction.MEMORIA_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.SYBILLINE_TEMPLE, new PanesterraTeam(PanesterraFaction.SYBILLINE_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.AUSTERITY_TEMPLE, new PanesterraTeam(PanesterraFaction.AUSTERITY_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.SERENITY_TEMPLE, new PanesterraTeam(PanesterraFaction.SERENITY_TEMPLE));
+			case 10211 -> { // Aspida
+				activeFactionTeams.put(NOERREN_TEMPLE, new PanesterraTeam(NOERREN_TEMPLE));
+				activeFactionTeams.put(BOREALIS_TEMPLE, new PanesterraTeam(BOREALIS_TEMPLE));
+				activeFactionTeams.put(MYRKREN_TEMPLE, new PanesterraTeam(MYRKREN_TEMPLE));
+				activeFactionTeams.put(GLUMVEILEN_TEMPLE, new PanesterraTeam(GLUMVEILEN_TEMPLE));
 			}
-			case 10411 -> {
-				activeFactionTeams.put(PanesterraFaction.NECROLUCE_TEMPLE, new PanesterraTeam(PanesterraFaction.NECROLUCE_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.ESMERAUDUS_TEMPLE, new PanesterraTeam(PanesterraFaction.ESMERAUDUS_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.VOLTAIC_TEMPLE, new PanesterraTeam(PanesterraFaction.VOLTAIC_TEMPLE));
-				activeFactionTeams.put(PanesterraFaction.ILLUMINATUS_TEMPLE, new PanesterraTeam(PanesterraFaction.ILLUMINATUS_TEMPLE));
+			case 10311 -> { // Atanatos
+				activeFactionTeams.put(MEMORIA_TEMPLE, new PanesterraTeam(MEMORIA_TEMPLE));
+				activeFactionTeams.put(SYBILLINE_TEMPLE, new PanesterraTeam(SYBILLINE_TEMPLE));
+				activeFactionTeams.put(AUSTERITY_TEMPLE, new PanesterraTeam(AUSTERITY_TEMPLE));
+				activeFactionTeams.put(SERENITY_TEMPLE, new PanesterraTeam(SERENITY_TEMPLE));
+			}
+			case 10411 -> { // Disillon
+				activeFactionTeams.put(NECROLUCE_TEMPLE, new PanesterraTeam(NECROLUCE_TEMPLE));
+				activeFactionTeams.put(ESMERAUDUS_TEMPLE, new PanesterraTeam(ESMERAUDUS_TEMPLE));
+				activeFactionTeams.put(VOLTAIC_TEMPLE, new PanesterraTeam(VOLTAIC_TEMPLE));
+				activeFactionTeams.put(ILLUMINATUS_TEMPLE, new PanesterraTeam(ILLUMINATUS_TEMPLE));
 			}
 		}
 	}
@@ -222,9 +240,9 @@ public class PanesterraService {
 		int siegeId = getSiegeId(player.getWorldId());
 		if (siegeId == 0)
 			return;
-		// Player is in Transidium Annex or on an active map with an active siege
+		// Player is in Transidium Annex or on a map with an active siege
 		if (siegeId == -1 || SiegeService.getInstance().isSiegeInProgress(siegeId)) {
-			PanesterraTeam team = getPanesterraFactionTeam(player);
+			PanesterraTeam team = getTeam(player);
 			if (team == null)
 				TeleportService.moveToBindLocation(player);
 			else if (team.isEliminated())
@@ -236,9 +254,9 @@ public class PanesterraService {
 			// Check if the player's faction owns any related fortress
 			PanesterraFaction faction = Stream.of(10111, 10211, 10311, 10411)
 				.filter(id -> SiegeService.getInstance().getFortress(id).getRace() == SiegeRace.getByRace(player.getRace()))
-				.map(PanesterraFaction::getByFortressId).findFirst().orElse(PanesterraFaction.PEACE);
+				.map(PanesterraFaction::getByFortressId).findFirst().orElse(PEACE);
 
-			if (faction == PanesterraFaction.PEACE)
+			if (faction == PEACE)
 				TeleportService.moveToBindLocation(player);
 
 			player.setPanesterraFaction(faction);
@@ -256,14 +274,6 @@ public class PanesterraService {
 		};
 	}
 
-	public PanesterraTeam getPanesterraFactionTeam(Player player) {
-		for (PanesterraTeam team : activeFactionTeams.values()) {
-			if (team.isTeamMember(player.getObjectId()))
-				return team;
-		}
-		return null;
-	}
-
 	public boolean isAhserionRaidStarted() {
 		return AhserionRaid.getInstance().isStarted();
 	}
@@ -276,7 +286,27 @@ public class PanesterraService {
 	public PanesterraTeam getTeam(PanesterraFaction faction) {
 		return activeFactionTeams.get(faction);
 	}
-	
+
+	public PanesterraTeam getTeam(Player player) {
+		for (PanesterraTeam team : activeFactionTeams.values()) {
+			if (team.isTeamMember(player.getObjectId()))
+				return team;
+		}
+		return null;
+	}
+
+	public boolean teleportToStartPosition(Player player) {
+		if (!WorldMapType.isPanesterraMap(player.getWorldId()))
+			return false;
+
+		PanesterraTeam team = getTeam(player);
+		if (team != null && !team.isEliminated()) {
+			team.movePlayerToStartPosition(player);
+			return true;
+		}
+		return false;
+	}
+
 	// TODO: Event START
 	public boolean reviveInEventLocation(Player player) {
 		if (!WorldMapType.isPanesterraMap(player.getWorldId()))
@@ -285,12 +315,12 @@ public class PanesterraService {
 		teleportToEventLocation(player);
 		return true;
 	}
-	
+
 	public void teleportToEventLocation(Player player) {
 		teleport(player);
 		PanesterraService.getInstance().onEnterPanesterra(player);
 	}
-	
+
 	private void teleport(Player player) {
 		switch (player.getRace()) {
 			case ELYOS -> {
