@@ -239,34 +239,23 @@ public class PlayerLifeStats extends CreatureLifeStats<Player> {
 		}
 	}
 
-	public void triggerFpReduceByCost(Integer costFp) {
-		triggerFpReduce(costFp);
-	}
-
 	public void triggerFpReduce() {
-		triggerFpReduce(null);
-	}
-
-	private void triggerFpReduce(Integer costFp) {
-		cancelFpRestore();
+		if (owner.hasAccess(AdminConfig.UNLIMITED_FLIGHT_TIME) || isDead)
+			return;
 		synchronized (restoreLock) {
-			if (!owner.hasAccess(AdminConfig.UNLIMITED_FLIGHT_TIME) && !isDead) {
-				if (costFp != null) {
-					flightReduceValue = costFp;
-					flightReducePeriod = 1;
-				} else {
-					boolean isInFlyArea = owner.isInsideZoneType(ZoneType.FLY) && !owner.isInsideZoneType(ZoneType.NO_FLY);
-					flightReduceValue = isInFlyArea ? 1 : 2;
-					flightReducePeriod = isInFlyArea && owner.isInGlidingState() ? 2 : 1;
-				}
-				if (flyReduceTask == null) {
-					if (costFp != null) {
-						flyReduceTask = LifeStatsRestoreService.getInstance().scheduleFpReduceTask(this, 500);
-					} else {
-						flyReduceTask = LifeStatsRestoreService.getInstance().scheduleFpReduceTask(this, 1000);
-					}
-				}
+			if (owner.isInSprintMode()) {
+				flightReduceValue = owner.ride.getCostFp();
+				flightReducePeriod = 1;
+			} else if (owner.isFlying()) {
+				boolean isInFlyArea = owner.isInsideZoneType(ZoneType.FLY) && !owner.isInsideZoneType(ZoneType.NO_FLY);
+				flightReduceValue = isInFlyArea ? 1 : 2;
+				flightReducePeriod = isInFlyArea && owner.isInGlidingState() ? 2 : 1;
+			} else {
+				return;
 			}
+			cancelFpRestore();
+			if (flyReduceTask == null && !isDead)
+				flyReduceTask = LifeStatsRestoreService.getInstance().scheduleFpReduceTask(this);
 		}
 	}
 

@@ -207,7 +207,7 @@ public class CM_EMOTION extends AionClientPacket {
 					return;
 				}
 				player.setSprintMode(true);
-				player.getLifeStats().triggerFpReduceByCost(player.ride.getCostFp());
+				player.getLifeStats().triggerFpReduce();
 				break;
 			case END_SPRINT:
 				if (!player.isInPlayerMode(PlayerMode.RIDE) || !player.ride.canSprint() || !player.isInSprintMode()) {
