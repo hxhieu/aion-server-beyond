@@ -449,6 +449,8 @@ public class Skill {
 			uncertainties.add("cast speed");
 		if (skillTemplate.getAmmoSpeed() != 0)
 			uncertainties.add("movement (calculated tolerance: " + toleranceMillis + " ms)");
+		if (clientHitTime == 0 && player.isInRobotMode()) // TODO remove once isSuspiciousClientHitTime() identifies all false positives 
+			uncertainties.add("Aethertech being weird 🤷‍♂️ (previous skill: " + player.getLastSkill().getSkillId() + ")");
 		return uncertainties;
 	}
 
