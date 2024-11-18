@@ -87,7 +87,6 @@ public class Skill {
 	private long castStartTime;
 	private String chainCategory = null;
 	private int chainUsageDuration = 0;
-	private volatile boolean isMultiCast = false;
 	private int hate;
 	private volatile ActionObserver firstTargetDieObserver;
 
@@ -438,8 +437,8 @@ public class Skill {
 			return false;
 		if (clientHitTime == 0 && (itemTemplate != null || skillTemplate.getMotion() != null && skillTemplate.getMotion().isInstantSkill()))
 			return false; // effects apply immediately (damage too, though visually delayed)
-		if (clientHitTime == 0 && player.isInRobotMode() && DataManager.SKILL_CHARGE_DATA.isChargeSkill(player.getLastSkill()))
-			return false; // AT sends no hitTime when casting a non-instant skill within the animation time of a previous charge skill, like 2640
+		if (clientHitTime == 0 && player.isInRobotMode() && (player.getLastSkill().isMultiCast() || DataManager.SKILL_CHARGE_DATA.isChargeSkill(player.getLastSkill())))
+			return false; // AT sends no hitTime when casting a non-instant skill within the animation time of a previous multiCast or charge skill, like 2640
 		return true;
 	}
 
@@ -1068,11 +1067,7 @@ public class Skill {
 	}
 
 	public int getMultiCastCount() {
-		return isMultiCast && effector instanceof Player p ? p.getChainSkills().getCurrentChainCount(chainCategory) : 0;
-	}
-
-	public void setIsMultiCast(boolean isMultiCast) {
-		this.isMultiCast = isMultiCast;
+		return skillTemplate.isMultiCast() && effector instanceof Player p ? p.getChainSkills().getCurrentChainCount(chainCategory) : 0;
 	}
 
 	public long getCastStartTime() {

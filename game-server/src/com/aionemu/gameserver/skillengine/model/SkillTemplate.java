@@ -1,22 +1,12 @@
 package com.aionemu.gameserver.skillengine.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 import com.aionemu.gameserver.controllers.attack.AttackStatus;
 import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.model.templates.L10n;
 import com.aionemu.gameserver.skillengine.action.Actions;
-import com.aionemu.gameserver.skillengine.condition.ChainCondition;
-import com.aionemu.gameserver.skillengine.condition.Condition;
-import com.aionemu.gameserver.skillengine.condition.Conditions;
-import com.aionemu.gameserver.skillengine.condition.HpCondition;
-import com.aionemu.gameserver.skillengine.condition.PlayerMovedCondition;
-import com.aionemu.gameserver.skillengine.condition.RideRobotCondition;
-import com.aionemu.gameserver.skillengine.condition.SkillChargeCondition;
+import com.aionemu.gameserver.skillengine.condition.*;
 import com.aionemu.gameserver.skillengine.effect.EffectTemplate;
 import com.aionemu.gameserver.skillengine.effect.EffectType;
 import com.aionemu.gameserver.skillengine.effect.Effects;
@@ -344,6 +334,11 @@ public class SkillTemplate implements L10n {
 		return noSaveOnLogout;
 	}
 
+	public boolean isMultiCast() {
+		ChainCondition chainCondition = getChainCondition();
+		return chainCondition != null && chainCondition.getAllowedActivations() > 1;
+	}
+
 	public ChainCondition getChainCondition() {
 		if (startconditions != null) {
 			for (Condition cond : startconditions.getConditions()) {
@@ -351,7 +346,6 @@ public class SkillTemplate implements L10n {
 					return (ChainCondition) cond;
 			}
 		}
-
 		return null;
 	}
 
