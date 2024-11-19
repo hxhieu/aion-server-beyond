@@ -2,13 +2,9 @@ package com.aionemu.gameserver.network.aion.clientpackets;
 
 import java.util.Set;
 
-import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.network.aion.AionClientPacket;
 import com.aionemu.gameserver.network.aion.AionConnection.State;
-import com.aionemu.gameserver.skillengine.condition.SkillChargeCondition;
-import com.aionemu.gameserver.skillengine.model.ChargeSkillEntry;
-import com.aionemu.gameserver.skillengine.model.ChargedSkill;
 import com.aionemu.gameserver.skillengine.model.Skill;
 
 /**
@@ -28,21 +24,9 @@ public class CM_USE_CHARGE_SKILL extends AionClientPacket {
 	protected void runImpl() {
 		Player player = getConnection().getActivePlayer();
 		Skill chargeCastingSkill = player.getCastingSkill();
-		if (chargeCastingSkill == null || chargeCastingSkill.getSkillMethod() != Skill.SkillMethod.CHARGE)
+		if (chargeCastingSkill == null || !chargeCastingSkill.getSkillTemplate().isCharge())
 			return;
-		SkillChargeCondition chargeCondition = chargeCastingSkill.getSkillTemplate().getSkillChargeCondition();
-		ChargeSkillEntry chargeSkill = DataManager.SKILL_CHARGE_DATA.getChargedSkillEntry(chargeCondition.getValue());
-		float castSpeed = chargeCastingSkill.getCastSpeedForAnimationBoostAndChargeSkills();
-		long time = System.currentTimeMillis() - chargeCastingSkill.getCastStartTime();
-		int index = 0;
-		for (ChargedSkill skill : chargeSkill.getSkills()) {
-			int chargeTime = (int) (skill.getTime() * castSpeed);
-			if (time < chargeTime || ++index == chargeSkill.getSkills().size() - 1)
-				break;
-			time -= chargeTime;
-		}
-		player.getController().useChargeSkill(chargeSkill.getSkills().get(index).getId(), chargeCastingSkill.getSkillLevel(),
-			chargeCastingSkill.getHitTime(), index + 1, chargeCastingSkill.getFirstTarget());
-		chargeCastingSkill.cancelCast();
+		long chargeTimeMillis = System.currentTimeMillis() - chargeCastingSkill.getCastStartTime();
+		player.getController().useChargeSkill(chargeCastingSkill, chargeTimeMillis);
 	}
 }

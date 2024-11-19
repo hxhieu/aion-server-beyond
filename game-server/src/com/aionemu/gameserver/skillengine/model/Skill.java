@@ -29,7 +29,10 @@ import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.skill.NpcSkillEntry;
 import com.aionemu.gameserver.model.stats.container.StatEnum;
 import com.aionemu.gameserver.model.templates.item.ItemTemplate;
-import com.aionemu.gameserver.network.aion.serverpackets.*;
+import com.aionemu.gameserver.network.aion.serverpackets.SM_CASTSPELL;
+import com.aionemu.gameserver.network.aion.serverpackets.SM_CASTSPELL_RESULT;
+import com.aionemu.gameserver.network.aion.serverpackets.SM_ITEM_USAGE_ANIMATION;
+import com.aionemu.gameserver.network.aion.serverpackets.SM_SYSTEM_MESSAGE;
 import com.aionemu.gameserver.questEngine.QuestEngine;
 import com.aionemu.gameserver.questEngine.model.QuestEnv;
 import com.aionemu.gameserver.services.abyss.AbyssService;
@@ -95,7 +98,6 @@ public class Skill {
 		ITEM,
 		PASSIVE,
 		PROVOKED,
-		CHARGE,
 		PENALTY
 	}
 
@@ -130,8 +132,6 @@ public class Skill {
 			skillMethod = SkillMethod.PASSIVE;
 		else if (skillTemplate.isProvoked())
 			skillMethod = SkillMethod.PROVOKED;
-		else if (skillTemplate.isCharge())
-			skillMethod = SkillMethod.CHARGE;
 		else
 			skillMethod = SkillMethod.CAST;
 	}
@@ -153,7 +153,7 @@ public class Skill {
 
 		// check for counter skill
 		if (effector instanceof Player player) {
-			if ((skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.CHARGE) && chainCategory == null) // category gets set in preCastCheck()
+			if (skillMethod == SkillMethod.CAST && chainCategory == null) // category gets set in preCastCheck()
 				player.getChainSkills().resetChain();
 
 			if (skillTemplate.getCounterSkill() != null) {
@@ -258,14 +258,14 @@ public class Skill {
 		updateHitTime(checkAnimation);
 
 		// notify skill use observers
-		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM || skillMethod == SkillMethod.CHARGE)
+		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM)
 			effector.getObserveController().notifyStartSkillCastObservers(this);
 
 		// start casting
 		effector.setCasting(this);
 
 		// send packets to start casting
-		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM || skillMethod == SkillMethod.CHARGE) {
+		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM) {
 			castStartTime = System.currentTimeMillis();
 			startCast();
 			if (effector instanceof Npc)
@@ -284,8 +284,10 @@ public class Skill {
 			}
 		}
 		effector.getAi().onStartUseSkill(skillTemplate, skillLevel);
-		if (castDuration > 0) {
-			schedule(castDuration);
+		if (skillTemplate.isCharge()) {
+			ThreadPoolManager.getInstance().schedule(this::cancelCurrentSkillCast, castDuration);
+		} else if (castDuration > 0) {
+			ThreadPoolManager.getInstance().schedule(this::endCast, castDuration);
 		} else {
 			endCast();
 		}
@@ -310,67 +312,88 @@ public class Skill {
 	}
 
 	protected void updateCastDurationAndSpeed() {
-		castSpeedForAnimationBoostAndChargeSkills = 1 - effector.getGameStats().getStat(StatEnum.BOOST_CASTING_TIME, 1000).getBonus() / 1000f;
-		// ap & cash revival stones, or 2nd+ time of multicast-skill activation
-		if (getSkillId() == 10802 || getMultiCastCount() > 0) {
-			castDuration = 0;
-			return;
+		if (effector instanceof Npc npc) { // TODO: check if all skills should be effected
+			castDuration = Math.round(baseCastDuration * (npc.getGameStats().getCastSpeed() / 1000f));
+			castSpeedForAnimationBoostAndChargeSkills = 1f;
+		} else if (skillTemplate.isCharge()) {
+			boolean isChargeTimeFixed = updateChargeBaseCastDuration();
+			castDuration = isChargeTimeFixed ? baseCastDuration : calculateChargeCastDuration();
+			castSpeedForAnimationBoostAndChargeSkills = (float) castDuration / baseCastDuration;
+		} else {
+			castDuration = calculateCastDuration();
+			castSpeedForAnimationBoostAndChargeSkills = 1 - effector.getGameStats().getStat(StatEnum.BOOST_CASTING_TIME, 1000).getBonus() / 1000f;
 		}
+	}
 
-		if (skillMethod == SkillMethod.CHARGE) {
-			SkillChargeCondition chargeCondition = skillTemplate.getSkillChargeCondition();
-			if (chargeCondition != null) {
-				int maxCastDuration = 0;
-				ChargeSkillEntry skillCharge = DataManager.SKILL_CHARGE_DATA.getChargedSkillEntry(chargeCondition.getValue());
-				for (ChargedSkill chargedSkill : skillCharge.getSkills())
-					maxCastDuration += chargedSkill.getTime();
-				castDuration = baseCastDuration = maxCastDuration;
+	private boolean updateChargeBaseCastDuration() {
+		// cast/attack speed can affect charge time since 4.8 (https://aionpowerbook.com/powerbook/New_World_Update_-_Skill_Changes#Other_Changes)
+		boolean isChargeTimeFixed = !isCastDurationAffectedByCastSpeed(); // fear and sleep charge skills are excluded, just like with regular casts
+		SkillChargeCondition chargeCondition = skillTemplate.getSkillChargeCondition();
+		if (chargeCondition != null) {
+			int maxCastDuration = 0;
+			ChargeSkillEntry skillCharge = DataManager.SKILL_CHARGE_DATA.getChargedSkillEntry(chargeCondition.getValue());
+			for (ChargedSkill chargedSkill : skillCharge.getSkills()) {
+				if (!isChargeTimeFixed && !DataManager.SKILL_DATA.getSkillTemplate(chargedSkill.getId()).isCastDurationAffectedByCastSpeed())
+					isChargeTimeFixed = true;
+				maxCastDuration += chargedSkill.getTime();
 			}
+			baseCastDuration = maxCastDuration;
 		}
+		return isChargeTimeFixed;
+	}
 
-		if (isCastTimeFixed())
-			return;
-
-		int boostValue;
-		boolean noBaseDurationCap = false;
-		boolean isPhysicalCharge = skillMethod == SkillMethod.CHARGE && effector instanceof Player player
+	private int calculateChargeCastDuration() {
+		boolean isPhysicalClass = effector instanceof Player player
 			&& (player.getPlayerClass().isPhysicalClass() || player.getPlayerClass() == PlayerClass.RIDER || player.getPlayerClass() == PlayerClass.GUNNER);
-		if (skillTemplate.getType() == SkillType.MAGICAL || skillMethod == SkillMethod.CHARGE) {
-			if (isPhysicalCharge) {
-				castDuration = (int) effector.getGameStats().getPositiveStat(StatEnum.ATTACK_SPEED, baseCastDuration);
-			} else {
-				castDuration = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME, baseCastDuration);
-				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SKILL, baseCastDuration);
-				switch (skillTemplate.getSubType()) {
-					case SUMMON:
-						boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SUMMON, boostValue);
-						if (effector.getEffectController().hasAbnormalEffect(3779))
-							noBaseDurationCap = true;
-						break;
-					case SUMMONHOMING:
-						boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SUMMONHOMING, boostValue);
-						if (effector.getEffectController().hasAbnormalEffect(3779))
-							noBaseDurationCap = true;
-						break;
-					case SUMMONTRAP:
-						int tempBoostVal = boostValue;
-						boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_TRAP, boostValue);
-						if (boostValue == 0 && castDuration < tempBoostVal) {
-							boostValue = tempBoostVal - castDuration;
-						}
-						if (effector.getEffectController().hasAbnormalEffect(913))
-							noBaseDurationCap = true;
-						break;
-					case HEAL:
-						boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_HEAL, boostValue);
-						break;
-					case ATTACK:
-						boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_ATTACK, boostValue);
-						break;
+		int castDuration;
+		if (isPhysicalClass) // TODO check if attack speed should also affect magical classes
+			castDuration = (int) effector.getGameStats().getPositiveStat(StatEnum.ATTACK_SPEED, baseCastDuration);
+		else
+			castDuration = calculateMagicalCastDuration();
+		return Math.max(castDuration, (int) (baseCastDuration * 0.3f)); // TODO check limit with retail
+	}
+
+	private int calculateCastDuration() {
+		// ap & cash revival stones, or 2nd+ time of multicast-skill activation
+		if (getSkillId() == 10802 || getMultiCastCount() > 0)
+			return 0;
+		if (skillTemplate.getType() != SkillType.MAGICAL || !isCastDurationAffectedByCastSpeed())
+			return baseCastDuration;
+		return calculateMagicalCastDuration();
+	}
+
+	private int calculateMagicalCastDuration() {
+		boolean noBaseDurationCap = false;
+		int castDuration = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME, baseCastDuration);
+		int boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SKILL, baseCastDuration);
+		switch (skillTemplate.getSubType()) {
+			case SUMMON:
+				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SUMMON, boostValue);
+				if (effector.getEffectController().hasAbnormalEffect(3779))
+					noBaseDurationCap = true;
+				break;
+			case SUMMONHOMING:
+				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_SUMMONHOMING, boostValue);
+				if (effector.getEffectController().hasAbnormalEffect(3779))
+					noBaseDurationCap = true;
+				break;
+			case SUMMONTRAP:
+				int tempBoostVal = boostValue;
+				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_TRAP, boostValue);
+				if (boostValue == 0 && castDuration < tempBoostVal) {
+					boostValue = tempBoostVal - castDuration;
 				}
-				castDuration -= baseCastDuration - boostValue;
-			}
+				if (effector.getEffectController().hasAbnormalEffect(913))
+					noBaseDurationCap = true;
+				break;
+			case HEAL:
+				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_HEAL, boostValue);
+				break;
+			case ATTACK:
+				boostValue = effector.getGameStats().getPositiveReverseStat(StatEnum.BOOST_CASTING_TIME_ATTACK, boostValue);
+				break;
 		}
+		castDuration -= baseCastDuration - boostValue;
 
 		// 70% of base skill castDuration cap
 		// No cast speed cap for skill Summoning Alacrity I(skillId: 1778) and Nimble Fingers I(skillId: 2386)
@@ -380,20 +403,12 @@ public class Skill {
 				castDuration = baseDurationCap;
 			}
 		}
-
-		if (effector instanceof Npc npc) // TODO: check if all skills should be effected
-			castDuration = Math.round(baseCastDuration * (npc.getGameStats().getCastSpeed() / 1000f));
-
-		if (castDuration < 0)
-			castDuration = 0;
-
-		if (skillTemplate.isCharge())
-			castSpeedForAnimationBoostAndChargeSkills = Math.max(0.3f, (float) castDuration / baseCastDuration);
+		return Math.max(castDuration, 0);
 	}
 
 	protected void updateHitTime(boolean checkAnimation) {
 		hitTime = clientHitTime;
-		if (!checkAnimation || !(effector instanceof Player player) || skillMethod != SkillMethod.CAST && skillMethod != SkillMethod.CHARGE && skillMethod != SkillMethod.ITEM)
+		if (!checkAnimation || !(effector instanceof Player player) || skillMethod != SkillMethod.CAST && skillMethod != SkillMethod.ITEM)
 			return;
 
 		float animationTimeUntilFirstHit = DataManager.MOTION_DATA.calculateAnimationTimeUntilFirstHit(player, this);
@@ -473,7 +488,7 @@ public class Skill {
 	private void startCast() {
 		int targetObjId = firstTarget != null ? firstTarget.getObjectId() : 0;
 		boolean needsCast = itemTemplate != null && itemTemplate.isCombatActivated();
-		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.CHARGE || needsCast) {
+		if (skillMethod == SkillMethod.CAST || needsCast) {
 			switch (targetType) {
 				case 0: // PlayerObjectId as Target
 					PacketSendUtility.broadcastPacketAndReceive(effector,
@@ -522,20 +537,23 @@ public class Skill {
 
 	}
 
-	/**
-	 * Set this skill as canceled
-	 */
 	public void cancelCast() {
+		if (isCancelled)
+			return;
 		isCancelled = true;
+		removeObservers();
+	}
+
+	private void cancelCurrentSkillCast() {
+		if (!isCancelled && equals(effector.getCastingSkill()))
+			effector.getController().cancelCurrentSkill(null, null);
 	}
 
 	/**
 	 * Apply effects and perform actions specified in skill template
 	 */
 	protected void endCast() {
-		if (firstTargetDieObserver != null)
-			firstTarget.getObserveController().removeObserver(firstTargetDieObserver);
-		effector.getObserveController().removeObserver(moveListener);
+		removeObservers();
 		if (!effector.isCasting() || isCancelled)
 			return;
 		// check if target is out of skill range or other requirements are not met (anymore)
@@ -649,7 +667,7 @@ public class Skill {
 		else
 			ThreadPoolManager.getInstance().schedule(() -> applyEffect(effects), hitTime);
 
-		if (skillMethod == SkillMethod.PENALTY || skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM || skillMethod == SkillMethod.CHARGE) {
+		if (skillMethod == SkillMethod.PENALTY || skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.ITEM) {
 			boolean sentCastSpellResultPacket = sendCastSpellEnd(dashStatus, effects);
 			if (sentCastSpellResultPacket && skillMethod != SkillMethod.PENALTY && effector instanceof Player player) {
 				// animation times must be calculated after applyEffect of instant skills in order to honor speed buffs from this skill
@@ -679,10 +697,16 @@ public class Skill {
 			SkillAttackManager.afterUseSkill((NpcAI) npc.getAi());
 		}
 
-		if (skillMethod == SkillMethod.CAST || skillMethod == SkillMethod.CHARGE) {
+		if (skillMethod == SkillMethod.CAST) {
 			effector.getObserveController().notifyEndSkillCastObservers(this);
 		}
 		effector.getWorldMapInstance().getInstanceHandler().onEndCastSkill(this);
+	}
+
+	private void removeObservers() {
+		if (firstTargetDieObserver != null)
+			firstTarget.getObserveController().removeObserver(firstTargetDieObserver);
+		effector.getObserveController().removeObserver(moveListener);
 	}
 
 	private void addResistedEffectHateAndNotifyFriends(List<Effect> effects) {
@@ -729,23 +753,6 @@ public class Skill {
 		if (skillMethod == SkillMethod.ITEM && effector instanceof Player player)
 			PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_USE_ITEM(getItemTemplate().getL10n()));
 		return sentCastSpellPacket;
-	}
-
-	/**
-	 * Schedule actions/effects of skill (channeled skills)
-	 */
-	private void schedule(int delay) {
-		ThreadPoolManager.getInstance().schedule(() -> {
-			if (!isCancelled && skillMethod == SkillMethod.CHARGE) {
-				cancelCast();
-				effector.setCasting(null);
-				if (firstTargetDieObserver != null)
-					firstTarget.getObserveController().removeObserver(firstTargetDieObserver);
-				PacketSendUtility.broadcastPacketAndReceive(effector, new SM_SKILL_CANCEL(effector, skillTemplate.getSkillId()));
-				return;
-			}
-			endCast();
-		}, delay);
 	}
 
 	/**
@@ -955,12 +962,20 @@ public class Skill {
 		return h;
 	}
 
+	protected void setCastStartTime(long castStartTime) {
+		this.castStartTime = castStartTime;
+	}
+
 	public void setClientHitTime(int time) {
 		this.clientHitTime = time;
 	}
 
 	public int getHitTime() {
 		return hitTime;
+	}
+
+	protected void setCastSpeedForAnimationBoostAndChargeSkills(float castSpeedForAnimationBoostAndChargeSkills) {
+		this.castSpeedForAnimationBoostAndChargeSkills = castSpeedForAnimationBoostAndChargeSkills;
 	}
 
 	public float getCastSpeedForAnimationBoostAndChargeSkills() {
@@ -978,74 +993,8 @@ public class Skill {
 		return isMagical();
 	}
 
-	/**
-	 * @return true if skill must not be affected by boost casting time this comes from old 1.5.0.5 patch notes and still applies on 2.5 (confirmed)
-	 *         TODO: maybe another implementation? At the moment this doesnt seem to be handled on client infos, so it's hard coded
-	 */
-	private boolean isCastTimeFixed() {
-		if (skillMethod != SkillMethod.CAST && skillMethod != SkillMethod.CHARGE) // only casted skills are affected
-			return true;
-
-		switch (getSkillId()) {
-			case 3775: // Fear
-			case 19: // Fear: Poppy
-			case 20: // Fear: Ginseng
-			case 3589: // Fear Shriek I
-			case 1337: // Sleep
-			case 17: // Sleep: Scarecrow
-			case 18: // Sleep: Frightcorn
-			case 1339: // Sleeping Storm
-			case 1417: // Curse of Roots
-			case 1416: // Curse of Old Roots
-			case 1338: // Tranquilizing Cloud I
-			case 1340: // Slumberswept Wind
-			case 1341: // Slumberswept Wind
-			case 1342: // Slumberswept Wind
-			case 1343: // Somnolence
-			case 1344: // Somnolence
-			case 1345: // Somnolence
-			case 1956: // Freeze Cannon (3rd charge stage with sleep effect)
-			case 11885: // abyss transformation elyos
-			case 11886:
-			case 11887:
-			case 11888:
-			case 11889:
-			case 11890: // abyss transformation asmo
-			case 11891:
-			case 11892:
-			case 11893:
-			case 11894:
-			case 243: // Return
-			case 245: // Bandage Heal
-			case 246: // Herb Treatment
-			case 247: // Herb Treatment
-			case 249: // MP Recovery
-			case 250: // MP Recovery
-			case 251: // Herb Treatment
-			case 252: // MP Recovery
-			case 253: // Herb Treatment
-			case 254: // MP Recovery
-			case 297: // Herb Treatment
-			case 298: // MP Recovery
-			case 302: // Escape
-			case 308: // Herb Treatment
-			case 309: // Herb Treatment
-			case 310: // Herb Treatment
-			case 311: // Herb Treatment
-			case 312: // Herb Treatment
-			case 313: // Herb Treatment
-			case 314: // Herb Treatment
-			case 315: // MP Recovery
-			case 316: // MP Recovery
-			case 317: // MP Recovery
-			case 318: // MP Recovery
-			case 319: // MP Recovery
-			case 320: // MP Recovery
-			case 321: // MP Recovery
-				return true;
-		}
-
-		return false;
+	private boolean isCastDurationAffectedByCastSpeed() {
+		return skillMethod == SkillMethod.CAST && skillTemplate.isCastDurationAffectedByCastSpeed();
 	}
 
 	public void setChainCategory(String chainCategory) {

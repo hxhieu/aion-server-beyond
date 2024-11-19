@@ -6,6 +6,7 @@ import com.aionemu.gameserver.controllers.attack.AttackStatus;
 import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.model.templates.L10n;
 import com.aionemu.gameserver.skillengine.action.Actions;
+import com.aionemu.gameserver.skillengine.action.ItemUseAction;
 import com.aionemu.gameserver.skillengine.condition.*;
 import com.aionemu.gameserver.skillengine.effect.EffectTemplate;
 import com.aionemu.gameserver.skillengine.effect.EffectType;
@@ -265,6 +266,16 @@ public class SkillTemplate implements L10n {
 
 	public boolean isStance() {
 		return stance;
+	}
+
+	public boolean isCastDurationAffectedByCastSpeed() {
+		if (isDeityAvatar())
+			return false;
+		if (hasAnyEffect(EffectType.SLEEP, EffectType.FEAR, EffectType.RETURN, EffectType.ESCAPE))
+			return false; // sleep and fear skills are no longer affected by cast speed since 1.5.0.5
+		if (getActions() != null && getActions().getActions().stream().anyMatch(action -> action instanceof ItemUseAction)) // e.g. Herb Treatment
+			return false;
+		return true;
 	}
 
 	public boolean hasAnyEffect(EffectType... effectTypes) {

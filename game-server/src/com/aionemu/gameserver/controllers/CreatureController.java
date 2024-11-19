@@ -43,12 +43,14 @@ import com.aionemu.gameserver.network.aion.serverpackets.SM_SKILL_CANCEL;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_SYSTEM_MESSAGE;
 import com.aionemu.gameserver.services.item.ItemPacketService;
 import com.aionemu.gameserver.skillengine.SkillEngine;
+import com.aionemu.gameserver.skillengine.condition.SkillChargeCondition;
 import com.aionemu.gameserver.skillengine.model.*;
 import com.aionemu.gameserver.skillengine.model.Skill.SkillMethod;
 import com.aionemu.gameserver.skillengine.properties.Properties.CastState;
 import com.aionemu.gameserver.taskmanager.tasks.MovementNotifyTask;
 import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.utils.ThreadPoolManager;
+import com.aionemu.gameserver.utils.audit.AuditLogger;
 import com.aionemu.gameserver.utils.stats.CalculationType;
 import com.aionemu.gameserver.world.geo.GeoService;
 import com.aionemu.gameserver.world.zone.ZoneInstance;
@@ -448,16 +450,29 @@ public abstract class CreatureController<T extends Creature> extends VisibleObje
 		return false;
 	}
 
-	public boolean useChargeSkill(int skillId, int skillLevel, int time, int motionId, VisibleObject firstTarget) {
+	public boolean useChargeSkill(Skill startSkill, long chargeTimeMillis) {
+		SkillChargeCondition chargeCondition = startSkill.getSkillTemplate().getSkillChargeCondition();
+		ChargeSkillEntry chargeSkill = chargeCondition == null ? null : DataManager.SKILL_CHARGE_DATA.getChargedSkillEntry(chargeCondition.getValue());
+		if (chargeSkill == null || chargeTimeMillis < chargeSkill.getMinTime() * startSkill.getCastSpeedForAnimationBoostAndChargeSkills()) {
+			if (getOwner() instanceof Player player)
+				AuditLogger.log(player, "tried to use charge skill " + startSkill.getSkillId() + " after " + chargeTimeMillis);
+			return false;
+		}
 		try {
-			Player creature = (Player) getOwner();
-			ChargeSkill skill = SkillEngine.getInstance().getChargeSkill(creature, skillId, skillLevel, motionId, firstTarget);
-			if (skill != null) {
-				skill.setClientHitTime(time);
-				return skill.useSkill();
+			int index = 0, chargeTimeSum = 0;
+			for (ChargedSkill skill : chargeSkill.getSkills()) {
+				chargeTimeSum += (int) (skill.getTime() * startSkill.getCastSpeedForAnimationBoostAndChargeSkills());
+				if (chargeTimeSum >= chargeTimeMillis || ++index == chargeSkill.getSkills().size() - 1)
+					break;
 			}
+			int skillId = chargeSkill.getSkills().get(index).getId();
+			ChargeSkill skill = SkillEngine.getInstance().getChargeSkill(getOwner(), skillId, startSkill.getSkillLevel(), index + 1, startSkill);
+			if (skill != null)
+				return skill.useSkill();
 		} catch (Exception ex) {
-			log.error("Exception during skill use: " + skillId, ex);
+			log.error("Could not use charge skill " + startSkill.getSkillId() + " with charge time " + chargeTimeMillis, ex);
+		} finally {
+			startSkill.cancelCast();
 		}
 		return false;
 	}

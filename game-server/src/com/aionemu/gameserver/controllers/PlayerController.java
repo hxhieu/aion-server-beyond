@@ -504,13 +504,12 @@ public class PlayerController extends CreatureController<Player> {
 		Player player = getOwner();
 		Skill castingSkill = player.getCastingSkill();
 		castingSkill.cancelCast();
-		player.removeSkillCoolDown(castingSkill.getSkillTemplate().getCooldownId());
 		player.setCasting(null);
 		if (castingSkill.allowAnimationBoostByCastSpeed())
 			player.setHitTimeBoost(Long.MAX_VALUE, castingSkill.getCastSpeedForAnimationBoostAndChargeSkills()); // yes, this is retail client behavior
 		else
 			player.setHitTimeBoost(0, 0);
-		if (castingSkill.getSkillMethod() == SkillMethod.CAST || castingSkill.getSkillMethod() == SkillMethod.CHARGE) {
+		if (castingSkill.getSkillMethod() == SkillMethod.CAST) {
 			PacketSendUtility.broadcastPacket(player, new SM_SKILL_CANCEL(player, castingSkill.getSkillTemplate().getSkillId()), true);
 			if (message != null)
 				PacketSendUtility.sendPacket(player, message);

@@ -35,7 +35,6 @@ import com.aionemu.gameserver.skillengine.condition.DpCondition;
 import com.aionemu.gameserver.skillengine.effect.AbnormalState;
 import com.aionemu.gameserver.skillengine.model.Effect;
 import com.aionemu.gameserver.skillengine.model.Skill;
-import com.aionemu.gameserver.skillengine.model.Skill.SkillMethod;
 import com.aionemu.gameserver.skillengine.model.SkillTemplate;
 import com.aionemu.gameserver.skillengine.model.SkillType;
 import com.aionemu.gameserver.skillengine.properties.Properties.CastState;
@@ -205,7 +204,7 @@ public class CustomInstanceBossAI extends GeneralNpcAI {
 				if (isDPskill || !skillI.canUseSkill(CastState.CAST_START)
 					|| (skillI.getSkillTemplate().getType() == SkillType.MAGICAL && getEffectController().isAbnormalSet(AbnormalState.SILENCE))
 					|| (skillI.getSkillTemplate().getType() == SkillType.PHYSICAL && getEffectController().isAbnormalSet(AbnormalState.BIND))
-					|| skillI.getSkillMethod() == SkillMethod.CHARGE || skillI.isPointSkill()
+					|| skillI.getSkillTemplate().isCharge() || skillI.isPointSkill()
 					|| (cdID != -1 && getOwner().getSkillCoolDown(cdID) > System.currentTimeMillis()))
 					output.set(i, -1d); // -1 = minimum probability
 			}
