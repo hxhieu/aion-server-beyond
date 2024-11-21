@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import com.aionemu.gameserver.skillengine.model.Effect;
+
 /**
  * @author ATracer
  */
@@ -17,18 +19,18 @@ public class SkillAttackInstantEffect extends DamageEffect {
 	@XmlAttribute
 	protected boolean cannotmiss;
 
-	/**
-	 * @return the rnddmg
-	 */
 	public int getRnddmg() {
 		return rnddmg;
 	}
 
-	/**
-	 * @return the cannotmiss
-	 */
 	public boolean isCannotmiss() {
 		return cannotmiss;
+	}
+
+	protected boolean canDodgeOrResist(Effect effect) {
+		if (cannotmiss)
+			return false;
+		return super.canDodgeOrResist(effect);
 	}
 
 }

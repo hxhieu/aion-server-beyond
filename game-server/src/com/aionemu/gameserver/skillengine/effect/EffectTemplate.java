@@ -292,105 +292,77 @@ public abstract class EffectTemplate {
 			return false;
 		}
 
-		// dont check for forced effect
-		if (effect.isForcedEffect()) {
-			this.addSuccessEffect(effect, spellStatus);
-			calculateDamage(effect);
-			return true;
-		}
-
-		// check conditions
-		if (!effectConditionsCheck(effect))
-			return false;
-
-		if (firstEffectCheck(effect, statEnum, spellStatus, element)) {
-			addSuccessEffect(effect, spellStatus);
-			calculateDamage(effect);
-			return true;
-		} else if (nextEffectCheck(effect, spellStatus, statEnum)) {
-			addSuccessEffect(effect, spellStatus);
-			calculateDamage(effect);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean firstEffectCheck(Effect effect, StatEnum statEnum, SpellStatus spellStatus, SkillElement element) {
-		if (getPosition() == 1) {
-			// check effectresistrate
-			if (!calculateEffectResistRate(effect, statEnum)) {
+		if (!effect.isForcedEffect()) {
+			if (!validateEffectConditions(effect))
 				return false;
-			}
-			if (!noResist && !isCannotMiss()) {
-				if (isDodgedOrResisted(effect)) {
+			if (!validatePreEffects(effect))
+				return false;
+			if (getPosition() == 1 ? !validateFirstEffect(effect, statEnum) : !validateSecondaryEffect(effect, statEnum))
+				return false;
+		}
+		addSuccessEffect(effect, spellStatus);
+		calculateDamage(effect);
+		return true;
+	}
+
+	private boolean validateEffectConditions(Effect effect) {
+		return effectConditions == null || effectConditions.validate(effect);
+	}
+
+	private boolean validatePreEffects(Effect effect) {
+		if (getPreEffects() != null) {
+			for (int position : getPreEffects()) {
+				if (!effect.isInSuccessEffects(position))
 					return false;
-				}
 			}
-			return true;
+			if (Rnd.chance() >= getPreEffectProb())
+				return false;
 		}
-		return false;
+		return true;
 	}
 
-	private boolean nextEffectCheck(Effect effect, SpellStatus spellStatus, StatEnum statEnum) {
-		EffectTemplate firstEffect = effect.effectInPos(1);
-		if (getPosition() > 1) {
-			if (Rnd.chance() < getPreEffectProb()) {
-				int[] positions = getPreEffects();
-				if (positions != null) {
-					for (int pos : positions) {
-						if (!effect.isInSuccessEffects(pos)) {
-							return false;
-						}
-					}
-				}
-				if (!noResist && !isCannotMiss()) {
-					if (!calculateEffectResistRate(effect, statEnum) || isDodgedOrResisted(effect)) {
-						if (!(firstEffect instanceof DamageEffect)) {
-							effect.getSuccessEffects().remove(firstEffect);
-						}
-						return false;
-					}
-				}
-				return true;
-			}
+	private boolean validateFirstEffect(Effect effect, StatEnum statEnum) {
+		if (!calculateEffectResistRate(effect, statEnum)) {
+			return false;
 		}
-		return false;
+		if (canDodgeOrResist(effect) && isDodgedOrResisted(effect)) {
+			return false;
+		}
+		return true;
 	}
 
-	private boolean isCannotMiss() {
-		return this instanceof SkillAttackInstantEffect && ((SkillAttackInstantEffect) this).isCannotmiss();
+	private boolean validateSecondaryEffect(Effect effect, StatEnum statEnum) {
+		if (canDodgeOrResist(effect) && (!calculateEffectResistRate(effect, statEnum) || isDodgedOrResisted(effect))) {
+			EffectTemplate firstEffect = effect.effectInPos(1);
+			if (!(firstEffect instanceof DamageEffect)) {
+				effect.getSuccessEffects().remove(firstEffect);
+			}
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canDodgeOrResist(Effect effect) {
+		if (noResist)
+			return false;
+		if (effect.getSkillTemplate().getActivationAttribute() == ActivationAttribute.TOGGLE) // Sprinting must not be dodged by Focused Evasion
+			return false;
+		return true;
 	}
 
 	private boolean isDodgedOrResisted(Effect effect) {
-		// check for BOOST_RESIST
-		int boostResist = 0;
-		switch (effect.getSkillTemplate().getSubType()) {
-			case DEBUFF:
-				boostResist = effect.getEffector().getGameStats().getStat(StatEnum.BOOST_RESIST_DEBUFF, 0).getCurrent();
-				break;
-		}
-		int accMod = accMod2 + accMod1 * effect.getSkillLevel() + effect.getAccModBoost() + boostResist;
-		switch (element) {
-			case NONE:
-				return StatFunctions.checkIsDodgedHit(effect.getEffector(), effect.getEffected(), accMod);
-			default:
-				return Rnd.get(1, 1000) <= StatFunctions.calculateMagicalResistRate(effect.getEffector(), effect.getEffected(), accMod, element);
-		}
+		int accuracyModifier = accMod2 + accMod1 * effect.getSkillLevel() + effect.getAccModBoost();
+		if (effect.getSkillTemplate().getSubType() == SkillSubType.DEBUFF)
+			accuracyModifier += effect.getEffector().getGameStats().getStat(StatEnum.BOOST_RESIST_DEBUFF, 0).getCurrent();
+		if (element == SkillElement.NONE)
+			return StatFunctions.checkIsDodgedHit(effect.getEffector(), effect.getEffected(), accuracyModifier);
+		return Rnd.get(1, 1000) <= StatFunctions.calculateMagicalResistRate(effect.getEffector(), effect.getEffected(), accuracyModifier, element);
 	}
 
 	private void addSuccessEffect(Effect effect, SpellStatus spellStatus) {
 		effect.addSuccessEffect(this);
 		if (spellStatus != null)
 			effect.setSpellStatus(spellStatus);
-	}
-
-	/**
-	 * Check all condition statuses for effect template
-	 */
-	private boolean effectConditionsCheck(Effect effect) {
-		Conditions effectConditions = getEffectConditions();
-		return effectConditions == null || effectConditions.validate(effect);
 	}
 
 	/**
