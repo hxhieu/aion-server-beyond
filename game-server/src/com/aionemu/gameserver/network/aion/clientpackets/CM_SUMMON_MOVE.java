@@ -97,6 +97,6 @@ public class CM_SUMMON_MOVE extends AionClientPacket {
 		m.updateLastMove();
 
 		if ((type & MovementMask.POSITION) == MovementMask.POSITION || type == MovementMask.IMMEDIATE)
-			PacketSendUtility.broadcastPacket(summon, new SM_MOVE(summon));
+			PacketSendUtility.broadcastToSightedPlayers(summon, new SM_MOVE(summon));
 	}
 }
