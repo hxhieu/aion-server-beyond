@@ -62,7 +62,10 @@ public class SM_PLAYER_INFO extends AbstractPlayerInfoPacket {
 		writeH(player.getState());
 
 		writeD(0);
-		writeD(0);
+		boolean someState = false;
+		writeD(someState ? 1 : 0);
+		if (someState)
+			writeB(new byte[13]); // TODO find out what this data controls
 
 		writeC(player.getHeading());
 
