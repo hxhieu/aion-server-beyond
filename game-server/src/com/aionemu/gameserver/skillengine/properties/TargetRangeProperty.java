@@ -2,9 +2,6 @@ package com.aionemu.gameserver.skillengine.properties;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.aionemu.gameserver.configs.main.GeoDataConfig;
 import com.aionemu.gameserver.model.actions.PlayerMode;
 import com.aionemu.gameserver.model.gameobjects.Creature;
@@ -25,8 +22,6 @@ import com.aionemu.gameserver.world.zone.ZoneInstance;
  * @author ATracer, Yeats, Neon
  */
 public class TargetRangeProperty {
-
-	private static final Logger log = LoggerFactory.getLogger(TargetRangeProperty.class);
 
 	public static boolean set(Properties properties, Properties.ValidationResult result, Creature skillEffector, SkillTemplate skillTemplate, float x,
 		float y, float z) {
@@ -117,6 +112,7 @@ public class TargetRangeProperty {
 					TemporaryPlayerTeam<? extends TeamMember<Player>> team;
 					if (value == TargetRangeAttribute.PARTY_WITHPET) {
 						team = effector.getCurrentTeam(); // group or whole alliance
+						tryAddSummon(effector.getSummon(), result, skillTemplate, effectedList);
 					} else {
 						team = effector.getCurrentGroup(); // group or alliance group (max 6 targets)
 					}
@@ -130,13 +126,8 @@ public class TargetRangeProperty {
 							if (PositionUtil.isInRange(effector, member, effectiveRange, false)) {
 								if (shouldAffectTarget(member, result.getFirstTarget(), skillTemplate))
 									effectedList.add(member);
-								if (value == TargetRangeAttribute.PARTY_WITHPET) {
-									Summon aMemberSummon = member.getSummon();
-									if (aMemberSummon != null) {
-										if (shouldAffectTarget(aMemberSummon, result.getFirstTarget(), skillTemplate))
-											effectedList.add(aMemberSummon);
-									}
-								}
+								if (value == TargetRangeAttribute.PARTY_WITHPET)
+									tryAddSummon(member.getSummon(), result, skillTemplate, effectedList);
 							}
 						}
 					}
@@ -201,5 +192,10 @@ public class TargetRangeProperty {
 			return GeoService.getInstance().canSee(firstTarget, object);
 		}
 		return true;
+	}
+
+	private static void tryAddSummon(Summon summon, Properties.ValidationResult result, SkillTemplate skillTemplate, List<Creature> effectedList) {
+		if (summon != null && shouldAffectTarget(summon, result.getFirstTarget(), skillTemplate))
+			effectedList.add(summon);
 	}
 }
