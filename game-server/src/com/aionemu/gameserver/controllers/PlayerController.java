@@ -96,10 +96,7 @@ public class PlayerController extends CreatureController<Player> {
 				}
 				DropService.getInstance().see(getOwner(), npc);
 			} else if (creature instanceof Player player) {
-				PacketSendUtility.sendPacket(getOwner(), new SM_PLAYER_INFO(player, getOwner().isAggroIconTo(player)));
-				PacketSendUtility.sendPacket(getOwner(), new SM_MOTION(player.getObjectId(), player.getMotions().getActiveMotions()));
-				if (player.isInPlayerMode(PlayerMode.RIDE))
-					PacketSendUtility.sendPacket(getOwner(), new SM_EMOTION(player, EmotionType.RIDE, 0, player.ride.getNpcId()));
+				sendPlayerInfoPackets(player);
 			} else if (creature instanceof Summon) {
 				PacketSendUtility.sendPacket(getOwner(), new SM_NPC_INFO((Summon) creature, getOwner()));
 			}
@@ -116,6 +113,15 @@ public class PlayerController extends CreatureController<Player> {
 		} else if (object instanceof HouseObject) {
 			PacketSendUtility.sendPacket(getOwner(), new SM_HOUSE_OBJECT((HouseObject<?>) object));
 		}
+	}
+
+	private void sendPlayerInfoPackets(Player player) {
+		PacketSendUtility.sendPacket(getOwner(), new SM_PLAYER_INFO(player, !player.equals(getOwner()) && getOwner().isAggroIconTo(player)));
+		PacketSendUtility.sendPacket(getOwner(), new SM_MOTION(player.getObjectId(), player.getMotions().getActiveMotions()));
+		if (player.isInPlayerMode(PlayerMode.RIDE))
+			PacketSendUtility.sendPacket(getOwner(), new SM_EMOTION(player, EmotionType.RIDE, 0, player.ride.getNpcId()));
+		if (player.getController().isUnderStance())
+			PacketSendUtility.sendPacket(getOwner(), new SM_PLAYER_STANCE(player, 1));
 	}
 
 	@Override
@@ -607,10 +613,7 @@ public class PlayerController extends CreatureController<Player> {
 
 	public void onChangedPlayerAttributes() {
 		getOwner().clearKnownlist();
-		PacketSendUtility.sendPacket(getOwner(), new SM_PLAYER_INFO(getOwner()));
-		PacketSendUtility.sendPacket(getOwner(), new SM_MOTION(getOwner().getObjectId(), getOwner().getMotions().getActiveMotions()));
-		if (getOwner().isInPlayerMode(PlayerMode.RIDE))
-			PacketSendUtility.sendPacket(getOwner(), new SM_EMOTION(getOwner(), EmotionType.RIDE, 0, getOwner().ride.getNpcId()));
+		sendPlayerInfoPackets(getOwner());
 		if (getOwner().getSeeState() != 0)
 			PacketSendUtility.sendPacket(getOwner(), new SM_PLAYER_STATE(getOwner())); // needed to see hidden creatures again
 		getOwner().getEffectController().updatePlayerEffectIcons(null);
@@ -691,13 +694,14 @@ public class PlayerController extends CreatureController<Player> {
 		stopStance();
 		stanceObserver = new StanceObserver(getOwner(), skillId);
 		getOwner().getObserveController().addObserver(stanceObserver);
+		PacketSendUtility.broadcastPacket(getOwner(), new SM_PLAYER_STANCE(getOwner(), 1), true);
 	}
 
 	public void stopStance() {
 		if (stanceObserver != null) {
 			getOwner().getObserveController().removeObserver(stanceObserver);
 			getOwner().getEffectController().removeEffect(stanceObserver.getStanceSkillId());
-			PacketSendUtility.sendPacket(getOwner(), new SM_PLAYER_STANCE(getOwner(), 0));
+			PacketSendUtility.broadcastPacket(getOwner(), new SM_PLAYER_STANCE(getOwner(), 0), true);
 			stanceObserver = null;
 		}
 	}

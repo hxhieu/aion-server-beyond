@@ -12,7 +12,6 @@ import com.aionemu.gameserver.model.team.common.legacy.GroupEvent;
 import com.aionemu.gameserver.model.team.common.legacy.PlayerAllianceEvent;
 import com.aionemu.gameserver.model.team.group.PlayerGroupService;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_ABNORMAL_STATE;
-import com.aionemu.gameserver.network.aion.serverpackets.SM_PLAYER_STANCE;
 import com.aionemu.gameserver.services.event.EventService;
 import com.aionemu.gameserver.skillengine.model.Effect;
 import com.aionemu.gameserver.skillengine.model.Effect.ForceType;
@@ -126,15 +125,5 @@ public class PlayerEffectController extends EffectController {
 
 		if (effect.getSkillTemplate().getTargetSlot() != SkillTargetSlot.NOSHOW)
 			PacketSendUtility.sendPacket(getOwner(), new SM_ABNORMAL_STATE(Collections.singletonList(effect), abnormals, SkillTargetSlot.FULLSLOTS));
-
-	}
-
-	@Override
-	public void broadCastEffects(Effect effect) {
-		super.broadCastEffects(effect);
-		Player player = getOwner();
-		if (player.getController().isUnderStance()) {
-			PacketSendUtility.sendPacket(player, new SM_PLAYER_STANCE(player, 1));
-		}
 	}
 }
