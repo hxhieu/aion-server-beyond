@@ -989,26 +989,16 @@ public class Effect implements StatOwner {
 		return this.subEffectAbortedBySubConditions;
 	}
 
-	/**
-	 * Check all in use equipment conditions
-	 * 
-	 * @return true if all conditions have been satisfied
-	 */
-	private boolean useEquipmentConditionsCheck() {
-		Conditions useEquipConditions = skillTemplate.getUseEquipmentconditions();
-		return useEquipConditions == null || useEquipConditions.validate(this);
-	}
-
 	private void addEquipmentObserver() {
 		// If skill has use equipment conditions, observe for unequip event and remove effect if event occurs
-		if (getSkillTemplate().getUseEquipmentconditions() != null && !getSkillTemplate().getUseEquipmentconditions().getConditions().isEmpty()) {
+		Conditions useEquipConditions = skillTemplate.getUseEquipmentconditions();
+		if (useEquipConditions != null && !useEquipConditions.getConditions().isEmpty()) {
 			addObserver(getEffected(), new ActionObserver(ObserverType.UNEQUIP) {
 
 				@Override
 				public void unequip(Item item, Player owner) {
-					if (!useEquipmentConditionsCheck()) {
+					if (!useEquipConditions.validate(skill))
 						endEffect();
-					}
 				}
 			});
 		}
