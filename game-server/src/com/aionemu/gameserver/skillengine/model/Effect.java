@@ -626,8 +626,9 @@ public class Effect implements StatOwner {
 
 			schedulePeriodicActions();
 
-			for (EffectTemplate template : successEffects.values()) {
-				template.startEffect(this);
+			if (!successEffects.isEmpty()) {
+				for (EffectTemplate template : successEffects.values())
+					template.startEffect(this);
 				addEquipmentObserver();
 				addCancelOnDmgObserver();
 			}
