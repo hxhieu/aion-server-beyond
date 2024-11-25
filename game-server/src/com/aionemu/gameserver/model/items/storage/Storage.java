@@ -245,8 +245,7 @@ public abstract class Storage implements IStorage {
 			setPersistentState(PersistentState.UPDATE_REQUIRED);
 			ItemPacketService.sendItemDeletePacket(actor, StorageType.getStorageTypeById(item.getItemLocation()), item, deleteType);
 			if (LoggingConfig.LOG_ITEM && !item.getItemTemplate().isKinah() && item.getItemCount() > 0)
-				if (item.getItemId() < 160000000 || item.getItemId() >= 165000000) // exclude potions, food, scrolls and other unimportant consumables from logging
-					log.info("Item: " +  item.getItemId() + " [" + item.getItemName()+ "] deleted from player " + actor.getName() + " (count: " + item.getItemCount() + ") (deletion type: " + deleteType + ")");
+				log.info("Item: " +  item.getItemId() + " [" + item.getItemName()+ "] deleted from player " + actor.getName() + " (count: " + item.getItemCount() + ") (deletion type: " + deleteType + ")");
 			QuestEngine.getInstance().onItemRemoved(actor, item.getItemId());
 			return item;
 		}
