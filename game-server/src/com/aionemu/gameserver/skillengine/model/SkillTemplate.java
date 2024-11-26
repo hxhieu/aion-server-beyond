@@ -18,15 +18,13 @@ import com.aionemu.gameserver.skillengine.properties.Properties;
  * @author ATracer, Wakizashi
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "skillTemplate", propOrder = { "properties", "startconditions", "useconditions", "endconditions", "useequipmentconditions", "effects",
-	"actions", "periodicActions", "motion" })
+@XmlType(name = "skillTemplate")
 public class SkillTemplate implements L10n {
 
 	private Properties properties;
 	private Conditions startconditions;
 	private Conditions useconditions;
 	private Conditions endconditions;
-	private Conditions useequipmentconditions;
 	private Effects effects;
 	private Actions actions;
 	@XmlElement(name = "periodicactions")
@@ -116,10 +114,6 @@ public class SkillTemplate implements L10n {
 
 	public Conditions getUseconditions() {
 		return useconditions;
-	}
-
-	public Conditions getUseEquipmentconditions() {
-		return useequipmentconditions;
 	}
 
 	public Effects getEffects() {

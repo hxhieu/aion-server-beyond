@@ -13,7 +13,6 @@ import com.aionemu.gameserver.controllers.observer.AttackCalcObserver;
 import com.aionemu.gameserver.controllers.observer.ObserverType;
 import com.aionemu.gameserver.model.SkillElement;
 import com.aionemu.gameserver.model.gameobjects.Creature;
-import com.aionemu.gameserver.model.gameobjects.Item;
 import com.aionemu.gameserver.model.gameobjects.Npc;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.stats.calc.StatOwner;
@@ -22,7 +21,6 @@ import com.aionemu.gameserver.network.aion.serverpackets.SM_ATTACK_STATUS.TYPE;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_SKILL_ACTIVATION;
 import com.aionemu.gameserver.services.event.Event;
 import com.aionemu.gameserver.skillengine.SkillEngine;
-import com.aionemu.gameserver.skillengine.condition.Conditions;
 import com.aionemu.gameserver.skillengine.effect.*;
 import com.aionemu.gameserver.skillengine.model.EffectReserved.ResourceType;
 import com.aionemu.gameserver.skillengine.periodicaction.PeriodicAction;
@@ -629,7 +627,6 @@ public class Effect implements StatOwner {
 			if (!successEffects.isEmpty()) {
 				for (EffectTemplate template : successEffects.values())
 					template.startEffect(this);
-				addEquipmentObserver();
 				addCancelOnDmgObserver();
 			}
 
@@ -987,21 +984,6 @@ public class Effect implements StatOwner {
 
 	public boolean isSubEffectAbortedBySubConditions() {
 		return this.subEffectAbortedBySubConditions;
-	}
-
-	private void addEquipmentObserver() {
-		// If skill has use equipment conditions, observe for unequip event and remove effect if event occurs
-		Conditions useEquipConditions = skillTemplate.getUseEquipmentconditions();
-		if (useEquipConditions != null && !useEquipConditions.getConditions().isEmpty()) {
-			addObserver(getEffected(), new ActionObserver(ObserverType.UNEQUIP) {
-
-				@Override
-				public void unequip(Item item, Player owner) {
-					if (!useEquipConditions.validate(skill))
-						endEffect();
-				}
-			});
-		}
 	}
 
 	private void addCancelOnDmgObserver() {
