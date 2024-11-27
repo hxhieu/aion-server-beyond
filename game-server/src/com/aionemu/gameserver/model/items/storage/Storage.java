@@ -229,10 +229,10 @@ public abstract class Storage implements IStorage {
 	}
 
 	/**
-	 * Delete item from storage and mark for DB update. UNKNOWN delete type
+	 * Delete item from storage and mark for DB update
 	 */
 	Item delete(Item item, Player actor) {
-		return delete(item, ItemDeleteType.QUEST_REWARD, actor);
+		return delete(item, ItemDeleteType.DEFAULT, actor);
 	}
 
 	/**

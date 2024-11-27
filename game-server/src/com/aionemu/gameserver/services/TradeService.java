@@ -29,6 +29,7 @@ import com.aionemu.gameserver.restrictions.PlayerRestrictions;
 import com.aionemu.gameserver.services.abyss.AbyssPointsService;
 import com.aionemu.gameserver.services.item.ItemFactory;
 import com.aionemu.gameserver.services.item.ItemPacketService.ItemAddType;
+import com.aionemu.gameserver.services.item.ItemPacketService.ItemDeleteType;
 import com.aionemu.gameserver.services.item.ItemPacketService.ItemUpdateType;
 import com.aionemu.gameserver.services.item.ItemService;
 import com.aionemu.gameserver.services.item.ItemService.ItemUpdatePredicate;
@@ -229,12 +230,12 @@ public class TradeService {
 				break;
 
 			long realReward = sellReward * count;
-			Item repurchaseItem = null;
+			Item repurchaseItem;
 			if (item.getItemCount() - count < 0) {
 				AuditLogger.log(player, "tried to sell more items to npc than he has");
 				return false;
 			} else if (item.getItemCount() - count == 0) {
-				inventory.delete(item); // need to be here to avoid exploit by sending packet with many items with same unique ids
+				inventory.delete(item, ItemDeleteType.SELL); // need to be here to avoid exploit by sending packet with many items with same unique ids
 				repurchaseItem = item;
 			} else if (item.getItemCount() - count > 0) {
 				repurchaseItem = ItemFactory.newItem(item.getItemId(), count);

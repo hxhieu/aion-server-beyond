@@ -112,7 +112,7 @@ public class ItemPacketService {
 	}
 
 	public enum ItemDeleteType {
-		QUEST_REWARD(0),
+		DEFAULT(0),
 		SPLIT(0x04),
 		MOVE(0x14),
 		DISCARD(0x15),
@@ -139,7 +139,7 @@ public class ItemPacketService {
 				case DEC_ITEM_SPLIT -> SPLIT;
 				case DEC_ITEM_USE -> USE;
 				case DEC_ITEM_SPLIT_MOVE -> MOVE;
-				default -> QUEST_REWARD;
+				default -> DEFAULT;
 			};
 		}
 
@@ -147,7 +147,7 @@ public class ItemPacketService {
 			return switch (questStatus) {
 				case START -> QUEST_START;
 				case COMPLETE -> QUEST_COMPLETE;
-				default -> QUEST_REWARD;
+				default -> DEFAULT;
 			};
 		}
 	}
