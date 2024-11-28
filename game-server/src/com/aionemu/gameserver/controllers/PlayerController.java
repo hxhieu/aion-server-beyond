@@ -442,7 +442,6 @@ public class PlayerController extends CreatureController<Player> {
 			return;
 
 		cancelUseItem();
-		cancelGathering();
 		super.onAttack(attacker, effect, type, damage, notifyAttack, logId, attackStatus, hopType);
 
 		if (attacker instanceof Npc) {
@@ -540,13 +539,6 @@ public class PlayerController extends CreatureController<Player> {
 			cancelTask(TaskId.ITEM_USE);
 			PacketSendUtility.broadcastPacket(player, new SM_ITEM_USAGE_ANIMATION(player.getObjectId(), usingItem == null ? 0 : usingItem.getObjectId(),
 				usingItem == null ? 0 : usingItem.getItemTemplate().getTemplateId(), 0, 3, 0), true);
-		}
-	}
-
-	public void cancelGathering() {
-		Player player = getOwner();
-		if (player.getTarget() instanceof Gatherable g) {
-			g.getController().finishGathering(player);
 		}
 	}
 

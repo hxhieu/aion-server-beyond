@@ -2,18 +2,21 @@ package com.aionemu.gameserver.network.aion.clientpackets;
 
 import java.util.Set;
 
+import org.slf4j.LoggerFactory;
+
 import com.aionemu.gameserver.model.gameobjects.Gatherable;
 import com.aionemu.gameserver.model.gameobjects.VisibleObject;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.network.aion.AionClientPacket;
 import com.aionemu.gameserver.network.aion.AionConnection.State;
+import com.aionemu.gameserver.utils.audit.AuditLogger;
 
 /**
  * @author ATracer
  */
 public class CM_GATHER extends AionClientPacket {
 
-	boolean isStartGather = false;
+	private int actionId;
 
 	public CM_GATHER(int opcode, Set<State> validStates) {
 		super(opcode, validStates);
@@ -21,19 +24,25 @@ public class CM_GATHER extends AionClientPacket {
 
 	@Override
 	protected void readImpl() {
-		int action = readD();
-		if (action == 0)
-			isStartGather = true;
+		actionId = readD();
 	}
 
 	@Override
 	protected void runImpl() {
 		Player player = getConnection().getActivePlayer();
 		VisibleObject target = player.getTarget();
-		if (target != null && target.getPosition().isSpawned() && target instanceof Gatherable)
-			if (isStartGather)
-				((Gatherable) target).getController().onStartUse(player);
-			else
-				((Gatherable) target).getController().finishGathering(player);
+		if (!(target instanceof Gatherable gatherable)) {
+			if (target != null || actionId != -1) // client sends actionId -1 twice for cancellation requests, the second one after deselecting the target
+				AuditLogger.log(player, "tried to gather from " + target + " (action ID: " + actionId + ")");
+			return;
+		}
+		switch (actionId) {
+			case -1 -> {
+				if (gatherable.getController().getGatheringPlayerId() == player.getObjectId())
+					gatherable.getController().cancelGathering();
+			}
+			case 0 -> gatherable.getController().startGathering(player);
+			default -> LoggerFactory.getLogger(getClass()).warn("Unhandled gathering action ID {} (sent by {})", actionId, player);
+		}
 	}
 }
