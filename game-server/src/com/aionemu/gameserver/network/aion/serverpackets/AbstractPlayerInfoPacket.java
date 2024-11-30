@@ -1,6 +1,5 @@
 package com.aionemu.gameserver.network.aion.serverpackets;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.aionemu.gameserver.configs.main.SecurityConfig;
@@ -32,14 +31,6 @@ public abstract class AbstractPlayerInfoPacket extends AionServerPacket {
 		int playerId = pcd.getPlayerObjId();
 		PlayerAppearance playerAppearance = accPlData.getAppearance();
 		CharacterBanInfo cbi = getCharBanInfo(accPlData, con);
-
-		List<Item> itemList = new ArrayList<>(16);
-		for (Item item : accPlData.getEquipment()) {
-			if (itemList.size() == 16)
-				break;
-			if (ItemSlot.isVisible(item.getEquipmentSlot()))
-				itemList.add(item);
-		}
 
 		writeD(playerId);
 		writeS(pcd.getName(), CHARNAME_MAX_LENGTH);
@@ -119,11 +110,11 @@ public abstract class AbstractPlayerInfoPacket extends AionServerPacket {
 		writeH(accPlData.isLegionMember() ? 1 : 0);
 		writeD(pcd.getLastOnlineEpochSeconds());
 		for (int i = 0; i < 16; i++) { // 16 items is always expected by the client...
-			Item item = i < itemList.size() ? itemList.get(i) : null;
-			writeC(item == null ? 0 : ItemSlot.getEquipmentSlotType(item.getEquipmentSlot())); // 0 = not visible, 1 = default (right-hand) slot, 2 = secondary (left-hand) slot
-			writeD(item == null ? 0 : item.getItemSkinTemplate().getTemplateId());
-			writeD(item == null ? 0 : item.getGodStoneId());
-			writeDyeInfo(item == null ? null : item.getItemColor());
+			PlayerAccountData.VisibleItem item = i < accPlData.getVisibleItems().size() ? accPlData.getVisibleItems().get(i) : null;
+			writeC(item == null ? 0 : item.slotType()); // 0 = not visible, 1 = default (right-hand) slot, 2 = secondary (left-hand) slot
+			writeD(item == null ? 0 : item.itemId());
+			writeD(item == null ? 0 : item.godStoneId());
+			writeDyeInfo(item == null ? null : item.color());
 		}
 		writeD(0);
 		writeD(0);

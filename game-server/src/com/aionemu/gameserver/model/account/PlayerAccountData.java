@@ -1,11 +1,13 @@
 package com.aionemu.gameserver.model.account;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.aionemu.gameserver.model.gameobjects.Item;
 import com.aionemu.gameserver.model.gameobjects.player.PlayerAppearance;
 import com.aionemu.gameserver.model.gameobjects.player.PlayerCommonData;
+import com.aionemu.gameserver.model.items.ItemSlot;
 import com.aionemu.gameserver.model.team.legion.Legion;
 import com.aionemu.gameserver.model.team.legion.LegionMember;
 import com.aionemu.gameserver.model.templates.BoundRadius;
@@ -23,7 +25,7 @@ public class PlayerAccountData {
 	private final PlayerCommonData playerCommonData;
 	private PlayerAppearance appearance;
 	private CharacterBanInfo cbi;
-	private List<Item> equipment;
+	private List<VisibleItem> visibleItems;
 	private Timestamp creationDate;
 	private Timestamp deletionDate;
 	private LegionMember legionMember;
@@ -37,8 +39,8 @@ public class PlayerAccountData {
 		this.playerCommonData = playerCommonData;
 		this.appearance = appearance;
 		this.cbi = cbi;
-		this.equipment = equipment;
 		this.legionMember = legionMember;
+		setVisibleItems(equipment);
 		updateBoundingRadius();
 	}
 
@@ -124,18 +126,19 @@ public class PlayerAccountData {
 		return legionMember != null;
 	}
 
-	/**
-	 * @return the equipment
-	 */
-	public List<Item> getEquipment() {
-		return equipment;
+	public List<VisibleItem> getVisibleItems() {
+		return visibleItems;
 	}
 
-	/**
-	 * @param equipment
-	 *          the equipment to set
-	 */
-	public void setEquipment(List<Item> equipment) {
-		this.equipment = equipment;
+	public void setVisibleItems(List<Item> equipment) {
+		List<VisibleItem> items = new ArrayList<>();
+		for (Item item : equipment) {
+			byte slotType = ItemSlot.getEquipmentSlotType(item.getEquipmentSlot());
+			if (slotType != 0)
+				items.add(new VisibleItem(slotType, item.getItemId(), item.getGodStoneId(), item.getItemColor()));
+		}
+		this.visibleItems = items;
 	}
+
+	public record VisibleItem(byte slotType, int itemId, int godStoneId, Integer color) {}
 }

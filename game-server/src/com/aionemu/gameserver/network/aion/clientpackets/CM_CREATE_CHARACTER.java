@@ -71,7 +71,7 @@ public class CM_CREATE_CHARACTER extends AbstractCharacterEditPacket {
 			IDFactory.getInstance().releaseId(playerCommonData.getPlayerObjId());
 		} else {
 			List<Item> equipment = InventoryDAO.loadEquipment(player.getObjectId());
-			accPlData.setEquipment(equipment);
+			accPlData.setVisibleItems(equipment);
 			accPlData.setCreationDate(new Timestamp(System.currentTimeMillis()));
 			PlayerService.storeCreationTime(player.getObjectId(), accPlData.getCreationDate());
 
