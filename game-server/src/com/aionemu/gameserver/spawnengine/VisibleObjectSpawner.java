@@ -13,6 +13,7 @@ import com.aionemu.gameserver.geoEngine.collision.CollisionIntention;
 import com.aionemu.gameserver.geoEngine.collision.IgnoreProperties;
 import com.aionemu.gameserver.geoEngine.math.Vector3f;
 import com.aionemu.gameserver.model.Race;
+import com.aionemu.gameserver.model.base.Base;
 import com.aionemu.gameserver.model.gameobjects.*;
 import com.aionemu.gameserver.model.gameobjects.player.PetCommonData;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
@@ -31,7 +32,6 @@ import com.aionemu.gameserver.model.templates.spawns.vortexspawns.VortexSpawnTem
 import com.aionemu.gameserver.network.aion.serverpackets.SM_PLAYER_STATE;
 import com.aionemu.gameserver.services.BaseService;
 import com.aionemu.gameserver.services.RiftService;
-import com.aionemu.gameserver.model.base.Base;
 import com.aionemu.gameserver.skillengine.effect.SummonOwner;
 import com.aionemu.gameserver.skillengine.model.SkillTemplate;
 import com.aionemu.gameserver.utils.PacketSendUtility;
@@ -48,7 +48,7 @@ import com.aionemu.gameserver.world.knownlist.PlayerAwareKnownList;
 public class VisibleObjectSpawner {
 
 	private static final Logger log = LoggerFactory.getLogger(VisibleObjectSpawner.class);
-	
+
 	protected static VisibleObject spawnNpc(SpawnTemplate spawn, int instanceIndex) {
 		int npcId = spawn.getNpcId();
 		NpcTemplate npcTemplate = DataManager.NPC_DATA.getNpcTemplate(npcId);

@@ -6,8 +6,6 @@ import com.aionemu.gameserver.model.gameobjects.AionObject;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.team.TemporaryPlayerTeam;
 import com.aionemu.gameserver.services.BaseService;
-import com.aionemu.gameserver.services.panesterra.PanesterraService;
-import com.aionemu.gameserver.services.panesterra.ahserion.PanesterraFaction;
 
 /**
  * @author Source, Rolandas
@@ -50,10 +48,8 @@ public class BaseBossDeathListener extends OnDieEventListener {
 	private BaseOccupier findOccupierType(Player player) {
 		if (base instanceof PanesterraFactionCamp)
 			return BaseOccupier.PEACE; // If the soul anchor (boss) is destroyed, the camp will be eliminated
-		
-		if (base instanceof PanesterraBase && player.getPanesterraFaction() != null) {
+		if (base instanceof PanesterraBase && player.getPanesterraFaction() != null)
 			return BaseOccupier.findBy(player.getPanesterraFaction());
-		}
 		return BaseOccupier.findBy(player.getRace());
 	}
 }

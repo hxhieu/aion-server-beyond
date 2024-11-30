@@ -933,9 +933,6 @@ public class Player extends Creature {
 		if (isInCustomState(CustomPlayerState.ENEMY_OF_ALL_PLAYERS) || enemy.isInCustomState(CustomPlayerState.ENEMY_OF_ALL_PLAYERS)) {
 			return !isInFfaTeamMode || !enemy.isInFfaTeamMode() || !isInSameTeam(enemy);
 		}
-		if (panesterraFaction != null && WorldMapType.isPanesterraMap(getWorldId())) {
-			return panesterraFaction != enemy.getPanesterraFaction();
-		}
 		return canPvP(enemy) || isDueling(enemy);
 	}
 

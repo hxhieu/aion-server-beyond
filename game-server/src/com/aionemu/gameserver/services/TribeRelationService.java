@@ -55,7 +55,7 @@ public class TribeRelationService {
 				}
 				break;
 		}
-		if (creature1.getTribe().name().startsWith("GAB1_") && creature2 instanceof Player p && p.getPanesterraFaction() != null) {
+		if (creature2 instanceof Player p && p.getPanesterraFaction() != null && creature1.getTribe().name().startsWith("GAB1_")) {
 			TribeClass playerTribe = creature1.getTribe().name().startsWith("GAB1_SUB") ? p.getPanesterraFaction().getSubTribe() : p.getPanesterraFaction().getTribe();
 			if (creature1.getTribe() == playerTribe)
 				return false;
@@ -101,7 +101,7 @@ public class TribeRelationService {
 					return true;
 				break;
 		}
-		if (creature1.getTribe().name().startsWith("GAB1_") && creature2 instanceof Player p && p.getPanesterraFaction() != null) {
+		if (creature2 instanceof Player p && p.getPanesterraFaction() != null && creature1.getTribe().name().startsWith("GAB1_")) {
 			TribeClass playerTribe = creature1.getTribe().name().startsWith("GAB1_SUB") ? p.getPanesterraFaction().getSubTribe() : p.getPanesterraFaction().getTribe();
 			if (creature1.getTribe() == playerTribe)
 				return true;
@@ -126,7 +126,7 @@ public class TribeRelationService {
 					return true;
 				break;
 		}
-		if (creature1.getTribe().name().startsWith("GAB1_") && creature2 instanceof Player p && p.getPanesterraFaction() != null) {
+		if (creature2 instanceof Player p && p.getPanesterraFaction() != null && creature1.getTribe().name().startsWith("GAB1_")) {
 			TribeClass playerTribe = creature1.getTribe().name().startsWith("GAB1_SUB") ? p.getPanesterraFaction().getSubTribe() : p.getPanesterraFaction().getTribe();
 			if (creature1.getTribe() == playerTribe)
 				return true;
@@ -179,7 +179,7 @@ public class TribeRelationService {
 			}
 		}
 
-		if (creature1.getTribe().name().startsWith("GAB1_") && creature2 instanceof Player p && p.getPanesterraFaction() != null) {
+		if (creature2 instanceof Player p && p.getPanesterraFaction() != null && creature1.getTribe().name().startsWith("GAB1_")) {
 			TribeClass playerTribe = creature1.getTribe().name().startsWith("GAB1_SUB") ? p.getPanesterraFaction().getSubTribe() : p.getPanesterraFaction().getTribe();
 			if (creature1.getTribe() == playerTribe)
 				return false;

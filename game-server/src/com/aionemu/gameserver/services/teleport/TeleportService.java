@@ -265,9 +265,6 @@ public class TeleportService {
 		} else if (DuelService.getInstance().isDueling(player)) {
 			DuelService.getInstance().loseDuel(player);
 		}
-		if (player.getPanesterraFaction() != null && !WorldMapType.isPanesterraMap(worldId))
-			player.setPanesterraFaction(null);
-		
 		sendLoc(player, worldId, instanceId, x, y, z, heading, animation);
 	}
 

@@ -381,14 +381,16 @@ public class PlayerController extends CreatureController<Player> {
 	@Override
 	public void onBeforeSpawn() {
 		super.onBeforeSpawn();
-		if (getOwner().isDead())
-			return;
-		if (getOwner().getIsFlyingBeforeDeath())
-			getOwner().unsetState(CreatureState.FLOATING_CORPSE);
-		else if (getOwner().isInState(CreatureState.DEAD))
-			getOwner().unsetState(CreatureState.DEAD);
-		getOwner().setState(CreatureState.ACTIVE);
+		if (!getOwner().isDead()) {
+			if (getOwner().getIsFlyingBeforeDeath())
+				getOwner().unsetState(CreatureState.FLOATING_CORPSE);
+			else if (getOwner().isInState(CreatureState.DEAD))
+				getOwner().unsetState(CreatureState.DEAD);
+			getOwner().setState(CreatureState.ACTIVE);
+		}
 		getOwner().setHitTimeBoost(0, 0);
+		if (getOwner().getPanesterraFaction() != null && !WorldMapType.isPanesterraMap(getOwner().getWorldId()))
+			getOwner().setPanesterraFaction(null);
 	}
 
 	@Override

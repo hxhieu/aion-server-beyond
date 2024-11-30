@@ -135,8 +135,6 @@
 		<xs:attribute name="handler" type="SpawnHandlerType"/>
 		<xs:attribute name="custom" type="xs:boolean" use="optional" default="false"/>
 		<xs:attribute name="difficult_id" type="xs:byte"/>
-		<xs:attribute name="initial_spawn_time" type="xs:int" use="optional"/>
-		<xs:attribute name="condition" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="SpawnSpotTemplate">
 		<xs:sequence>

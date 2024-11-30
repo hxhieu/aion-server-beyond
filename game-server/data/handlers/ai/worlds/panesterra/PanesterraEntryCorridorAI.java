@@ -23,15 +23,10 @@ import ai.GeneralNpcAI;
 @AIName("panesterra_entry_corridor")
 public class PanesterraEntryCorridorAI extends GeneralNpcAI {
 
-	private int relatedFortressId;
+	private final int relatedFortressId;
 
 	public PanesterraEntryCorridorAI(Npc owner) {
 		super(owner);
-	}
-
-	@Override
-	protected void handleSpawned() {
-		super.handleSpawned();
 		relatedFortressId = switch (getNpcId()) {
 			case 730946, 730950 -> 10111;
 			case 730947, 730951 -> 10211;
