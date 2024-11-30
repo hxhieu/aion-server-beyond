@@ -1,16 +1,17 @@
 package com.aionemu.gameserver.model.team.legion;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import com.aionemu.gameserver.configs.main.LegionConfig;
 import com.aionemu.gameserver.model.gameobjects.AionObject;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
+import com.aionemu.gameserver.model.team.legion.LegionHistoryAction.Type;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_ICON_INFO;
 import com.aionemu.gameserver.services.LegionService;
 import com.aionemu.gameserver.utils.PacketSendUtility;
@@ -34,7 +35,7 @@ public class Legion extends AionObject {
 	private Announcement announcement;
 	private LegionEmblem legionEmblem = new LegionEmblem();
 	private LegionWarehouse legionWarehouse;
-	private final List<LegionHistory> legionHistory = new ArrayList<>();
+	private Map<Type, List<LegionHistoryEntry>> legionHistoryByType;
 	private AtomicBoolean hasBonus = new AtomicBoolean(false);
 	private int occupiedLegionDominion = 0;
 	private int currentLegionDominion = 0;
@@ -419,24 +420,33 @@ public class Legion extends AionObject {
 		return getLegionLevel() - 1;
 	}
 
-	public List<LegionHistory> getLegionHistoryByTabId(int tabType) {
-		synchronized (legionHistory) {
-			if (legionHistory.isEmpty())
-				return Collections.emptyList();
-			return legionHistory.stream().filter(h -> h.getTabId() == tabType).collect(Collectors.toList());
+	public List<LegionHistoryEntry> getHistory(Type type) {
+		List<LegionHistoryEntry> history = legionHistoryByType.get(type);
+		synchronized (history) {
+			return new ArrayList<>(history);
 		}
 	}
 
 	/**
-	 * Adds history entries sorted descending by their timestamps.
+	 * Adds the history entry at the top of the list and removes entries older than a year (except the ones on the first page)
 	 */
-	public void addHistory(LegionHistory history) {
-		synchronized (legionHistory) {
-			int index = 0;
-			while (index < legionHistory.size() && history.getTime().before(legionHistory.get(index).getTime()))
-				index++;
-			legionHistory.add(index, history);
+	public List<LegionHistoryEntry> addHistory(LegionHistoryEntry entry) {
+		List<LegionHistoryEntry> removedEntries = new ArrayList<>();
+		Type type = entry.action().getType();
+		List<LegionHistoryEntry> history = legionHistoryByType.get(type);
+		synchronized (history) {
+			history.addFirst(entry);
+			if (type == Type.REWARD || type == Type.WAREHOUSE) {
+				long maxMillis = System.currentTimeMillis() / 1000 - Duration.ofDays(365).toSeconds();
+				while (history.getLast().epochSeconds() < maxMillis)
+					removedEntries.add(history.removeLast());
+			}
 		}
+		return removedEntries;
+	}
+
+	public void setHistory(Map<Type, List<LegionHistoryEntry>> history) {
+		legionHistoryByType = history;
 	}
 
 	public void addBonus() {

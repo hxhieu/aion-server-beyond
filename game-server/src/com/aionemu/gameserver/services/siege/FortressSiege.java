@@ -23,7 +23,7 @@ import com.aionemu.gameserver.model.siege.FortressLocation;
 import com.aionemu.gameserver.model.siege.SiegeModType;
 import com.aionemu.gameserver.model.siege.SiegeRace;
 import com.aionemu.gameserver.model.team.legion.Legion;
-import com.aionemu.gameserver.model.team.legion.LegionHistoryType;
+import com.aionemu.gameserver.model.team.legion.LegionHistoryAction;
 import com.aionemu.gameserver.model.templates.npc.AbyssNpcType;
 import com.aionemu.gameserver.model.templates.npc.NpcRating;
 import com.aionemu.gameserver.model.templates.siegelocation.SiegeLegionReward;
@@ -370,7 +370,7 @@ public class FortressSiege extends Siege<FortressLocation> {
 				if (item.getItemId() == ItemId.KINAH) {
 					long kinah = isBossKilled() ? item.getItemCount() : Math.round(item.getItemCount() * 0.7f);
 					legion.getLegionWarehouse().increaseKinah(kinah);
-					LegionService.getInstance().addRewardHistory(legion, kinah, isBossKilled() ? LegionHistoryType.OCCUPATION : LegionHistoryType.DEFENSE,
+					LegionService.getInstance().addRewardHistory(legion, kinah, isBossKilled() ? LegionHistoryAction.OCCUPATION : LegionHistoryAction.DEFENSE,
 						getSiegeLocationId());
 					totalKinah += kinah;
 				} else {

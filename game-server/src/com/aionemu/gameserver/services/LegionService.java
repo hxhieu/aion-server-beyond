@@ -134,7 +134,7 @@ public class LegionService {
 		LegionMemberDAO.deleteLegionMember(legionMember.getObjectId());
 		Legion legion = legionMember.getLegion();
 		legion.deleteLegionMember(legionMember.getObjectId());
-		addHistory(legion, legionMember.getName(), LegionHistoryType.KICK);
+		addHistory(legion, legionMember.getName(), LegionHistoryAction.KICK);
 	}
 
 	public Legion getLegion(String legionName) {
@@ -167,7 +167,7 @@ public class LegionService {
 		legion.setLegionEmblem(LegionDAO.loadLegionEmblem(legion.getLegionId()));
 		legion.setLegionWarehouse(LegionDAO.loadLegionStorage(legion));
 		ItemService.loadItemStones(legion.getLegionWarehouse().getItems());
-		LegionDAO.loadLegionHistory(legion);
+		LegionDAO.loadHistory(legion);
 	}
 
 	public LegionMember getLegionMember(int playerObjId) {
@@ -263,8 +263,8 @@ public class LegionService {
 
 			storeLegion(legion, true);
 			addLegionMember(legion, activePlayer, LegionRank.BRIGADE_GENERAL);
-			addHistory(legion, "", LegionHistoryType.CREATE);
-			addHistory(legion, activePlayer.getName(), LegionHistoryType.JOIN);
+			addHistory(legion, "", LegionHistoryAction.CREATE);
+			addHistory(legion, activePlayer.getName(), LegionHistoryAction.JOIN);
 
 			PacketSendUtility.sendPacket(activePlayer, SM_SYSTEM_MESSAGE.STR_GUILD_CREATED(legion.getName()));
 		}
@@ -280,7 +280,7 @@ public class LegionService {
 			displayLegionAnnouncement(invited, legion.getAnnouncement());
 
 			// Add to history of legion
-			addHistory(legion, invited.getName(), LegionHistoryType.JOIN);
+			addHistory(legion, invited.getName(), LegionHistoryAction.JOIN);
 			return true;
 		}
 		PacketSendUtility.sendPacket(inviter, SM_SYSTEM_MESSAGE.STR_GUILD_INVITE_CAN_NOT_ADD_MEMBER_ANY_MORE());
@@ -396,7 +396,7 @@ public class LegionService {
 		player.getLegionMember().setRank(LegionRank.BRIGADE_GENERAL);
 		PacketSendUtility.broadcastToLegion(legion, new SM_LEGION_UPDATE_MEMBER(player, 1300273, player.getName()));
 		PacketSendUtility.broadcastToLegion(legion, new SM_LEGION_EDIT(0x08));
-		addHistory(legion, player.getName(), LegionHistoryType.APPOINTED);
+		addHistory(legion, player.getName(), LegionHistoryAction.APPOINTED);
 	}
 
 	/**
@@ -486,7 +486,7 @@ public class LegionService {
 			Legion legion = activePlayer.getLegion();
 			activePlayer.getInventory().decreaseKinah(legion.getKinahPrice());
 			changeLevel(legion, legion.getLegionLevel() + 1, false);
-			addHistory(legion, legion.getLegionLevel() + "", LegionHistoryType.LEVEL_UP);
+			addHistory(legion, legion.getLegionLevel() + "", LegionHistoryAction.LEVEL_UP);
 		}
 	}
 
@@ -570,7 +570,7 @@ public class LegionService {
 	public void storeLegionEmblem(Player activePlayer, int emblemId, int color_a, int color_r, int color_g, int color_b, LegionEmblemType emblemType) {
 		if (legionRestrictions.canStoreLegionEmblem(activePlayer, emblemId)) {
 			Legion legion = activePlayer.getLegion();
-			addHistory(legion, "", LegionHistoryType.EMBLEM_MODIFIED);
+			addHistory(legion, "", LegionHistoryAction.EMBLEM_MODIFIED);
 			activePlayer.getInventory().decreaseKinah(PricesService.getPriceForService(LegionConfig.LEGION_EMBLEM_REQUIRED_KINAH, activePlayer.getRace()));
 			legion.getLegionEmblem().setEmblem(emblemId, color_a, color_r, color_g, color_b, emblemType, null);
 			updateMembersEmblem(legion);
@@ -695,7 +695,7 @@ public class LegionService {
 				// Finished
 				legionEmblem.setCustomEmblemData(legionEmblem.getUploadData());
 				LegionDAO.storeLegionEmblem(activePlayer.getLegion().getLegionId(), legionEmblem);
-				addHistory(activePlayer.getLegion(), "", LegionHistoryType.EMBLEM_REGISTER);
+				addHistory(activePlayer.getLegion(), "", LegionHistoryAction.EMBLEM_REGISTER);
 				updateMembersEmblem(activePlayer.getLegion());
 				PacketSendUtility.sendPacket(activePlayer, SM_SYSTEM_MESSAGE.STR_GUILD_WARN_SUCCESS_UPLOAD_EMBLEM());
 				legionEmblem.resetUploadSettings();
@@ -768,27 +768,25 @@ public class LegionService {
 		}
 	}
 
-	private void addHistory(Legion legion, String text, LegionHistoryType legionHistoryType) {
-		addHistory(legion, text, legionHistoryType, 0, "");
+	private void addHistory(Legion legion, String text, LegionHistoryAction action) {
+		addHistory(legion, text, action, "");
 	}
 
-	public void addRewardHistory(Legion legion, long kinahAmount, LegionHistoryType lht, int fortressId) {
-		addHistory(legion, String.valueOf(kinahAmount), lht, 1, String.valueOf(fortressId));
+	public void addRewardHistory(Legion legion, long kinahAmount, LegionHistoryAction action, int fortressId) {
+		addHistory(legion, String.valueOf(kinahAmount), action, String.valueOf(fortressId));
 	}
 
 	/**
 	 * This method will add a new history for a legion
 	 *
-	 * @param text        in case of reward: kinah amount
+	 * @param name        in case of reward: kinah amount
 	 * @param description in case of reward: fortress id
 	 */
-	public void addHistory(Legion legion, String text, LegionHistoryType legionHistoryType, int tabId, String description) {
-		LegionHistory legionHistory = new LegionHistory(legionHistoryType, text, new Timestamp(System.currentTimeMillis()), tabId, description);
-
-		legion.addHistory(legionHistory);
-		LegionDAO.saveNewLegionHistory(legion.getLegionId(), legionHistory);
-
-		PacketSendUtility.broadcastToLegion(legion, new SM_LEGION_TABS(legion.getLegionHistoryByTabId(tabId), tabId));
+	public void addHistory(Legion legion, String name, LegionHistoryAction action, String description) {
+		LegionHistoryEntry historyEntry = LegionDAO.insertHistory(legion.getLegionId(), action, name, description);
+		List<LegionHistoryEntry> removedEntries = legion.addHistory(historyEntry);
+		LegionDAO.deleteHistory(legion.getLegionId(), removedEntries);
+		PacketSendUtility.broadcastToLegion(legion, new SM_LEGION_HISTORY(legion.getHistory(action.getType()), action.getType()));
 	}
 
 	/**
@@ -1224,9 +1222,9 @@ public class LegionService {
 		if (legion != null) {
 			String description = Integer.toString(itemId) + ":" + Long.toString(count);
 			if (sourceStorage.getStorageType() == StorageType.LEGION_WAREHOUSE) {
-				LegionService.getInstance().addHistory(legion, player.getName(), LegionHistoryType.ITEM_WITHDRAW, 2, description);
+				LegionService.getInstance().addHistory(legion, player.getName(), LegionHistoryAction.ITEM_WITHDRAW, description);
 			} else if (destStorage.getStorageType() == StorageType.LEGION_WAREHOUSE) {
-				LegionService.getInstance().addHistory(legion, player.getName(), LegionHistoryType.ITEM_DEPOSIT, 2, description);
+				LegionService.getInstance().addHistory(legion, player.getName(), LegionHistoryAction.ITEM_DEPOSIT, description);
 			}
 		}
 	}
@@ -1292,7 +1290,7 @@ public class LegionService {
 		String oldName = legion.getName();
 		legion.setName(name);
 		LegionDAO.storeLegion(legion);
-		addHistory(legion, oldName, LegionHistoryType.LEGION_RENAME, 0, name);
+		addHistory(legion, oldName, LegionHistoryAction.LEGION_RENAME, name);
 		PacketSendUtility.broadcastToWorld(new SM_RENAME(legion, oldName)); // broadcast to world to update all keeps, member's tags, etc.
 		return true;
 	}

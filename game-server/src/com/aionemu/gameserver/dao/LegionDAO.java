@@ -1,6 +1,10 @@
 package com.aionemu.gameserver.dao;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +17,7 @@ import com.aionemu.gameserver.model.gameobjects.Item;
 import com.aionemu.gameserver.model.gameobjects.Persistable.PersistentState;
 import com.aionemu.gameserver.model.items.storage.StorageType;
 import com.aionemu.gameserver.model.team.legion.*;
+import com.aionemu.gameserver.model.team.legion.LegionHistoryAction.Type;
 
 /**
  * Class that is responsible for storing/loading legion data
@@ -40,8 +45,9 @@ public class LegionDAO {
 	/** Storage Queries **/
 	private static final String SELECT_STORAGE_QUERY = "SELECT * FROM `inventory` WHERE `item_owner`=? AND `item_location`=? AND `is_equipped`=?";
 	/** History Queries **/
-	private static final String INSERT_HISTORY_QUERY = "INSERT INTO legion_history(`legion_id`, `date`, `history_type`, `name`, `tab_id`, `description`) VALUES (?, ?, ?, ?, ?, ?)";
-	private static final String SELECT_HISTORY_QUERY = "SELECT * FROM `legion_history` WHERE legion_id=? ORDER BY date ASC;";
+	private static final String INSERT_HISTORY_QUERY = "INSERT INTO legion_history(`legion_id`, `date`, `history_type`, `name`, `description`) VALUES (?, ?, ?, ?, ?)";
+	private static final String SELECT_HISTORY_QUERY = "SELECT * FROM `legion_history` WHERE legion_id=? ORDER BY date DESC, id DESC";
+	private static final String DELETE_HISTORY_QUERY = "DELETE FROM `legion_history` WHERE id IN (%s)";
 	private static final String CLEAR_LEGION_SIEGE = "UPDATE siege_locations SET legion_id=0 WHERE legion_id=?";
 
 	public static boolean isNameUsed(String name) {
@@ -378,33 +384,53 @@ public class LegionDAO {
 		return inventory;
 	}
 
-	public static void loadLegionHistory(Legion legion) {
+	public static void loadHistory(Legion legion) {
+		Map<Type, List<LegionHistoryEntry>> history = new EnumMap<>(Type.class);
+		for (Type type : Type.values())
+			history.put(type, new ArrayList<>());
 		try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement(SELECT_HISTORY_QUERY)) {
 			stmt.setInt(1, legion.getLegionId());
 			ResultSet resultSet = stmt.executeQuery();
-			while (resultSet.next())
-				legion.addHistory(new LegionHistory(LegionHistoryType.valueOf(resultSet.getString("history_type")), resultSet.getString("name"),
-					resultSet.getTimestamp("date"), resultSet.getInt("tab_id"), resultSet.getString("description")));
+			while (resultSet.next()) {
+				int id = resultSet.getInt("id");
+				int epochSeconds = (int) (resultSet.getTimestamp("date").getTime() / 1000);
+				LegionHistoryAction action = LegionHistoryAction.valueOf(resultSet.getString("history_type"));
+				String name = resultSet.getString("name");
+				String description = resultSet.getString("description");
+				history.get(action.getType()).add(new LegionHistoryEntry(id, epochSeconds, action, name, description));
+			}
 		} catch (Exception e) {
-			log.error("Error loading legion history of " + legion, e);
+			log.error("Could not load history of legion " + legion, e);
+		}
+		legion.setHistory(history);
+	}
+
+	public static LegionHistoryEntry insertHistory(int legionId, LegionHistoryAction action, String name, String description) {
+		try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement(INSERT_HISTORY_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+			long nowMillis = System.currentTimeMillis();
+			stmt.setInt(1, legionId);
+			stmt.setTimestamp(2, new Timestamp(nowMillis));
+			stmt.setString(3, action.toString());
+			stmt.setString(4, name);
+			stmt.setString(5, description);
+			stmt.execute();
+			ResultSet result = stmt.getGeneratedKeys();
+			result.next();
+			return new LegionHistoryEntry(result.getInt(1), (int) (nowMillis / 1000), action, name, description);
+		} catch (Exception e) {
+			log.error("Could not add history entry for legion " + legionId, e);
+			return null;
 		}
 	}
 
-	public static boolean saveNewLegionHistory(int legionId, LegionHistory legionHistory) {
-		boolean success = DB.insertUpdate(INSERT_HISTORY_QUERY, new IUStH() {
-
-			@Override
-			public void handleInsertUpdate(PreparedStatement preparedStatement) throws SQLException {
-				preparedStatement.setInt(1, legionId);
-				preparedStatement.setTimestamp(2, legionHistory.getTime());
-				preparedStatement.setString(3, legionHistory.getLegionHistoryType().toString());
-				preparedStatement.setString(4, legionHistory.getName());
-				preparedStatement.setInt(5, legionHistory.getTabId());
-				preparedStatement.setString(6, legionHistory.getDescription());
-				preparedStatement.execute();
-			}
-		});
-		return success;
+	public static void deleteHistory(int legionId, List<LegionHistoryEntry> entries) {
+		String placeholders = ",?".repeat(entries.size()).substring(1);
+		try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement(DELETE_HISTORY_QUERY.formatted(placeholders))) {
+			for (int i = 0; i < entries.size(); i++)
+				stmt.setInt(i + 1, entries.get(i).id());
+			stmt.executeUpdate();
+		} catch (Exception e) {
+			log.error("Could not delete " + entries.size() + " history entries for legion " + legionId, e);
+		}
 	}
-
 }

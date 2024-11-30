@@ -471,7 +471,6 @@ CREATE TABLE `legion_history` (
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `history_type` enum('CREATE','JOIN','KICK','APPOINTED','EMBLEM_REGISTER','EMBLEM_MODIFIED','ITEM_DEPOSIT','ITEM_WITHDRAW','KINAH_DEPOSIT','KINAH_WITHDRAW','LEVEL_UP','DEFENSE','OCCUPATION','LEGION_RENAME','CHARACTER_RENAME') NOT NULL,
   `name` varchar(50) NOT NULL,
-  `tab_id` smallint(3) NOT NULL DEFAULT '0',
   `description` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `legion_id` (`legion_id`),

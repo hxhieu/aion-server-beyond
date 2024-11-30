@@ -27,7 +27,7 @@ public class ServerPacketsOpcodes {
 		// addPacketOpcode(9, ); // [S_LOGIN_CHECK]
 		addPacketOpcode(10, SM_NPC_ASSEMBLER.class); // [S_CUTSCENE_NPC_INFO]
 		addPacketOpcode(11, SM_LEGION_UPDATE_NICKNAME.class); // [S_CHANGE_GUILD_MEMBER_NICKNAME]
-		addPacketOpcode(12, SM_LEGION_TABS.class); // [S_GUILD_HISTORY]
+		addPacketOpcode(12, SM_LEGION_HISTORY.class); // [S_GUILD_HISTORY]
 		addPacketOpcode(13, SM_ENTER_WORLD_CHECK.class); // [S_ENTER_WORLD_CHECK]
 		addPacketOpcode(14, SM_NPC_INFO.class); // [S_PUT_NPC]
 		addPacketOpcode(15, SM_PLAYER_SPAWN.class); // [S_WORLD]

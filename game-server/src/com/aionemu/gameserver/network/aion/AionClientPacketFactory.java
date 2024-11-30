@@ -80,7 +80,7 @@ public class AionClientPacketFactory {
 			packets[52] = new PacketInfo<>(CM_SHOW_DIALOG.class, State.IN_GAME); // [C_START_DIALOG (StartDialogPacket)]
 			packets[53] = new PacketInfo<>(CM_CLOSE_DIALOG.class, State.IN_GAME); // [C_END_DIALOG (EndDialogPacket)]
 			packets[54] = new PacketInfo<>(CM_DIALOG_SELECT.class, State.IN_GAME); // [C_HACTION (HActionPacket)]
-			packets[55] = new PacketInfo<>(CM_LEGION_TABS.class, State.IN_GAME); // [C_REQUEST_GUILD_HISTORY (RequestGuildHistoryPacket)]
+			packets[55] = new PacketInfo<>(CM_LEGION_HISTORY.class, State.IN_GAME); // [C_REQUEST_GUILD_HISTORY (RequestGuildHistoryPacket)]
 			// packets[56] = [C_BOOKMARK (BookmarkPacket)]
 			// packets[57] = [C_DELETE_BOOKMARK (DeleteBookmarkPacket)]
 			packets[58] = new PacketInfo<>(CM_SET_NOTE.class, State.IN_GAME); // [C_TODAY_WORDS (TodayWordsPacket)]

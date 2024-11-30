@@ -5,7 +5,7 @@ import java.util.Set;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.items.storage.StorageType;
 import com.aionemu.gameserver.model.team.legion.Legion;
-import com.aionemu.gameserver.model.team.legion.LegionHistoryType;
+import com.aionemu.gameserver.model.team.legion.LegionHistoryAction;
 import com.aionemu.gameserver.model.team.legion.LegionMember;
 import com.aionemu.gameserver.model.team.legion.LegionPermissionsMask;
 import com.aionemu.gameserver.network.aion.AionClientPacket;
@@ -47,7 +47,7 @@ public class CM_LEGION_WH_KINAH extends AionClientPacket {
 					}
 					if (activePlayer.getStorage(StorageType.LEGION_WAREHOUSE.getId()).tryDecreaseKinah(amount)) {
 						activePlayer.getInventory().increaseKinah(amount);
-						LegionService.getInstance().addHistory(legion, activePlayer.getName(), LegionHistoryType.KINAH_WITHDRAW, 2, Long.toString(amount));
+						LegionService.getInstance().addHistory(legion, activePlayer.getName(), LegionHistoryAction.KINAH_WITHDRAW, Long.toString(amount));
 					}
 					break;
 				case 1:
@@ -58,7 +58,7 @@ public class CM_LEGION_WH_KINAH extends AionClientPacket {
 					}
 					if (activePlayer.getInventory().tryDecreaseKinah(amount)) {
 						activePlayer.getStorage(StorageType.LEGION_WAREHOUSE.getId()).increaseKinah(amount);
-						LegionService.getInstance().addHistory(legion, activePlayer.getName(), LegionHistoryType.KINAH_DEPOSIT, 2, Long.toString(amount));
+						LegionService.getInstance().addHistory(legion, activePlayer.getName(), LegionHistoryAction.KINAH_DEPOSIT, Long.toString(amount));
 					}
 					break;
 			}
