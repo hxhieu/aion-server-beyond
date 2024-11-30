@@ -3,3 +3,13 @@
  */
 
 ALTER TABLE `legion_history` DROP COLUMN `tab_id`;
+
+-- drop advent calendar table
+drop table advent;
+
+-- create advent calendar table
+CREATE TABLE `advent` (
+												`account_id` int(11) NOT NULL,
+												`last_day_received` tinyint(4) NOT NULL,
+												PRIMARY KEY (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
