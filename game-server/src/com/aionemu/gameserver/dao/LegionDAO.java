@@ -424,6 +424,8 @@ public class LegionDAO {
 	}
 
 	public static void deleteHistory(int legionId, List<LegionHistoryEntry> entries) {
+		if (entries.isEmpty())
+			return;
 		String placeholders = ",?".repeat(entries.size()).substring(1);
 		try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement(DELETE_HISTORY_QUERY.formatted(placeholders))) {
 			for (int i = 0; i < entries.size(); i++)
