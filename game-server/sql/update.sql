@@ -13,3 +13,5 @@ CREATE TABLE `advent` (
 												`last_day_received` tinyint(4) NOT NULL,
 												PRIMARY KEY (`account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `player_veteran_rewards` CHANGE COLUMN `received_months` `received_months` TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER `player_id`;
