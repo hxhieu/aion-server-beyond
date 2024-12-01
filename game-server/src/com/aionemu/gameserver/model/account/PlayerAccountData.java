@@ -2,6 +2,7 @@ package com.aionemu.gameserver.model.account;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.aionemu.gameserver.model.gameobjects.Item;
@@ -31,7 +32,7 @@ public class PlayerAccountData {
 	private LegionMember legionMember;
 
 	public PlayerAccountData(PlayerCommonData playerCommonData, PlayerAppearance appearance) {
-		this(playerCommonData, appearance, null, null, null);
+		this(playerCommonData, appearance, null, Collections.emptyList(), null);
 	}
 
 	public PlayerAccountData(PlayerCommonData playerCommonData, PlayerAppearance appearance, CharacterBanInfo cbi, List<Item> equipment,
