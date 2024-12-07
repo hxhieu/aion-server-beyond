@@ -42,7 +42,8 @@ public class CM_GATHER extends AionClientPacket {
 					gatherable.getController().cancelGathering();
 			}
 			case 0 -> gatherable.getController().startGathering(player);
-			default -> LoggerFactory.getLogger(getClass()).warn("Unhandled gathering action ID {} (sent by {})", actionId, player);
+			// case 128 -> TODO identify corresponding action
+			default -> LoggerFactory.getLogger(getClass()).warn("Unhandled gathering action ID {} (sent by {} at {})", actionId, player, player.getPosition());
 		}
 	}
 }
