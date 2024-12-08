@@ -2,10 +2,7 @@ package com.aionemu.gameserver.model.team.legion;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.aionemu.gameserver.configs.main.LegionConfig;
@@ -35,7 +32,7 @@ public class Legion extends AionObject {
 	private Announcement announcement;
 	private LegionEmblem legionEmblem = new LegionEmblem();
 	private LegionWarehouse legionWarehouse;
-	private Map<Type, List<LegionHistoryEntry>> legionHistoryByType;
+	private final Map<Type, List<LegionHistoryEntry>> legionHistoryByType = new EnumMap<>(Type.class);
 	private AtomicBoolean hasBonus = new AtomicBoolean(false);
 	private int occupiedLegionDominion = 0;
 	private int currentLegionDominion = 0;
@@ -45,6 +42,7 @@ public class Legion extends AionObject {
 		super(legionId);
 		this.legionName = legionName;
 		this.legionWarehouse = new LegionWarehouse(this);
+		setHistory(Collections.emptyMap());
 	}
 
 	public int getLegionId() {
@@ -446,7 +444,10 @@ public class Legion extends AionObject {
 	}
 
 	public void setHistory(Map<Type, List<LegionHistoryEntry>> history) {
-		legionHistoryByType = history;
+		for (Type type : Type.values()) {
+			List<LegionHistoryEntry> entries = history.get(type);
+			legionHistoryByType.put(type, entries == null ? new ArrayList<>(1) : entries);
+		}
 	}
 
 	public void addBonus() {
