@@ -26900,6 +26900,9 @@
 			<item id="188051879" /><!-- Solorius Furniture Set Box -->
 		</items>
 		<items>
+			<item id="188053610" min_count="2" /><!-- [Event] Level 70 Composite Manastone Bundle -->
+		</items>
+		<items>
 			<item id="166500002" min_count="2" /><!-- Amplification Stone -->
 		</items>
 		<items>
@@ -26927,6 +26930,9 @@
 		</items>
 	</decomposable>
 	<decomposable item_id="188052999"><!-- [Event] Brilliant Ice Prism -->
+		<items>
+			<item id="188053728" /><!-- Beritra's Equipment Box -->
+		</items>
 		<items>
 			<item id="188053618" /><!-- Honorable Elim's Idian Bundle -->
 		</items>
