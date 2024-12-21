@@ -107,19 +107,6 @@ CREATE TABLE `player_transfers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Table structure for `tasks`
--- ----------------------------
-DROP TABLE IF EXISTS `tasks`;
-CREATE TABLE `tasks` (
-  `id` int(5) NOT NULL AUTO_INCREMENT,
-  `task_type` enum('SHUTDOWN','RESTART') NOT NULL,
-  `trigger_type` enum('FIXED_IN_TIME') NOT NULL,
-  `exec_param` text,
-  `trigger_param` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
 -- Table structure for `banned_hdd`
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS `banned_hdd` (

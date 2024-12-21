@@ -946,21 +946,6 @@ CREATE TABLE `siege_locations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Table structure for `skill_motions`
--- ----------------------------
-CREATE TABLE `skill_motions` (
-  `motion_name` varchar(255) NOT NULL DEFAULT '',
-  `skill_id` int(11) NOT NULL,
-  `attack_speed` int(11) NOT NULL,
-  `weapon_type` varchar(255) NOT NULL,
-  `off_weapon_type` varchar(255) NOT NULL,
-  `race` varchar(255) NOT NULL,
-  `gender` varchar(255) NOT NULL,
-  `time` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`motion_name`,`skill_id`,`attack_speed`,`weapon_type`,`off_weapon_type`,`gender`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
 -- Table structure for `surveys`
 -- ----------------------------
 CREATE TABLE `surveys` (
@@ -975,18 +960,6 @@ CREATE TABLE `surveys` (
   PRIMARY KEY (`unique_id`),
   KEY `owner_id` (`owner_id`),
   CONSTRAINT `surveys_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for `tasks`
--- ----------------------------
-CREATE TABLE `tasks` (
-  `id` int(5) NOT NULL AUTO_INCREMENT,
-  `task_type` enum('SHUTDOWN','RESTART') NOT NULL,
-  `trigger_type` enum('FIXED_IN_TIME') NOT NULL,
-  `trigger_param` text NOT NULL,
-  `exec_param` text,
-  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
