@@ -299,7 +299,7 @@ public class PlayerService {
 	 *          id of player to delete from db
 	 */
 	public static void deletePlayerFromDB(int playerId) {
-		InventoryDAO.deletePlayerItems(playerId);
+		InventoryDAO.deletePlayerOrLegionItems(playerId);
 		PlayerDAO.deletePlayer(playerId);
 		HousingService.getInstance().onPlayerDeleted(playerId);
 		BrokerService.getInstance().onPlayerDeleted(playerId);

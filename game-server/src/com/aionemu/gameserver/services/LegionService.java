@@ -121,9 +121,10 @@ public class LegionService {
 	/**
 	 * Completely removes legion from database and cache
 	 */
-	private void deleteLegionFromDB(Legion legion) {
-		legionsById.remove(legion.getLegionId());
-		LegionDAO.deleteLegion(legion.getLegionId());
+	private void deleteLegionFromDB(int legionId) {
+		legionsById.remove(legionId);
+		LegionDAO.deleteLegion(legionId);
+		InventoryDAO.deletePlayerOrLegionItems(legionId);
 	}
 
 	/**
@@ -203,8 +204,8 @@ public class LegionService {
 			allCachedLegionMembers.remove(memberObjId);
 		}
 		SiegeService.getInstance().cleanLegionId(legion.getLegionId());
+		deleteLegionFromDB(legion.getLegionId());
 		updateAfterDisbandLegion(legion);
-		deleteLegionFromDB(legion);
 	}
 
 	/**

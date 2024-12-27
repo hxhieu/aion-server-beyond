@@ -392,12 +392,12 @@ public class InventoryDAO {
 	/**
 	 * Since inventory is not using FK - need to clean items
 	 */
-	public static boolean deletePlayerItems(int playerId) {
+	public static boolean deletePlayerOrLegionItems(int playerOrLegionId) {
 		try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement(DELETE_CLEAN_QUERY)) {
-			stmt.setInt(1, playerId);
+			stmt.setInt(1, playerOrLegionId);
 			stmt.execute();
 		} catch (Exception e) {
-			log.error("Error deleting all player items. PlayerObjId: " + playerId, e);
+			log.error("Error deleting all player or legion items. playerOrLegionId: " + playerOrLegionId, e);
 			return false;
 		}
 		return true;
