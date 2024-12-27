@@ -458,7 +458,7 @@ public class SiegeService {
 		for (SiegeLocation loc : getSiegeLocations().values()) {
 			if (loc.getLegionId() == legionId) {
 				loc.setLegionId(0);
-				break;
+				SiegeDAO.updateSiegeLocation(loc);
 			}
 		}
 	}

@@ -56,7 +56,7 @@ public class ArtifactSiege extends Siege<ArtifactLocation> {
 		spawnNpcs(getSiegeLocationId(), getSiegeLocation().getRace(), SiegeModType.PEACE);
 
 		// Store siege results in DB
-		SiegeDAO.updateLocation(getSiegeLocation());
+		SiegeDAO.updateSiegeLocation(getSiegeLocation());
 
 		broadcastUpdate(getSiegeLocation());
 		startSiege(getSiegeLocationId());

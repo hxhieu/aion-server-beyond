@@ -48,7 +48,6 @@ public class LegionDAO {
 	private static final String INSERT_HISTORY_QUERY = "INSERT INTO legion_history(`legion_id`, `date`, `history_type`, `name`, `description`) VALUES (?, ?, ?, ?, ?)";
 	private static final String SELECT_HISTORY_QUERY = "SELECT * FROM `legion_history` WHERE legion_id=? ORDER BY date DESC, id DESC";
 	private static final String DELETE_HISTORY_QUERY = "DELETE FROM `legion_history` WHERE id IN (%s)";
-	private static final String CLEAR_LEGION_SIEGE = "UPDATE siege_locations SET legion_id=0 WHERE legion_id=?";
 
 	public static boolean isNameUsed(String name) {
 		PreparedStatement s = DB.prepareStatement("SELECT count(id) as cnt FROM legions WHERE ? = legions.name");
@@ -168,14 +167,6 @@ public class LegionDAO {
 			statement.setInt(1, legionId);
 		} catch (SQLException e) {
 			log.error("deleteLegion #1", e);
-		}
-		DB.executeUpdateAndClose(statement);
-
-		statement = DB.prepareStatement(CLEAR_LEGION_SIEGE);
-		try {
-			statement.setInt(1, legionId);
-		} catch (SQLException e) {
-			log.error("deleteLegion #2", e);
 		}
 		DB.executeUpdateAndClose(statement);
 	}
