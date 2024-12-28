@@ -118,11 +118,7 @@ public class LegionService {
 		allCachedLegionMembers.addMemberEx(legionMemberEx);
 	}
 
-	/**
-	 * Completely removes legion from database and cache
-	 */
-	private void deleteLegionFromDB(int legionId) {
-		legionsById.remove(legionId);
+	public static void deleteLegionFromDB(int legionId) {
 		LegionDAO.deleteLegion(legionId);
 		InventoryDAO.deletePlayerOrLegionItems(legionId);
 	}
@@ -200,9 +196,8 @@ public class LegionService {
 	 * This method will disband a legion and update all members
 	 */
 	public void disbandLegion(Legion legion) {
-		for (Integer memberObjId : legion.getLegionMembers()) {
-			allCachedLegionMembers.remove(memberObjId);
-		}
+		legionsById.remove(legion.getLegionId());
+		legion.getLegionMembers().forEach(allCachedLegionMembers::remove);
 		SiegeService.getInstance().cleanLegionId(legion.getLegionId());
 		deleteLegionFromDB(legion.getLegionId());
 		updateAfterDisbandLegion(legion);

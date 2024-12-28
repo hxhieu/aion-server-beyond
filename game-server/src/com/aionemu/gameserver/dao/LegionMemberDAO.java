@@ -1,5 +1,6 @@
 package com.aionemu.gameserver.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aionemu.commons.database.DB;
+import com.aionemu.commons.database.DatabaseFactory;
 import com.aionemu.commons.database.IUStH;
 import com.aionemu.commons.database.ParamReadStH;
 import com.aionemu.gameserver.model.PlayerClass;
@@ -30,6 +32,7 @@ public class LegionMemberDAO {
 	/** LegionMember Queries */
 	private static final String INSERT_LEGIONMEMBER_QUERY = "INSERT INTO legion_members(`legion_id`, `player_id`, `rank`) VALUES (?, ?, ?)";
 	private static final String UPDATE_LEGIONMEMBER_QUERY = "UPDATE legion_members SET nickname=?, `rank`=?, selfintro=?, challenge_score=? WHERE player_id=?";
+	private static final String UPDATE_RANK_QUERY = "UPDATE legion_members SET `rank`=? WHERE player_id=?";
 	private static final String SELECT_LEGIONMEMBER_QUERY = "SELECT * FROM legion_members WHERE player_id = ?";
 	private static final String DELETE_LEGIONMEMBER_QUERY = "DELETE FROM legion_members WHERE player_id = ?";
 	private static final String SELECT_LEGIONMEMBERS_QUERY = "SELECT player_id FROM legion_members WHERE legion_id = ?";
@@ -197,31 +200,15 @@ public class LegionMemberDAO {
 
 	public static List<Integer> loadLegionMembers(int legionId) {
 		List<Integer> legionMembers = new ArrayList<>();
-
-		boolean success = DB.select(SELECT_LEGIONMEMBERS_QUERY, new ParamReadStH() {
-
-			@Override
-			public void setParams(PreparedStatement stmt) throws SQLException {
-				stmt.setInt(1, legionId);
-			}
-
-			@Override
-			public void handleRead(ResultSet resultSet) {
-				try {
-					while (resultSet.next()) {
-						int playerObjId = resultSet.getInt("player_id");
-						legionMembers.add(playerObjId);
-					}
-				} catch (SQLException e) {
-					log.error("Could not load members of legion " + legionId, e);
-				}
-			}
-		});
-
-		if (success && legionMembers.size() > 0) {
-			return legionMembers;
+		try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement(SELECT_LEGIONMEMBERS_QUERY)) {
+			stmt.setInt(1, legionId);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next())
+				legionMembers.add(rs.getInt("player_id"));
+		} catch (SQLException e) {
+			throw new RuntimeException("Could not load members of legion " + legionId, e);
 		}
-		return null;
+		return legionMembers;
 	}
 
 	public static void deleteLegionMember(int playerObjId) {
@@ -234,4 +221,14 @@ public class LegionMemberDAO {
 		DB.executeUpdateAndClose(statement);
 	}
 
+	public static boolean setRank(int playerId, LegionRank legionRank) {
+		try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement(UPDATE_RANK_QUERY)) {
+			stmt.setString(1, legionRank.toString());
+			stmt.setInt(2, playerId);
+			return stmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			log.error("Could not set rank of player {} to {}", playerId, legionRank, e);
+			return false;
+		}
+	}
 }

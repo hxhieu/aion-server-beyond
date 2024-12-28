@@ -299,26 +299,16 @@ public class PlayerService {
 	 *          id of player to delete from db
 	 */
 	public static void deletePlayerFromDB(int playerId) {
-		InventoryDAO.deletePlayerOrLegionItems(playerId);
-		PlayerDAO.deletePlayer(playerId);
-		HousingService.getInstance().onPlayerDeleted(playerId);
-		BrokerService.getInstance().onPlayerDeleted(playerId);
+		deletePlayerFromDB(playerId, true);
 	}
 
-	/**
-	 * Completely removes player from database
-	 *
-	 * @param accountId
-	 *          id of account to delete player on
-	 * @param maxExp
-	 *          maximum allowed character experience points (level) for deletion
-	 * @return number of deleted chars
-	 */
-	public static int deleteAccountsCharsFromDB(int accountId, long maxExp) {
-		List<Integer> charIds = PlayerDAO.getPlayerOidsOnAccount(accountId, maxExp);
-		for (int playerId : charIds)
-			deletePlayerFromDB(playerId);
-		return charIds.size();
+	public static void deletePlayerFromDB(int playerId, boolean notifyServices) {
+		InventoryDAO.deletePlayerOrLegionItems(playerId);
+		PlayerDAO.deletePlayer(playerId);
+		if (notifyServices) {
+			HousingService.getInstance().onPlayerDeleted(playerId);
+			BrokerService.getInstance().onPlayerDeleted(playerId);
+		}
 	}
 
 	/**

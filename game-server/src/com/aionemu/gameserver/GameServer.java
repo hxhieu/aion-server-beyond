@@ -289,11 +289,11 @@ public class GameServer {
 		// Second should be database factory
 		DatabaseFactory.init();
 		PlayerDAO.setAllPlayersOffline();
+		if (CleaningConfig.CLEANING_ENABLE)
+			DatabaseCleaningService.deletePlayersOnInactiveAccounts();
+
 		// Initialize thread pools
 		ThreadPoolManager.getInstance();
-
-		if (CleaningConfig.CLEANING_ENABLE)
-			DatabaseCleaningService.getInstance().runCleaning();
 
 		// Initialize cron service
 		CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(GSConfig.TIME_ZONE_ID));
