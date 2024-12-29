@@ -28,7 +28,7 @@ CREATE TABLE `abyss_rank` (
   KEY `rank_pos` (`rank_pos`),
   KEY `gp` (`gp`),
   CONSTRAINT `abyss_rank_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `account_passports`
@@ -39,7 +39,7 @@ CREATE TABLE `account_passports` (
   `rewarded` int(11) NOT NULL,
   `arrive_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`account_id`,`passport_id`,`arrive_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `account_stamps`
@@ -49,7 +49,7 @@ CREATE TABLE `account_stamps` (
   `stamps` tinyint(2) NOT NULL DEFAULT '0',
   `last_stamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `announcements`
@@ -61,7 +61,7 @@ CREATE TABLE `announcements` (
   `type` enum('SHOUT','ORANGE','YELLOW','WHITE','SYSTEM') NOT NULL DEFAULT 'SYSTEM',
   `delay` int(4) NOT NULL DEFAULT '1800',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `blocks`
@@ -74,7 +74,7 @@ CREATE TABLE `blocks` (
   KEY `blocked_player` (`blocked_player`),
   CONSTRAINT `blocks_ibfk_1` FOREIGN KEY (`player`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `blocks_ibfk_2` FOREIGN KEY (`blocked_player`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `bonus_packs`
@@ -83,7 +83,7 @@ CREATE TABLE `bonus_packs` (
   `account_id` int(11) NOT NULL,
   `receiving_player` int(11) NOT NULL,
   PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `bookmark`
@@ -97,7 +97,7 @@ CREATE TABLE `bookmark` (
   `z` float NOT NULL,
   `world_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `broker`
@@ -119,7 +119,7 @@ CREATE TABLE `broker` (
   PRIMARY KEY (`id`),
   KEY `seller_id` (`seller_id`),
   CONSTRAINT `broker_ibfk_1` FOREIGN KEY (`seller_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `challenge_tasks`
@@ -132,7 +132,7 @@ CREATE TABLE `challenge_tasks` (
   `complete_count` int(3) unsigned NOT NULL DEFAULT '0',
   `complete_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`task_id`,`quest_id`,`owner_id`,`owner_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `commands_access`
@@ -142,7 +142,7 @@ CREATE TABLE `commands_access` (
   `command` varchar(40) NOT NULL,
   PRIMARY KEY (`player_id`,`command`),
   CONSTRAINT `commands_access_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `craft_cooldowns`
@@ -153,7 +153,7 @@ CREATE TABLE `craft_cooldowns` (
   `reuse_time` bigint(13) unsigned NOT NULL,
   PRIMARY KEY (`player_id`,`delay_id`),
   CONSTRAINT `craft_cooldowns_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `custom_instance`
@@ -169,7 +169,7 @@ CREATE TABLE `custom_instance` (
   KEY `rank` (`rank`),
   KEY `last_entry` (`last_entry`),
   CONSTRAINT `custom_instance_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `custom_instance_records`
@@ -203,7 +203,7 @@ CREATE TABLE `custom_instance_records` (
   `target_debuff_count`  int NULL,
   `target_is_shielded`  tinyint(1) NULL,
   CONSTRAINT `custom_instance_records_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `event`
@@ -215,7 +215,7 @@ CREATE TABLE `event` (
   `buff_allowed_days` varchar(255) DEFAULT NULL,
   `last_change` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`event_name`,`buff_index`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `faction_packs`
@@ -224,7 +224,7 @@ CREATE TABLE `faction_packs` (
   `account_id` int(11) NOT NULL,
   `receiving_player` int(11) NOT NULL,
   PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `friends`
@@ -237,7 +237,7 @@ CREATE TABLE `friends` (
   KEY `friend` (`friend`),
   CONSTRAINT `friends_ibfk_1` FOREIGN KEY (`player`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `friends_ibfk_2` FOREIGN KEY (`friend`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `guides`
@@ -249,7 +249,7 @@ CREATE TABLE `guides` (
   PRIMARY KEY (`guide_id`),
   KEY `player_id` (`player_id`),
   CONSTRAINT `guides_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `headhunting`
@@ -259,7 +259,7 @@ CREATE TABLE `headhunting` (
   `accumulated_kills` int(11) NOT NULL,
   `last_update` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`hunter_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `house_bids`
@@ -272,7 +272,7 @@ CREATE TABLE `house_bids` (
   PRIMARY KEY (`player_id`,`house_id`,`bid`),
   KEY `house_id_ibfk_1` (`house_id`),
   CONSTRAINT `house_id_ibfk_1` FOREIGN KEY (`house_id`) REFERENCES `houses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `house_object_cooldowns`
@@ -284,7 +284,7 @@ CREATE TABLE `house_object_cooldowns` (
   PRIMARY KEY (`player_id`,`object_id`),
   CONSTRAINT `house_object_cooldowns_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `house_object_cooldowns_ibfk_2` FOREIGN KEY (`object_id`) REFERENCES `player_registered_items` (`item_unique_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `house_scripts`
@@ -296,7 +296,7 @@ CREATE TABLE `house_scripts` (
   `date_added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`house_id`,`script_id`),
   CONSTRAINT `houses_id_ibfk_1` FOREIGN KEY (`house_id`) REFERENCES `houses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 -- ----------------------------
 -- Table structure for `houses`
@@ -312,7 +312,7 @@ CREATE TABLE `houses` (
   `sign_notice` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `address` (`address`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `ingameshop`
@@ -331,7 +331,7 @@ CREATE TABLE `ingameshop` (
   `title_description` varchar(20) NOT NULL,
   `description` varchar(20) NOT NULL,
   PRIMARY KEY (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `ingameshop_log`
@@ -347,7 +347,7 @@ CREATE TABLE `ingameshop_log` (
   `item_count` bigint(13) NOT NULL DEFAULT '0',
   `item_price` bigint(13) NOT NULL DEFAULT '0',
   PRIMARY KEY (`transaction_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `inventory`
@@ -384,7 +384,7 @@ CREATE TABLE `inventory` (
   PRIMARY KEY (`item_unique_id`),
   KEY `item_location` (`item_location`) USING HASH,
   KEY `index3` (`item_owner`,`item_location`,`is_equipped`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `item_cooldowns`
@@ -396,7 +396,7 @@ CREATE TABLE `item_cooldowns` (
   `reuse_time` bigint(13) NOT NULL,
   PRIMARY KEY (`player_id`,`delay_id`),
   CONSTRAINT `item_cooldowns_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `item_stones`
@@ -411,7 +411,7 @@ CREATE TABLE `item_stones` (
   `proc_count` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`item_unique_id`,`slot`,`category`),
   CONSTRAINT `item_stones_ibfk_1` FOREIGN KEY (`item_unique_id`) REFERENCES `inventory` (`item_unique_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `legion_announcement_list`
@@ -422,7 +422,7 @@ CREATE TABLE `legion_announcement_list` (
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `legion_id` (`legion_id`),
   CONSTRAINT `legion_announcement_list_ibfk_1` FOREIGN KEY (`legion_id`) REFERENCES `legions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `legion_dominion_locations`
@@ -432,7 +432,7 @@ CREATE TABLE `legion_dominion_locations` (
   `legion_id` int(11) NOT NULL DEFAULT '0',
   `occupied_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `legion_dominion_participants`
@@ -444,7 +444,7 @@ CREATE TABLE `legion_dominion_participants` (
   `survived_time` int(11) NOT NULL DEFAULT '0',
   `participated_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`legion_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `legion_emblems`
@@ -460,7 +460,7 @@ CREATE TABLE `legion_emblems` (
   `emblem_data` longblob,
   PRIMARY KEY (`legion_id`),
   CONSTRAINT `legion_emblems_ibfk_1` FOREIGN KEY (`legion_id`) REFERENCES `legions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `legion_history`
@@ -475,7 +475,7 @@ CREATE TABLE `legion_history` (
   PRIMARY KEY (`id`),
   KEY `legion_id` (`legion_id`),
   CONSTRAINT `legion_history_ibfk_1` FOREIGN KEY (`legion_id`) REFERENCES `legions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `legion_members`
@@ -492,7 +492,7 @@ CREATE TABLE `legion_members` (
   KEY `legion_id` (`legion_id`),
   CONSTRAINT `legion_members_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `legion_members_ibfk_2` FOREIGN KEY (`legion_id`) REFERENCES `legions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `legions`
@@ -515,7 +515,7 @@ CREATE TABLE `legions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`),
   KEY `rank_pos` (`rank_pos`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `mail`
@@ -534,7 +534,7 @@ CREATE TABLE `mail` (
   PRIMARY KEY (`mail_unique_id`),
   KEY `mail_recipient_id` (`mail_recipient_id`),
   CONSTRAINT `FK_mail` FOREIGN KEY (`mail_recipient_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `old_names`
@@ -549,7 +549,7 @@ CREATE TABLE `old_names` (
   KEY `player_id` (`player_id`),
   KEY `renamed_date` (`renamed_date`),
   CONSTRAINT `old_names_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_appearance`
@@ -611,7 +611,7 @@ CREATE TABLE `player_appearance` (
   `height` float NOT NULL,
   PRIMARY KEY (`player_id`),
   CONSTRAINT `player_id_fk` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_bind_point`
@@ -625,7 +625,7 @@ CREATE TABLE `player_bind_point` (
   `heading` int(3) NOT NULL,
   PRIMARY KEY (`player_id`),
   CONSTRAINT `player_bind_point_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_cooldowns`
@@ -636,7 +636,7 @@ CREATE TABLE `player_cooldowns` (
   `reuse_delay` bigint(13) NOT NULL,
   PRIMARY KEY (`player_id`,`cooldown_id`),
   CONSTRAINT `player_cooldowns_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_effects`
@@ -650,7 +650,7 @@ CREATE TABLE `player_effects` (
   `force_type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`player_id`,`skill_id`),
   CONSTRAINT `player_effects_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_emotions`
@@ -661,7 +661,7 @@ CREATE TABLE `player_emotions` (
   `remaining` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`player_id`,`emotion`),
   CONSTRAINT `player_emotions_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_life_stats`
@@ -673,7 +673,7 @@ CREATE TABLE `player_life_stats` (
   `fp` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`player_id`),
   CONSTRAINT `FK_player_life_stats` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_macrosses`
@@ -684,7 +684,7 @@ CREATE TABLE `player_macrosses` (
   `macro` text NOT NULL,
   UNIQUE KEY `main` (`player_id`,`order`),
   CONSTRAINT `player_macrosses_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_motions`
@@ -696,7 +696,7 @@ CREATE TABLE `player_motions` (
   `active` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`player_id`,`motion_id`) USING BTREE,
   CONSTRAINT `motions_player_id_fk` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_npc_factions`
@@ -710,7 +710,7 @@ CREATE TABLE `player_npc_factions` (
   `quest_id` int(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (`player_id`,`faction_id`),
   CONSTRAINT `player_npc_factions_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_passkey`
@@ -719,7 +719,7 @@ CREATE TABLE `player_passkey` (
   `account_id` int(11) NOT NULL,
   `passkey` varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (`account_id`,`passkey`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_pets`
@@ -744,7 +744,7 @@ CREATE TABLE `player_pets` (
   PRIMARY KEY (`id`),
   KEY `player_id` (`player_id`),
   CONSTRAINT `FK_player_pets` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_punishments`
@@ -757,7 +757,7 @@ CREATE TABLE `player_punishments` (
   `reason` text,
   PRIMARY KEY (`player_id`,`punishment_type`),
   CONSTRAINT `player_punishments_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_quests`
@@ -774,7 +774,7 @@ CREATE TABLE `player_quests` (
   `complete_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`player_id`,`quest_id`),
   CONSTRAINT `player_quests_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_recipes`
@@ -784,7 +784,7 @@ CREATE TABLE `player_recipes` (
   `recipe_id` int(11) NOT NULL,
   PRIMARY KEY (`player_id`,`recipe_id`),
   CONSTRAINT `player_recipes_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_registered_items`
@@ -807,7 +807,7 @@ CREATE TABLE `player_registered_items` (
   PRIMARY KEY (`player_id`,`item_unique_id`,`item_id`),
   UNIQUE KEY `item_unique_id` (`item_unique_id`),
   CONSTRAINT `player_regitems_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_settings`
@@ -818,7 +818,7 @@ CREATE TABLE `player_settings` (
   `settings` blob NOT NULL,
   PRIMARY KEY (`player_id`,`settings_type`),
   CONSTRAINT `ps_pl_fk` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_skills`
@@ -829,7 +829,7 @@ CREATE TABLE `player_skills` (
   `skill_level` int(3) NOT NULL DEFAULT '1',
   PRIMARY KEY (`player_id`,`skill_id`),
   CONSTRAINT `player_skills_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_titles`
@@ -840,7 +840,7 @@ CREATE TABLE `player_titles` (
   `remaining` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`player_id`,`title_id`),
   CONSTRAINT `player_titles_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_veteran_rewards`
@@ -850,7 +850,7 @@ CREATE TABLE `player_veteran_rewards` (
   `received_months` tinyint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`player_id`),
   CONSTRAINT `player_veteran_rewards_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_web_rewards`
@@ -867,7 +867,7 @@ CREATE TABLE `player_web_rewards` (
   KEY `item_owner` (`player_id`),
   UNIQUE (`order_id`),
   CONSTRAINT `player_web_rewards_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `players`
@@ -910,7 +910,7 @@ CREATE TABLE `players` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`),
   KEY `account_id` (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `portal_cooldowns`
@@ -922,7 +922,7 @@ CREATE TABLE `portal_cooldowns` (
   `entry_count` int(11) NOT NULL,
   PRIMARY KEY (`player_id`,`world_id`),
   CONSTRAINT `portal_cooldowns_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `server_variables`
@@ -931,7 +931,7 @@ CREATE TABLE `server_variables` (
   `key` varchar(30) NOT NULL,
   `value` varchar(30) NOT NULL,
   PRIMARY KEY (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `siege_locations`
@@ -943,7 +943,7 @@ CREATE TABLE `siege_locations` (
   `occupy_count` tinyint(4) NOT NULL DEFAULT '0',
   `faction_balance` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `surveys`
@@ -960,7 +960,7 @@ CREATE TABLE `surveys` (
   PRIMARY KEY (`unique_id`),
   KEY `owner_id` (`owner_id`),
   CONSTRAINT `surveys_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `towns`
@@ -972,4 +972,4 @@ CREATE TABLE `towns` (
   `race` enum('ELYOS','ASMODIANS') NOT NULL,
   `level_up_date` timestamp NOT NULL DEFAULT '1970-01-01 07:00:01',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

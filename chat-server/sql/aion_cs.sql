@@ -10,4 +10,4 @@ CREATE TABLE `chatlog` (
   `message` text NOT NULL,
   `type` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

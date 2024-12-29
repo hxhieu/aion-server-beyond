@@ -23,7 +23,7 @@ CREATE TABLE `account_data` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `ext_auth_name` (`ext_auth_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- account_time
@@ -38,7 +38,7 @@ CREATE TABLE `account_time` (
   `accumulated_rest` int(10) DEFAULT '0',
   `penalty_end` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `account_rewards`
@@ -52,7 +52,7 @@ CREATE TABLE `account_rewards` (
   `received` varchar(70) NOT NULL DEFAULT '0',
   `rewarded` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`uniqId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- banned_ip
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `banned_ip` (
   `time_end` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mask` (`mask`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- gameservers
@@ -74,7 +74,7 @@ CREATE TABLE `gameservers` (
   `mask` varchar(45) NOT NULL,
   `password` varchar(65) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `banned_mac`
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `banned_mac` (
   `time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   `details` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`uniId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `player_transfers`
@@ -104,7 +104,7 @@ CREATE TABLE `player_transfers` (
   `time_done` varchar(100) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `banned_hdd`
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `banned_hdd` (
   `serial` varchar(100) NOT NULL,
   `time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `account_login_history`
@@ -128,4 +128,4 @@ CREATE TABLE `account_login_history` (
   `mac` varchar(20) DEFAULT NULL,
   `hdd_serial` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`account_id`, `date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
