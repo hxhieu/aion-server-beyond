@@ -56,8 +56,7 @@ public class AccountService {
 	 */
 	public static void removeDeletedCharacters(Account account) {
 		/* Removes chars that should be removed */
-		Iterator<PlayerAccountData> it = account.iterator();
-		while (it.hasNext()) {
+		for (Iterator<PlayerAccountData> it = account.iterator(); it.hasNext(); ) {
 			PlayerAccountData pad = it.next();
 			Race race = pad.getPlayerCommonData().getRace();
 			long deletionTime = pad.getDeletionDate() == null ? 0 : pad.getDeletionDate().getTime();
@@ -70,11 +69,12 @@ public class AccountService {
 						GameServer.updateRatio(pad.getPlayerCommonData().getRace(), -1);
 					}
 				}
+				if (account.isEmpty()) {
+					InventoryDAO.deleteAccountWH(account.getId());
+					account.setAccountWarehouse(loadAccountWarehouse(account));
+					break;
+				}
 			}
-		}
-		if (account.isEmpty()) {
-			InventoryDAO.deleteAccountWH(account.getId());
-			loadAccountWarehouse(account);
 		}
 	}
 
