@@ -28112,6 +28112,13 @@ public final class SM_SYSTEM_MESSAGE extends AionServerPacket {
 	}
 
 	/**
+	 * The price of the entered item exceeds the maximum amount of Kinah.
+	 */
+	public static SM_SYSTEM_MESSAGE STR_MSG_LIMITED_VENDOR_CANT_OVER_GOLD() {
+		return new SM_SYSTEM_MESSAGE(1402666);
+	}
+
+	/**
 	 * The boost for %0 failed. The item was destroyed.
 	 */
 	public static SM_SYSTEM_MESSAGE STR_MSG_ENCHANT_TYPE1_ENCHANT_FAIL(String value0) {

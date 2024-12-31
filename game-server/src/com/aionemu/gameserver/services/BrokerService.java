@@ -421,8 +421,8 @@ public class BrokerService {
 		if (price <= 0 || count <= 0)
 			return;
 
-		// check max price for 1 item in stack
-		if (price / count > 999999999) {
+		if (count > 1 && price / count > 999_999_999 || price > 99_999_999_999L ) { // retail price limits
+			PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LIMITED_VENDOR_CANT_OVER_GOLD());
 			return;
 		}
 
