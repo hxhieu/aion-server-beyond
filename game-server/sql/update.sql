@@ -13,3 +13,4 @@ ALTER TABLE `inventory`
 ALTER TABLE `player_registered_items`
 	DROP INDEX `item_unique_id`,
 	ADD UNIQUE INDEX `item_unique_id` (`item_unique_id`) USING BTREE;
+DELETE b FROM broker b LEFT JOIN inventory i ON b.item_pointer = i.item_unique_id AND i.item_id = b.item_id AND i.item_location = 126 WHERE i.item_id != b.item_id OR i.item_id IS NULL AND b.is_sold = 0;
