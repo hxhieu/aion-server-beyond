@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.aionemu.gameserver.configs.main.LoggingConfig;
 import com.aionemu.gameserver.dao.BrokerDAO;
 import com.aionemu.gameserver.dao.InventoryDAO;
+import com.aionemu.gameserver.dao.ItemStoneListDAO;
 import com.aionemu.gameserver.model.Race;
 import com.aionemu.gameserver.model.broker.BrokerItemMask;
 import com.aionemu.gameserver.model.broker.BrokerMessages;
@@ -21,6 +22,7 @@ import com.aionemu.gameserver.model.gameobjects.Item;
 import com.aionemu.gameserver.model.gameobjects.Persistable.PersistentState;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.gameobjects.player.PlayerCommonData;
+import com.aionemu.gameserver.model.items.storage.StorageType;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_BROKER_SERVICE;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_DELETE_ITEM;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_SYSTEM_MESSAGE;
@@ -474,7 +476,7 @@ public class BrokerService {
 			PacketSendUtility.sendPacket(player, new SM_DELETE_ITEM(itemToRegister.getObjectId()));
 		}
 
-		itemToRegister.setItemLocation(126);
+		itemToRegister.setItemLocation(StorageType.BROKER.getId());
 
 		BrokerItem newBrokerItem = new BrokerItem(itemToRegister, price, player.getObjectId(), splittingAvailable, brRace);
 
@@ -761,8 +763,10 @@ public class BrokerService {
 		@Override
 		public void run() {
 			// first save item for FK consistency
-			if (item != null)
+			if (item != null) {
 				InventoryDAO.store(item, playerId);
+				ItemStoneListDAO.save(List.of(item));
+			}
 			if (brokerItem != null)
 				BrokerDAO.store(brokerItem);
 			if (kinahItem != null)

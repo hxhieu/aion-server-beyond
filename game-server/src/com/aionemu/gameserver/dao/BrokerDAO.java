@@ -26,6 +26,7 @@ public class BrokerDAO {
 		List<BrokerItem> brokerItems = new ArrayList<>();
 
 		List<Item> items = getBrokerItems();
+		ItemStoneListDAO.load(items);
 
 		DB.select("SELECT * FROM broker", new ReadStH() {
 
@@ -41,12 +42,9 @@ public class BrokerDAO {
 					BrokerRace itemBrokerRace = BrokerRace.valueOf(rset.getString("broker_race"));
 					Timestamp expireTime = rset.getTimestamp("expire_time");
 					Timestamp settleTime = rset.getTimestamp("settle_time");
-					int sold = rset.getInt("is_sold");
-					int settled = rset.getInt("is_settled");
-					boolean splittingAvailable = rset.getInt("splitting_available") == 1 ? true : false;
-
-					boolean isSold = sold == 1;
-					boolean isSettled = settled == 1;
+					boolean isSold = rset.getBoolean("is_sold");
+					boolean isSettled = rset.getBoolean("is_settled");
+					boolean splittingAvailable = rset.getBoolean("splitting_available");
 
 					Item item = null;
 					if (!isSold)
