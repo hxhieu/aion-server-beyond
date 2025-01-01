@@ -13,9 +13,7 @@ import com.aionemu.commons.database.DB;
 import com.aionemu.commons.database.DatabaseFactory;
 import com.aionemu.commons.database.IUStH;
 import com.aionemu.commons.database.ParamReadStH;
-import com.aionemu.gameserver.model.gameobjects.Item;
 import com.aionemu.gameserver.model.gameobjects.Persistable.PersistentState;
-import com.aionemu.gameserver.model.items.storage.StorageType;
 import com.aionemu.gameserver.model.team.legion.*;
 import com.aionemu.gameserver.model.team.legion.LegionHistoryAction.Type;
 
@@ -42,8 +40,6 @@ public class LegionDAO {
 	private static final String INSERT_EMBLEM_QUERY = "INSERT INTO legion_emblems(legion_id, emblem_id, color_a, color_r, color_g, color_b, emblem_type, emblem_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String UPDATE_EMBLEM_QUERY = "UPDATE legion_emblems SET emblem_id=?, color_a=?, color_r=?, color_g=?, color_b=?, emblem_type=?, emblem_data=? WHERE legion_id=?";
 	private static final String SELECT_EMBLEM_QUERY = "SELECT * FROM legion_emblems WHERE legion_id=?";
-	/** Storage Queries **/
-	private static final String SELECT_STORAGE_QUERY = "SELECT * FROM `inventory` WHERE `item_owner`=? AND `item_location`=? AND `is_equipped`=?";
 	/** History Queries **/
 	private static final String INSERT_HISTORY_QUERY = "INSERT INTO legion_history(`legion_id`, `date`, `history_type`, `name`, `description`) VALUES (?, ?, ?, ?, ?)";
 	private static final String SELECT_HISTORY_QUERY = "SELECT * FROM `legion_history` WHERE legion_id=? ORDER BY date DESC, id DESC";
@@ -318,61 +314,6 @@ public class LegionDAO {
 		legionEmblem.setPersistentState(PersistentState.UPDATED);
 
 		return legionEmblem;
-	}
-
-	public static LegionWarehouse loadLegionStorage(Legion legion) {
-		LegionWarehouse inventory = new LegionWarehouse(legion);
-		int legionId = legion.getLegionId();
-		int storage = StorageType.LEGION_WAREHOUSE.getId();
-		int equipped = 0;
-
-		DB.select(SELECT_STORAGE_QUERY, new ParamReadStH() {
-
-			@Override
-			public void setParams(PreparedStatement stmt) throws SQLException {
-				stmt.setInt(1, legionId);
-				stmt.setInt(2, storage);
-				stmt.setInt(3, equipped);
-			}
-
-			@Override
-			public void handleRead(ResultSet rset) throws SQLException {
-				while (rset.next()) {
-					int itemUniqueId = rset.getInt("item_unique_id");
-					int itemId = rset.getInt("item_id");
-					long itemCount = rset.getLong("item_count");
-					Integer itemColor = (Integer) rset.getObject("item_color"); // accepts null (which means not dyed)
-					int colorExpireTime = rset.getInt("color_expires");
-					String itemCreator = rset.getString("item_creator");
-					int expireTime = rset.getInt("expire_time");
-					int activationCount = rset.getInt("activation_count");
-					int isEquiped = rset.getInt("is_equipped");
-					int slot = rset.getInt("slot");
-					int enchant = rset.getInt("enchant");
-					int enchantBonus = rset.getInt("enchant_bonus");
-					int itemSkin = rset.getInt("item_skin");
-					int fusionedItem = rset.getInt("fusioned_item");
-					int optionalSocket = rset.getInt("optional_socket");
-					int optionalFusionSocket = rset.getInt("optional_fusion_socket");
-					int charge = rset.getInt("charge");
-					int tuneCount = rset.getInt("tune_count");
-					int bonusStatsId = rset.getInt("rnd_bonus");
-					int fusionedItemBonusStatsId = rset.getInt("fusion_rnd_bonus");
-					int tempering = rset.getInt("tempering");
-					int packCount = rset.getInt("pack_count");
-					int isAmplified = rset.getInt("is_amplified");
-					int buffSkill = rset.getInt("buff_skill");
-					int rndPlumeBonusValue = rset.getInt("rnd_plume_bonus");
-
-					Item item = new Item(itemUniqueId, itemId, itemCount, itemColor, colorExpireTime, itemCreator, expireTime, activationCount, isEquiped == 1,
-						false, slot, storage, enchant, enchantBonus, itemSkin, fusionedItem, optionalSocket, optionalFusionSocket, charge, tuneCount,
-						bonusStatsId, fusionedItemBonusStatsId, tempering, packCount, isAmplified == 1, buffSkill, rndPlumeBonusValue);
-					item.setPersistentState(PersistentState.UPDATED);
-					inventory.onLoadHandler(item);
-				}
-			}
-		});
-		return inventory;
 	}
 
 	public static void loadHistory(Legion legion) {

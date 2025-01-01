@@ -281,9 +281,7 @@ public class InstanceService {
 		for (Item item : player.getInventory().getItems())
 			if (conditionForItemRemoval.test(item))
 				player.getInventory().decreaseByObjectId(item.getObjectId(), item.getItemCount());
-		for (Storage storage : player.getPetBag()) {
-			if (storage == null)
-				continue;
+		for (Storage storage : player.getPetBags()) {
 			for (Item item : storage.getItems())
 				if (conditionForItemRemoval.test(item))
 					storage.decreaseByObjectId(item.getObjectId(), item.getItemCount());

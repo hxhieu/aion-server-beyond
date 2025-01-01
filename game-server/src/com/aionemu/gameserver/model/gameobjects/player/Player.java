@@ -42,10 +42,7 @@ import com.aionemu.gameserver.model.gameobjects.state.FlyState;
 import com.aionemu.gameserver.model.house.House;
 import com.aionemu.gameserver.model.ingameshop.InGameShop;
 import com.aionemu.gameserver.model.items.ItemCooldown;
-import com.aionemu.gameserver.model.items.storage.IStorage;
-import com.aionemu.gameserver.model.items.storage.LegionStorageProxy;
-import com.aionemu.gameserver.model.items.storage.Storage;
-import com.aionemu.gameserver.model.items.storage.StorageType;
+import com.aionemu.gameserver.model.items.storage.*;
 import com.aionemu.gameserver.model.skill.PlayerSkillList;
 import com.aionemu.gameserver.model.stats.container.PlayerGameStats;
 import com.aionemu.gameserver.model.stats.container.PlayerLifeStats;
@@ -111,11 +108,11 @@ public class Player extends Creature {
 
 	private ResponseRequester requester;
 	private boolean lookingForGroup = false;
-	private Storage inventory;
-	private Storage[] petBag = new Storage[StorageType.PET_BAG_MAX - StorageType.PET_BAG_MIN + 1];
-	private Storage[] cabinets = new Storage[StorageType.HOUSE_WH_MAX - StorageType.HOUSE_WH_MIN + 1];
-	private Storage regularWarehouse;
-	private Equipment equipment;
+	private final Equipment equipment;
+	private final Storage inventory;
+	private final Storage regularWarehouse;
+	private final Storage[] petBags = new Storage[StorageType.PET_BAG_MAX - StorageType.PET_BAG_MIN + 1];
+	private final Storage[] cabinets = new Storage[StorageType.HOUSE_WH_MAX - StorageType.HOUSE_WH_MIN + 1];
 	private Item usingItem;
 
 	private final AbsoluteStatOwner absStatsHolder;
@@ -214,6 +211,13 @@ public class Player extends Creature {
 		this.requester = new ResponseRequester(this);
 		this.questStateList = new QuestStateList();
 		this.titleList = new TitleList();
+		this.equipment = new Equipment(this);
+		this.inventory = new PlayerStorage(this, StorageType.CUBE);
+		this.regularWarehouse = new PlayerStorage(this, StorageType.REGULAR_WAREHOUSE);
+		for (int i = 0; i < petBags.length; i++)
+			petBags[i] = new PlayerStorage(this, StorageType.getStorageTypeById(StorageType.PET_BAG_MIN + i));
+		for (int i = 0; i < cabinets.length; i++)
+			cabinets[i] = new PlayerStorage(this, StorageType.getStorageTypeById(StorageType.HOUSE_WH_MIN + i));
 		this.portalCooldownList = new PortalCooldownList(this);
 		this.craftCooldowns = new Cooldowns();
 		this.houseObjectCooldowns = new Cooldowns();
@@ -473,10 +477,6 @@ public class Player extends Creature {
 		return equipment;
 	}
 
-	public void setEquipment(Equipment equipment) {
-		this.equipment = equipment;
-	}
-
 	public Item getUsingItem() {
 		return usingItem;
 	}
@@ -523,23 +523,7 @@ public class Player extends Creature {
 		this.recipeList = recipeList;
 	}
 
-	/**
-	 * @param storage
-	 *          the storage to set (should be set right after player object is created)
-	 */
-	public void setStorage(Storage storage) {
-		if (storage.getStorageType() == StorageType.CUBE)
-			inventory = storage;
-		else if (storage.getStorageType().getId() >= StorageType.PET_BAG_MIN && storage.getStorageType().getId() <= StorageType.PET_BAG_MAX)
-			petBag[storage.getStorageType().getId() - StorageType.PET_BAG_MIN] = storage;
-		else if (storage.getStorageType().getId() >= StorageType.HOUSE_WH_MIN && storage.getStorageType().getId() <= StorageType.HOUSE_WH_MAX)
-			cabinets[storage.getStorageType().getId() - StorageType.HOUSE_WH_MIN] = storage;
-		else if (storage.getStorageType() == StorageType.REGULAR_WAREHOUSE)
-			regularWarehouse = storage;
-		storage.setOwner(this);
-	}
-
-	public IStorage getStorage(int storageType) {
+	public Storage getStorage(int storageType) {
 		if (storageType == StorageType.CUBE.getId())
 			return inventory;
 
@@ -553,7 +537,7 @@ public class Player extends Creature {
 			return new LegionStorageProxy(getLegion().getLegionWarehouse(), this);
 
 		if (storageType >= StorageType.PET_BAG_MIN && storageType <= StorageType.PET_BAG_MAX)
-			return petBag[storageType - StorageType.PET_BAG_MIN];
+			return petBags[storageType - StorageType.PET_BAG_MIN];
 
 		if (storageType >= StorageType.HOUSE_WH_MIN && storageType <= StorageType.HOUSE_WH_MAX)
 			return cabinets[storageType - StorageType.HOUSE_WH_MIN];
@@ -561,8 +545,12 @@ public class Player extends Creature {
 		return null;
 	}
 
-	public Storage[] getPetBag() {
-		return petBag;
+	public Storage[] getPetBags() {
+		return petBags;
+	}
+
+	public Storage[] getCabinets() {
+		return cabinets;
 	}
 
 	/**
@@ -590,29 +578,15 @@ public class Player extends Creature {
 		return dirtyItems;
 	}
 
-	/**
-	 * //TODO probably need to optimize here
-	 * 
-	 * @return
-	 */
 	public List<Item> getAllItems() {
 		List<Item> items = new ArrayList<>();
 		items.addAll(inventory.getItemsWithKinah());
 		items.addAll(regularWarehouse.getItemsWithKinah());
 		items.addAll(playerAccount.getAccountWarehouse().getItemsWithKinah());
-
-		for (int petBagId = StorageType.PET_BAG_MIN; petBagId <= StorageType.PET_BAG_MAX; petBagId++) {
-			IStorage petBag = getStorage(petBagId);
-			if (petBag != null)
-				items.addAll(petBag.getItemsWithKinah());
-		}
-
-		for (int houseWhId = StorageType.HOUSE_WH_MIN; houseWhId <= StorageType.HOUSE_WH_MAX; houseWhId++) {
-			IStorage cabinet = getStorage(houseWhId);
-			if (cabinet != null)
-				items.addAll(cabinet.getItemsWithKinah());
-		}
-
+		for (Storage petBag : petBags)
+			items.addAll(petBag.getItemsWithKinah());
+		for (Storage cabinet : cabinets)
+			items.addAll(cabinet.getItemsWithKinah());
 		items.addAll(getEquipment().getEquippedItems());
 		return items;
 	}

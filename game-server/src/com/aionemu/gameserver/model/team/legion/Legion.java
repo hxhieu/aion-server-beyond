@@ -31,7 +31,7 @@ public class Legion extends AionObject {
 	private int disbandTime;
 	private Announcement announcement;
 	private LegionEmblem legionEmblem = new LegionEmblem();
-	private LegionWarehouse legionWarehouse;
+	private final LegionWarehouse legionWarehouse;
 	private final Map<Type, List<LegionHistoryEntry>> legionHistoryByType = new EnumMap<>(Type.class);
 	private AtomicBoolean hasBonus = new AtomicBoolean(false);
 	private int occupiedLegionDominion = 0;
@@ -372,17 +372,6 @@ public class Legion extends AionObject {
 		return legionEmblem;
 	}
 
-	/**
-	 * @param legionWarehouse
-	 *          the legionWarehouse to set
-	 */
-	public void setLegionWarehouse(LegionWarehouse legionWarehouse) {
-		this.legionWarehouse = legionWarehouse;
-	}
-
-	/**
-	 * @return the legionWarehouse
-	 */
 	public LegionWarehouse getLegionWarehouse() {
 		return legionWarehouse;
 	}

@@ -28,7 +28,6 @@ import com.aionemu.gameserver.model.items.storage.StorageType;
 import com.aionemu.gameserver.model.team.legion.*;
 import com.aionemu.gameserver.network.aion.serverpackets.*;
 import com.aionemu.gameserver.services.conquerorAndProtectorSystem.ConquerorAndProtectorService;
-import com.aionemu.gameserver.services.item.ItemService;
 import com.aionemu.gameserver.services.trade.PricesService;
 import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.utils.Util;
@@ -162,8 +161,8 @@ public class LegionService {
 		legion.setLegionMembers(LegionMemberDAO.loadLegionMembers(legion.getLegionId()));
 		legion.setAnnouncement(LegionDAO.loadAnnouncement(legion.getLegionId()));
 		legion.setLegionEmblem(LegionDAO.loadLegionEmblem(legion.getLegionId()));
-		legion.setLegionWarehouse(LegionDAO.loadLegionStorage(legion));
-		ItemService.loadItemStones(legion.getLegionWarehouse().getItems());
+		InventoryDAO.loadStorage(legion.getLegionId(), legion.getLegionWarehouse());
+		ItemStoneListDAO.load(legion.getLegionWarehouse().getItems());
 		LegionDAO.loadHistory(legion);
 	}
 

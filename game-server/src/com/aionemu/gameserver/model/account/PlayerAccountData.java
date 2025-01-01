@@ -35,13 +35,13 @@ public class PlayerAccountData {
 		this(playerCommonData, appearance, null, Collections.emptyList(), null);
 	}
 
-	public PlayerAccountData(PlayerCommonData playerCommonData, PlayerAppearance appearance, CharacterBanInfo cbi, List<Item> equipment,
+	public PlayerAccountData(PlayerCommonData playerCommonData, PlayerAppearance appearance, CharacterBanInfo cbi, List<VisibleItem> visibleItems,
 		LegionMember legionMember) {
 		this.playerCommonData = playerCommonData;
 		this.appearance = appearance;
 		this.cbi = cbi;
 		this.legionMember = legionMember;
-		setVisibleItems(equipment);
+		this.visibleItems = visibleItems;
 		updateBoundingRadius();
 	}
 
