@@ -39,13 +39,12 @@ public class GeoWorldLoader {
 	private static final Logger log = LoggerFactory.getLogger(GeoWorldLoader.class);
 	private static final Path GEO_DIR = Path.of("data/geo/");
 
-	public static void load(Collection<GeoMap> maps) throws InterruptedException {
-		Thread terrainThread = Thread.ofVirtual().name("terrain").start(() -> loadTerrains(maps));
+	public static void load(Collection<GeoMap> maps) {
+		loadTerrains(maps);
 		load(maps, loadMeshes());
-		terrainThread.join();
 		// preload mesh collision data for responsive initial collision checks and predictable memory usage
 		ThreadPoolManager.getInstance()
-			.execute(() -> maps.parallelStream().flatMap(m -> m.getGeometries().map(Geometry::getMesh)).distinct().forEach(Mesh::createCollisionData));
+			.executeLongRunning(() -> maps.parallelStream().flatMap(m -> m.getGeometries().map(Geometry::getMesh)).distinct().forEach(Mesh::createCollisionData));
 	}
 
 	/**

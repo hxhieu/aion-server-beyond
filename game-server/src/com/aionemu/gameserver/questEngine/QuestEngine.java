@@ -12,7 +12,6 @@ import com.aionemu.commons.scripting.classlistener.AggregatedClassListener;
 import com.aionemu.commons.scripting.classlistener.OnClassLoadUnloadListener;
 import com.aionemu.commons.scripting.classlistener.ScheduledTaskClassListener;
 import com.aionemu.commons.services.CronService;
-import com.aionemu.gameserver.GameServerError;
 import com.aionemu.gameserver.configs.main.GSConfig;
 import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.model.GameEngine;
@@ -50,46 +49,44 @@ import com.aionemu.gameserver.world.zone.ZoneName;
 public class QuestEngine implements GameEngine {
 
 	private static final Logger log = LoggerFactory.getLogger(QuestEngine.class);
-	private ScriptManager scriptManager = new ScriptManager();
+	private final ScriptManager scriptManager = new ScriptManager();
 	private JobDetail messageTask;
-	private Map<Integer, AbstractQuestHandler> questHandlers = new HashMap<>();
-	private Map<Integer, QuestNpc> questNpcs = new HashMap<>();
-	private Map<Integer, List<Integer>> questItemRelated = new HashMap<>();
-	private List<Integer> questHouseItems = new ArrayList<>();
-	private Map<Integer, List<Integer>> questItems = new HashMap<>();
-	private List<Integer> questOnCompleted = new ArrayList<>();
-	private Map<Race, List<Integer>> questOnLevelUp = new EnumMap<>(Race.class);
-	private List<Integer> questOnDie = new ArrayList<>();
-	private List<Integer> questOnLogOut = new ArrayList<>();
-	private List<Integer> questOnEnterWorld = new ArrayList<>();
-	private Map<ZoneName, List<Integer>> questOnEnterZone = new HashMap<>();
-	private Map<ZoneName, List<Integer>> questOnLeaveZone = new HashMap<>();
-	private Map<String, List<Integer>> questOnPassFlyingRings = new HashMap<>();
-	private Map<Integer, List<Integer>> questOnMovieEnd = new HashMap<>();
-	private List<Integer> questOnTimerEnd = new ArrayList<>();
-	private List<Integer> onInvisibleTimerEnd = new ArrayList<>();
-	private Map<AbyssRankEnum, List<Integer>> questOnKillRanked = new EnumMap<>(AbyssRankEnum.class);
-	private Map<Integer, List<Integer>> questOnKillInWorld = new HashMap<>();
-	private Map<Integer, List<Integer>> questOnUseSkill = new HashMap<>();
-	private Map<Integer, Integer> questOnFailCraft = new HashMap<>();
-	private Map<Integer, List<Integer>> questOnEquipItem = new HashMap<>();
-	private Map<Integer, List<Integer>> questCanAct = new HashMap<>();
-	private List<Integer> questOnDredgionReward = new ArrayList<>();
-	private Map<BonusType, List<Integer>> questOnBonusApply = new EnumMap<>(BonusType.class);
-	private List<Integer> questUpdateItems = new ArrayList<>();
-	private List<Integer> reachTarget = new ArrayList<>();
-	private List<Integer> lostTarget = new ArrayList<>();
-	private List<Integer> questOnEnterWindStream = new ArrayList<>();
-	private List<Integer> questRideAction = new ArrayList<>();
-	private Map<String, List<Integer>> questOnKillInZone = new HashMap<>();
+	private final Map<Integer, AbstractQuestHandler> questHandlers = new HashMap<>();
+	private final Map<Integer, QuestNpc> questNpcs = new HashMap<>();
+	private final Map<Integer, List<Integer>> questItemRelated = new HashMap<>();
+	private final List<Integer> questHouseItems = new ArrayList<>();
+	private final Map<Integer, List<Integer>> questItems = new HashMap<>();
+	private final List<Integer> questOnCompleted = new ArrayList<>();
+	private final Map<Race, List<Integer>> questOnLevelUp = new EnumMap<>(Race.class);
+	private final List<Integer> questOnDie = new ArrayList<>();
+	private final List<Integer> questOnLogOut = new ArrayList<>();
+	private final List<Integer> questOnEnterWorld = new ArrayList<>();
+	private final Map<ZoneName, List<Integer>> questOnEnterZone = new HashMap<>();
+	private final Map<ZoneName, List<Integer>> questOnLeaveZone = new HashMap<>();
+	private final Map<String, List<Integer>> questOnPassFlyingRings = new HashMap<>();
+	private final Map<Integer, List<Integer>> questOnMovieEnd = new HashMap<>();
+	private final List<Integer> questOnTimerEnd = new ArrayList<>();
+	private final List<Integer> onInvisibleTimerEnd = new ArrayList<>();
+	private final Map<AbyssRankEnum, List<Integer>> questOnKillRanked = new EnumMap<>(AbyssRankEnum.class);
+	private final Map<Integer, List<Integer>> questOnKillInWorld = new HashMap<>();
+	private final Map<Integer, List<Integer>> questOnUseSkill = new HashMap<>();
+	private final Map<Integer, Integer> questOnFailCraft = new HashMap<>();
+	private final Map<Integer, List<Integer>> questOnEquipItem = new HashMap<>();
+	private final Map<Integer, List<Integer>> questCanAct = new HashMap<>();
+	private final List<Integer> questOnDredgionReward = new ArrayList<>();
+	private final Map<BonusType, List<Integer>> questOnBonusApply = new EnumMap<>(BonusType.class);
+	private final List<Integer> questUpdateItems = new ArrayList<>();
+	private final List<Integer> reachTarget = new ArrayList<>();
+	private final List<Integer> lostTarget = new ArrayList<>();
+	private final List<Integer> questOnEnterWindStream = new ArrayList<>();
+	private final List<Integer> questRideAction = new ArrayList<>();
+	private final Map<String, List<Integer>> questOnKillInZone = new HashMap<>();
 
 	private QuestEngine() {
 	}
 
 	@Override
-	public void load() {
-		log.info("Quest engine load started");
-
+	public void init() {
 		for (QuestTemplate data : DataManager.QUEST_DATA.getQuestTemplates()) {
 			for (QuestDrop drop : data.getQuestDrop()) {
 				drop.setQuestId(data.getId());
@@ -102,38 +99,24 @@ public class QuestEngine implements GameEngine {
 				}
 			}
 		}
-
 		AggregatedClassListener acl = new AggregatedClassListener();
 		acl.addClassListener(new OnClassLoadUnloadListener());
 		acl.addClassListener(new ScheduledTaskClassListener());
 		acl.addClassListener(new QuestHandlerLoader());
 		scriptManager.setGlobalClassListener(acl);
-
-		try {
-			scriptManager.load(GSConfig.QUEST_HANDLER_DIRECTORY);
-			for (XMLQuest xmlQuest : DataManager.XML_QUESTS.getAllQuests())
-				xmlQuest.register(this);
-			log.info("Loaded " + questHandlers.size() + " quest handlers.");
-			if (GSConfig.ANALYZE_QUESTHANDLERS)
-				analyzeQuestHandlers();
-		} catch (Exception e) {
-			throw new GameServerError("Can't initialize quest handlers.", e);
-		}
-
+		scriptManager.load(GSConfig.QUEST_HANDLER_DIRECTORY);
+		for (XMLQuest xmlQuest : DataManager.XML_QUESTS.getAllQuests())
+			xmlQuest.register(this);
+		log.info("Loaded " + questHandlers.size() + " quest handlers.");
+		if (GSConfig.ANALYZE_QUESTHANDLERS)
+			analyzeQuestHandlers();
 		addMessageSendingTask();
 	}
 
 	public void reload() {
-		shutdown();
-		load();
-	}
-
-	@Override
-	public void shutdown() {
-		log.info("Quest engine shutdown started");
 		scriptManager.shutdown();
 		clear();
-		log.info("Quest engine shutdown complete");
+		init();
 	}
 
 	public void clear() {

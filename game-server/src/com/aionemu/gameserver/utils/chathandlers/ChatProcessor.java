@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.aionemu.commons.scripting.ScriptManager;
-import com.aionemu.gameserver.GameServerError;
 import com.aionemu.gameserver.configs.Config;
 import com.aionemu.gameserver.configs.administration.CommandsConfig;
 import com.aionemu.gameserver.model.GameEngine;
@@ -29,20 +28,10 @@ public class ChatProcessor implements GameEngine {
 	}
 
 	@Override
-	public void load() {
-		log.info("Chat processor load started");
-
+	public void init() {
 		ScriptManager scriptManager = new ScriptManager();
 		scriptManager.setGlobalClassListener(new ChatCommandsLoader(this));
-
-		try {
-			scriptManager.load(CommandsConfig.HANDLER_DIRECTORIES);
-		} catch (Exception e) {
-			throw new GameServerError("Can't initialize chat handlers.", e);
-		} finally {
-			scriptManager.shutdown();
-		}
-
+		scriptManager.load(CommandsConfig.HANDLER_DIRECTORIES);
 		log.info("Loaded " + commandHandlers.size() + " commands.");
 	}
 
@@ -51,16 +40,12 @@ public class ChatProcessor implements GameEngine {
 		try {
 			Config.load(CommandsConfig.class);
 			commandHandlers.clear();
-			load();
+			init();
 		} catch (Throwable e) {
 			commandHandlers.clear();
 			commandHandlers.putAll(oldCommands);
 			throw e;
 		}
-	}
-
-	@Override
-	public void shutdown() {
 	}
 
 	public void registerCommand(ChatCommand cmd) {

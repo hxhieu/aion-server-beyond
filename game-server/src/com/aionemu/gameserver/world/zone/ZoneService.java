@@ -9,7 +9,6 @@ import com.aionemu.commons.scripting.ScriptManager;
 import com.aionemu.commons.scripting.classlistener.AggregatedClassListener;
 import com.aionemu.commons.scripting.classlistener.OnClassLoadUnloadListener;
 import com.aionemu.commons.scripting.classlistener.ScheduledTaskClassListener;
-import com.aionemu.gameserver.GameServerError;
 import com.aionemu.gameserver.configs.main.GeoDataConfig;
 import com.aionemu.gameserver.configs.main.WorldConfig;
 import com.aionemu.gameserver.dataholders.DataManager;
@@ -35,38 +34,23 @@ import com.aionemu.gameserver.world.zone.handler.*;
 public final class ZoneService implements GameEngine {
 
 	private static final Logger log = LoggerFactory.getLogger(ZoneService.class);
-	private ScriptManager scriptManager = new ScriptManager();
-	private Map<ZoneName, Class<? extends ZoneHandler>> zoneHandlers = new HashMap<>();
-	private Map<ZoneName, ZoneHandler> collidableHandlers = new HashMap<>();
-	private Map<Integer, List<ZoneInfo>> zoneByMapIdMap = DataManager.ZONE_DATA.getZones();
+	private final Map<ZoneName, Class<? extends ZoneHandler>> zoneHandlers = new HashMap<>();
+	private final Map<ZoneName, ZoneHandler> collidableHandlers = new HashMap<>();
+	private final Map<Integer, List<ZoneInfo>> zoneByMapIdMap = DataManager.ZONE_DATA.getZones();
 
 	private ZoneService() {
 	}
 
 	@Override
-	public void load() {
-		log.info("Zone engine load started");
-
+	public void init() {
+		ScriptManager scriptManager = new ScriptManager();
 		AggregatedClassListener acl = new AggregatedClassListener();
 		acl.addClassListener(new OnClassLoadUnloadListener());
 		acl.addClassListener(new ScheduledTaskClassListener());
 		acl.addClassListener(new ZoneHandlerClassListener());
 		scriptManager.setGlobalClassListener(acl);
-
-		try {
-			scriptManager.load(WorldConfig.ZONE_HANDLER_DIRECTORY);
-			log.info("Loaded " + zoneHandlers.size() + " zone handlers.");
-		} catch (Exception e) {
-			throw new GameServerError("Can't initialize instance handlers.", e);
-		}
-	}
-
-	@Override
-	public void shutdown() {
-		log.info("Zone engine shutdown started");
-		scriptManager.shutdown();
-		zoneHandlers.clear();
-		log.info("Zone engine shutdown complete");
+		scriptManager.load(WorldConfig.ZONE_HANDLER_DIRECTORY);
+		log.info("Loaded " + zoneHandlers.size() + " zone handlers.");
 	}
 
 	public ZoneHandler getNewZoneHandler(ZoneName zoneName) {

@@ -11,8 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -20,12 +20,10 @@ import java.util.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.aionemu.commons.configs.CommonsConfig;
 import com.aionemu.commons.database.DatabaseFactory;
 import com.aionemu.commons.network.NioServer;
 import com.aionemu.commons.network.ServerCfg;
 import com.aionemu.commons.services.CronService;
-import com.aionemu.commons.utils.ExitCode;
 import com.aionemu.commons.utils.concurrent.UncaughtExceptionHandler;
 import com.aionemu.commons.utils.info.SystemInfo;
 import com.aionemu.commons.utils.info.VersionInfo;
@@ -160,16 +158,12 @@ public class GameServer {
 		JAXBUtil.preLoadContextAsync(StaticData.class); // do this early so DataManager doesn't need to wait as long
 		initUtilityServicesAndConfig();
 
-		boolean enableExecutionTimeWarnings = CommonsConfig.EXECUTION_TIME_WARNING_ENABLE;
-		CommonsConfig.EXECUTION_TIME_WARNING_ENABLE = false;
 		IDFactory.getInstance();
 
 		DataManager.getInstance();
 
-		loadMultithreaded(QuestEngine.getInstance(), AIEngine.getInstance(), InstanceEngine.getInstance(), ChatProcessor.getInstance(),
-			ZoneService.getInstance()); // ZoneService before GeoService
-
-		GeoService.getInstance().initializeGeo();
+		Stream.of(QuestEngine.getInstance(), AIEngine.getInstance(), InstanceEngine.getInstance(), ChatProcessor.getInstance(), ZoneService.getInstance(),
+			GeoService.getInstance()).parallel().forEach(GameEngine::init);
 		// ZoneService.getInstance().saveMaterialZones();
 
 		World.getInstance();
@@ -254,7 +248,6 @@ public class GameServer {
 
 		nioServer = initNioServer();
 		Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
-		CommonsConfig.EXECUTION_TIME_WARNING_ENABLE = enableExecutionTimeWarnings;
 		log.info("Game server started in " + (System.currentTimeMillis() / 1000 - START_TIME_SECONDS) + " seconds.");
 
 		LoginServer.getInstance().connect(nioServer);
@@ -297,28 +290,6 @@ public class GameServer {
 
 		// Initialize cron service
 		CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(GSConfig.TIME_ZONE_ID));
-	}
-
-	private static void loadMultithreaded(GameEngine... engines) {
-		CountDownLatch progressLatch = new CountDownLatch(engines.length);
-
-		for (GameEngine engine : engines) {
-			ThreadPoolManager.getInstance().execute(() -> {
-				try {
-					engine.load();
-				} catch (Throwable t) {
-					log.error("Aborting server start due to " + engine.getClass().getSimpleName() + " initialization error", t);
-					System.exit(ExitCode.ERROR);
-				} finally {
-					progressLatch.countDown();
-				}
-			});
-		}
-
-		try {
-			progressLatch.await();
-		} catch (InterruptedException e) {
-		}
 	}
 
 	public static void shutdownNioServer() {
