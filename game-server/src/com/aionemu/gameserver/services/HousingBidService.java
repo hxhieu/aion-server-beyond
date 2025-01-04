@@ -327,11 +327,9 @@ public class HousingBidService {
 	}
 
 	public void disableBids(int playerObjId) {
-		bids.values().forEach(b -> {
-			synchronized (b) {
-				HouseBidsDAO.deleteOrDisableBids(playerObjId, b.deleteOrDisableBids(playerObjId));
-			}
-		});
+		List<HouseBids.Bid> deletedBids = new ArrayList<>();
+		bids.values().forEach(b -> deletedBids.addAll(b.deleteOrDisableBids(playerObjId)));
+		HouseBidsDAO.deleteOrDisableBids(playerObjId, deletedBids);
 	}
 
 	public HouseBids.Bid findLastBid(Player player) {

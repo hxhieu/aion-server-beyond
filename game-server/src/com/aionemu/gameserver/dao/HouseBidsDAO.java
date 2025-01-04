@@ -36,10 +36,11 @@ public class HouseBidsDAO {
 					int houseId = rset.getInt("house_id");
 					long bidOffer = rset.getLong("bid");
 					Timestamp time = rset.getTimestamp("bid_time");
-					if (playerId == 0)
-						allBids.putIfAbsent(houseId, new HouseBids(houseId, bidOffer, time.getTime()));
+					HouseBids houseBids = bidsById.get(houseId);
+					if (houseBids == null)
+						allBids.put(houseId, new HouseBids(houseId, bidOffer, time.getTime()));
 					else
-						allBids.get(houseId).bid(playerId, bidOffer, time.getTime());
+						houseBids.bid(playerId, bidOffer, time.getTime());
 				}
 			}
 		} catch (Exception e) {
