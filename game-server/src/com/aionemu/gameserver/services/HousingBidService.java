@@ -3,6 +3,7 @@ package com.aionemu.gameserver.services;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BinaryOperator;
 
 import org.slf4j.Logger;
@@ -35,10 +36,11 @@ public class HousingBidService {
 
 	private static final Logger log = LoggerFactory.getLogger("HOUSE_AUCTION_LOG");
 	private static final HousingBidService instance = new HousingBidService();
-	private Map<Integer, HouseBids> bids;
+	private final Map<Integer, HouseBids> bids = new ConcurrentHashMap<>();
 
 	private HousingBidService() {
-		bids = HouseBidsDAO.loadBids();
+		Set<Integer> deletedPlayerIds = HouseBidsDAO.loadBids(bids);
+		deletedPlayerIds.forEach(this::disableBids);
 		setBidInfoToHouses();
 		log.info("Loaded bids for " + bids.size() + " houses");
 	}
