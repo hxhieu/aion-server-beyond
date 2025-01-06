@@ -218,7 +218,7 @@ public class HousingBidService {
 
 			House inactiveHouse = sellerId == 0 ? null : HousingService.getInstance().findInactiveHouse(sellerId);
 			if (inactiveHouse != null && inactiveHouse.secondsUntilGraceEnd() == 0) {
-				house.getController().changeOwner(0); // inactive house will also be activated automatically by this
+				HousingService.getInstance().changeOwner(house, 0); // inactive house will also be activated automatically by this
 				result = AuctionResult.GRACE_FAIL;
 				time = System.currentTimeMillis();
 				compensation = (long) (bids.getInitialOffer().getKinah() * HousingConfig.AUCTION_GRACE_END_REFUND_PERCENT);
@@ -253,8 +253,8 @@ public class HousingBidService {
 
 			House studio = HousingService.getInstance().getPlayerStudio(buyerPcd.getPlayerObjId());
 			if (studio != null)
-				studio.getController().changeOwner(0);
-			house.getController().changeOwner(buyerPcd.getPlayerObjId());
+				HousingService.getInstance().changeOwner(studio, 0);
+			HousingService.getInstance().changeOwner(house, buyerPcd.getPlayerObjId());
 
 			AuctionResult result = AuctionResult.WIN_BID;
 			long time = System.currentTimeMillis();
@@ -294,7 +294,7 @@ public class HousingBidService {
 		for (House house : HousingService.getInstance().getCustomHouses()) {
 			if (house.isInactive() && house.secondsUntilGraceEnd() == 0) {
 				House oldHouse = HousingService.getInstance().findActiveHouse(house.getOwnerId());
-				oldHouse.getController().changeOwner(0);
+				HousingService.getInstance().changeOwner(oldHouse, 0);
 				PlayerCommonData pcd = PlayerService.getOrLoadPlayerCommonData(house.getOwnerId());
 				if (pcd.isOnline())
 					PacketSendUtility.sendPacket(pcd.getPlayer(),
