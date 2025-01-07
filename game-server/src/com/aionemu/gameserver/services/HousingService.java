@@ -32,7 +32,6 @@ import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.world.World;
 import com.aionemu.gameserver.world.WorldMapInstance;
 import com.aionemu.gameserver.world.WorldPosition;
-import com.aionemu.gameserver.world.geo.GeoService;
 
 /**
  * @author Rolandas, Neon
@@ -106,7 +105,7 @@ public class HousingService {
 				return;
 			}
 			house.setInactive(newOwnerHasAnotherHouse);
-			house.setDoorState(null);
+			house.resetDoorState();
 			house.setShowOwnerName(true);
 			house.setSignNotice(null);
 			house.setAcquiredTime(newOwnerId == 0 ? null : new Timestamp(System.currentTimeMillis()));
@@ -168,7 +167,6 @@ public class HousingService {
 				instance.getInstanceId());
 			customHouse.setPosition(position);
 			SpawnEngine.bringIntoWorld(customHouse);
-			GeoService.getInstance().setHouseDoorState(address.getMapId(), instance.getInstanceId(), address.getId(), customHouse.getDoorState());
 			spawnedCounter++;
 		}
 		if (spawnedCounter > 0) {
@@ -184,7 +182,6 @@ public class HousingService {
 			HouseAddress addr = studio.getAddress();
 			studio.setPosition(World.getInstance().createPosition(addr.getMapId(), addr.getX(), addr.getY(), addr.getZ(), (byte) 0, instanceId));
 			SpawnEngine.bringIntoWorld(studio);
-			GeoService.getInstance().setHouseDoorState(addr.getMapId(), instanceId, addr.getId(), studio.getDoorState());
 		}
 	}
 

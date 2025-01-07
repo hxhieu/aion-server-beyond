@@ -25,6 +25,7 @@ import com.aionemu.gameserver.spawnengine.SpawnEngine;
 import com.aionemu.gameserver.spawnengine.VisibleObjectSpawner;
 import com.aionemu.gameserver.utils.PacketSendUtility;
 import com.aionemu.gameserver.utils.PositionUtil;
+import com.aionemu.gameserver.world.geo.GeoService;
 import com.aionemu.gameserver.world.zone.ZoneName;
 
 /**
@@ -53,6 +54,7 @@ public class HouseController extends VisibleObjectController<House> {
 		getOwner().getPlayerScripts();
 		getOwner().getRegistry();
 		updateSpawns();
+		GeoService.getInstance().setHouseDoorState(getOwner().getWorldId(), getOwner().getInstanceId(), getOwner().getAddress().getId(), getOwner().getDoorState());
 	}
 
 	private void updateSpawns() {

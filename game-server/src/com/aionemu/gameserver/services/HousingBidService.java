@@ -19,7 +19,6 @@ import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.gameobjects.player.PlayerCommonData;
 import com.aionemu.gameserver.model.house.House;
 import com.aionemu.gameserver.model.house.HouseBids;
-import com.aionemu.gameserver.model.house.HouseDoorState;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_RECEIVE_BIDS;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_SYSTEM_MESSAGE;
 import com.aionemu.gameserver.services.mail.AuctionResult;
@@ -47,9 +46,9 @@ public class HousingBidService {
 
 	private void setBidInfoToHouses() {
 		HousingService.getInstance().getCustomHouses().forEach(house -> {
-			house.setBids(getBidInfo(house));
+			house.setBids(getBidInfo(house), true);
 			if (house.getBids() != null && house.isInactive())
-				log.warn(house + " is for auction but inactive. ");
+				log.warn(house + " is for auction but inactive.");
 		});
 	}
 
@@ -80,11 +79,7 @@ public class HousingBidService {
 			bids.remove(house.getObjectId(), houseBids);
 			return false;
 		}
-		house.setBids(houseBids);
-		if (house.getOwnerId() == 0) {
-			house.setDoorState(HouseDoorState.OPEN);
-			house.save();
-		}
+		house.setBids(houseBids, true);
 		house.getController().updateSign();
 		house.getController().updateAppearance();
 		return true;
@@ -207,7 +202,7 @@ public class HousingBidService {
 		if (!HouseBidsDAO.deleteHouseBids(houseObjectId) || (bids = this.bids.remove(houseObjectId)) == null)
 			return false;
 		House house = HousingService.getInstance().findHouse(houseObjectId);
-		house.setBids(null);
+		house.setBids(null, false);
 		int sellerId = house.getOwnerId();
 		PlayerCommonData sellerPcd = sellerId == 0 ? null : PlayerService.getOrLoadPlayerCommonData(sellerId);
 		HouseBids.Bid highestBid = bids.getHighestBid();
@@ -353,11 +348,7 @@ public class HousingBidService {
 			return false;
 
 		HouseBidsDAO.deleteHouseBids(house.getObjectId());
-		house.setBids(null);
-		if (house.getOwnerId() == 0) {
-			house.setDoorState(null);
-			house.save();
-		}
+		house.setBids(null, true);
 		house.getController().updateSign();
 		house.getController().updateAppearance();
 
