@@ -149,13 +149,13 @@ public class GatherableController extends VisibleObjectController<Gatherable> {
 
 	public void completeInteraction() {
 		synchronized (this) {
+			gatheringTask = null;
 			if (++gatherCount == getOwner().getObjectTemplate().getHarvestCount()) {
 				if (getOwner().isInInstance())
 					getOwner().getController().delete();
 				else
 					getOwner().getController().deleteAndScheduleRespawn();
 			}
-			gatheringTask = null;
 		}
 	}
 
