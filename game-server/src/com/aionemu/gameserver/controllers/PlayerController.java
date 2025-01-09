@@ -246,11 +246,9 @@ public class PlayerController extends CreatureController<Player> {
 				if (getOwner().getWorldType() != WorldType.ABYSS && getOwner().getWorldType() != WorldType.BALAUREA
 					&& getOwner().getWorldType() != WorldType.PANESTERRA || getOwner().isInInstance()) {
 					ef.endEffect();
-					getOwner().getEffectController().clearEffect(ef);
 				}
 			} else if (ef.getSkillTemplate().getDispelCategory() == DispelCategoryType.NPC_BUFF) {
 				ef.endEffect();
-				getOwner().getEffectController().clearEffect(ef);
 			}
 		}
 	}

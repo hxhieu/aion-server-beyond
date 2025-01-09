@@ -331,10 +331,6 @@ public class EffectController {
 		PacketSendUtility.broadcastPacket(getOwner(), new SM_ABNORMAL_EFFECT(getOwner(), abnormals, effects, slot));
 	}
 
-	public void clearEffect(Effect effect) {
-		clearEffect(effect, true);
-	}
-
 	public void clearEffect(Effect effect, boolean broadCastEffects) {
 		Map<String, Effect> effectMap = getMapForEffect(effect);
 		lock.writeLock().lock();

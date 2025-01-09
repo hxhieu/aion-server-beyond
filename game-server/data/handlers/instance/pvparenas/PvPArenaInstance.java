@@ -368,10 +368,7 @@ public abstract class PvPArenaInstance extends GeneralInstanceHandler {
 	private void clearDebuffs(Player player) {
 		for (Effect ef : player.getEffectController().getAbnormalEffects()) {
 			switch (ef.getSkillTemplate().getDispelCategory()) {
-				case DEBUFF, DEBUFF_MENTAL, DEBUFF_PHYSICAL, ALL -> {
-					ef.endEffect();
-					player.getEffectController().clearEffect(ef);
-				}
+				case DEBUFF, DEBUFF_MENTAL, DEBUFF_PHYSICAL, ALL -> ef.endEffect();
 			}
 		}
 	}
