@@ -170,12 +170,6 @@ public class TalocsHollowInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogOut(Player player) {
-		player.getEffectController().removeEffect(10251);
-		player.getEffectController().removeEffect(10252);
-	}
-
-	@Override
 	public void onInstanceCreate() {
 		instance.setDoorState(48, true);
 		instance.setDoorState(7, true);

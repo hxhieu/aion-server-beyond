@@ -49,11 +49,6 @@ public class KromedesTrialInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogOut(Player player) {
-		player.getEffectController().removeEffect(skillId);
-	}
-
-	@Override
 	public void onLeaveInstance(Player player) {
 		player.getEffectController().removeEffect(skillId);
 		removeInstanceItems(player);

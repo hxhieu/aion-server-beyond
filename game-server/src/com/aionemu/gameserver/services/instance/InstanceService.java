@@ -245,8 +245,8 @@ public class InstanceService {
 		}
 	}
 
-	public static void onLogOut(Player player) {
-		player.getPosition().getWorldMapInstance().getInstanceHandler().onPlayerLogOut(player);
+	public static void onLogout(Player player) {
+		player.getPosition().getWorldMapInstance().getInstanceHandler().onPlayerLogout(player);
 	}
 
 	public static void onEnterInstance(Player player) {

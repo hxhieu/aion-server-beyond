@@ -123,11 +123,6 @@ public class RentusBaseInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogOut(Player player) {
-		player.getEffectController().removeEffect(player.getRace() == Race.ELYOS ? 21805 : 21806);
-	}
-
-	@Override
 	public void handleUseItemFinish(Player player, Npc npc) {
 		switch (npc.getNpcId()) {
 			case 702677:

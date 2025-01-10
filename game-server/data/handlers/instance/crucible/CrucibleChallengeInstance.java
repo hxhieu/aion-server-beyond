@@ -56,7 +56,10 @@ public class CrucibleChallengeInstance extends CrucibleInstance {
 	@Override
 	public void onEnterInstance(Player player) {
 		super.onEnterInstance(player);
-		sendPacket(null, 0);
+		if (getPlayerReward(player.getObjectId()).isRewarded())
+			doReward(player);
+		else
+			sendPacket(null, 0);
 		sendEventPacket();
 	}
 
@@ -459,15 +462,6 @@ public class CrucibleChallengeInstance extends CrucibleInstance {
 	@Override
 	public void leaveInstance(Player player) {
 		InstanceService.destroyInstance(player.getPosition().getWorldMapInstance());
-	}
-
-	@Override
-	public void onPlayerLogin(Player player) {
-		sendPacket(null, 0);
-		sendEventPacket();
-		if (getPlayerReward(player.getObjectId()).isRewarded()) {
-			doReward(player);
-		}
 	}
 
 	@Override

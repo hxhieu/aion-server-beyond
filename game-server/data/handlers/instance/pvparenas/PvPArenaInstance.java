@@ -345,24 +345,18 @@ public abstract class PvPArenaInstance extends GeneralInstanceHandler {
 
 	@Override
 	public void onEnterInstance(Player player) {
-		int objectId = player.getObjectId();
 		if (instanceScore.regPlayerReward(player)) {
-			instanceScore.setRndPosition(objectId);
+			instanceScore.setRndPosition(player.getObjectId());
 		} else {
 			instanceScore.portToPosition(player);
+			getPlayerSpecificReward(player).updateBonusTime();
 		}
 		sendEntryPacket(player);
 	}
 
 	@Override
-	public void onPlayerLogin(Player player) {
-		getPlayerSpecificReward(player).updateBonusTime();
-		sendEntryPacket(player);
-	}
-
-	@Override
-	public void onPlayerLogOut(Player player) {
-		getPlayerSpecificReward(player).updateLogOutTime();
+	public void onPlayerLogout(Player player) {
+		getPlayerSpecificReward(player).updateLogoutTime();
 	}
 
 	private void clearDebuffs(Player player) {

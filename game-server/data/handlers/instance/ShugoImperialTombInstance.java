@@ -61,11 +61,6 @@ public class ShugoImperialTombInstance extends GeneralInstanceHandler {
 		applyTransformation(player);
 	}
 
-	@Override
-	public void onPlayerLogin(Player player) {
-		applyTransformation(player);
-	}
-
 	private void applyTransformation(Player player) {
 		int skillId = switch (stage.get()) {
 			case 3 -> player.getRace() == Race.ASMODIANS ? 21105 : 21096;
@@ -1333,11 +1328,6 @@ public class ShugoImperialTombInstance extends GeneralInstanceHandler {
 		player.getInventory().decreaseByItemId(185000129, player.getInventory().getItemCountByItemId(182006989));
 		player.getInventory().decreaseByItemId(185000129, player.getInventory().getItemCountByItemId(182006990));
 		player.getInventory().decreaseByItemId(185000129, player.getInventory().getItemCountByItemId(182006991));
-	}
-
-	@Override
-	public void onPlayerLogOut(Player player) {
-		player.endTransformation();
 	}
 
 	@Override

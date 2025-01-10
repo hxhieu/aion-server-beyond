@@ -118,11 +118,6 @@ public class TheShugoEmperorsVault extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogin(Player player) {
-		reApplyTransformation(player);
-	}
-
-	@Override
 	public void onInstanceDestroy() {
 		if (timer != null && !timer.isDone())
 			timer.cancel(true);

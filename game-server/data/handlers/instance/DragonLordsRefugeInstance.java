@@ -315,12 +315,6 @@ public class DragonLordsRefugeInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogOut(Player player) {
-		if (player.isDead())
-			TeleportService.teleportTo(player, instance.getStartPos());
-	}
-
-	@Override
 	public boolean onDie(Player player, Creature lastAttacker) {
 		PacketSendUtility.sendPacket(player, new SM_DIE(player, 8));
 		return true;

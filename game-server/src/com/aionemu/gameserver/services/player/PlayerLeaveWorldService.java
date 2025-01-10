@@ -84,10 +84,10 @@ public class PlayerLeaveWorldService {
 		ExchangeService.getInstance().cancelExchange(player);
 		RepurchaseService.getInstance().removeRepurchaseItems(player);
 		if (AutoGroupConfig.AUTO_GROUP_ENABLE)
-			AutoGroupService.getInstance().onPlayerLogOut(player);
+			AutoGroupService.getInstance().onLogout(player);
 		ConquerorAndProtectorService.getInstance().onLeaveMap(player);
 		MultiClientingService.onLeaveWorld(player);
-		InstanceService.onLogOut(player);
+		InstanceService.onLogout(player);
 		GMService.getInstance().onPlayerLogout(player);
 		KiskService.getInstance().onLogout(player);
 

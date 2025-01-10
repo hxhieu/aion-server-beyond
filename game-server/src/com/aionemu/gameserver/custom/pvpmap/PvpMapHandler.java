@@ -382,13 +382,7 @@ public class PvpMapHandler extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogin(Player player) {
-		updateJoinOrLeaveTime(player);
-	}
-
-	@Override
-	public void onPlayerLogOut(Player player) {
-		updateJoinOrLeaveTime(player);
+	public void onPlayerLogout(Player player) {
 		removePlayer(player);
 	}
 

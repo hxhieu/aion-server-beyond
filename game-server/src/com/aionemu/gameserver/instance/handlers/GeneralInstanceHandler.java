@@ -51,7 +51,7 @@ public class GeneralInstanceHandler implements InstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogOut(Player player) {
+	public void onPlayerLogout(Player player) {
 	}
 
 	@Override

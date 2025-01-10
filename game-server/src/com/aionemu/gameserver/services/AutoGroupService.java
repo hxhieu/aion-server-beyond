@@ -224,7 +224,7 @@ public class AutoGroupService {
 		return lookingParties.values().stream().map(parties -> getSearchEntry(playerObjectId, parties)).filter(Objects::nonNull).toList();
 	}
 
-	public void onPlayerLogOut(Player player) {
+	public void onLogout(Player player) {
 		int objectId = player.getObjectId();
 		for (LookingForParty lfp : getSearchEntries(objectId)) {
 			if (lfp.isOnStartEnterTask()) {

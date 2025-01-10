@@ -156,26 +156,14 @@ public class BasicPvpInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onPlayerLogin(Player player) {
-		sendPacket(new SM_INSTANCE_SCORE(instance.getMapId(),
-			new PvpInstanceScoreWriter(instanceScore, InstanceScoreType.INIT_PLAYER, player.getObjectId(), 0), getTime()));
-		sendPacket(new SM_INSTANCE_SCORE(instance.getMapId(),
-			new PvpInstanceScoreWriter(instanceScore, InstanceScoreType.UPDATE_INSTANCE_BUFFS_AND_SCORE, instance.getPlayersInside()), getTime()));
-	}
-
-	@Override
-	public void onPlayerLogOut(Player player) {
-		if (player.isDead())
-			onReviveEvent(player);
-	}
-
-	@Override
 	public void onEnterInstance(Player player) {
 		if (!instanceScore.containsPlayer(player.getObjectId()))
 			instanceScore.addPlayerReward(new PvpInstancePlayerReward(player.getObjectId(), player.getRace()));
 
 		sendPacket(new SM_INSTANCE_SCORE(instance.getMapId(),
 			new PvpInstanceScoreWriter(instanceScore, InstanceScoreType.INIT_PLAYER, player.getObjectId(), 0), getTime()));
+		sendPacket(new SM_INSTANCE_SCORE(instance.getMapId(),
+			new PvpInstanceScoreWriter(instanceScore, InstanceScoreType.UPDATE_INSTANCE_BUFFS_AND_SCORE, instance.getPlayersInside()), getTime()));
 		sendPacket(new SM_INSTANCE_SCORE(instance.getMapId(),
 			new PvpInstanceScoreWriter(instanceScore, InstanceScoreType.UPDATE_PLAYER_BUFF_STATUS, player.getObjectId(), 0), getTime()));
 	}

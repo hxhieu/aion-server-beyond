@@ -367,11 +367,6 @@ public class NightmareCircus extends GeneralInstanceHandler {
 		removeEffects(player);
 	}
 
-	@Override
-	public void onPlayerLogOut(Player player) {
-		removeEffects(player);
-	}
-
 	private void removeEffects(Player player) {
 		PlayerEffectController effectController = player.getEffectController();
 		effectController.removeEffect(player.getRace() == Race.ELYOS ? 21469 : 21471);

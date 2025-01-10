@@ -32,7 +32,7 @@ public interface InstanceHandler {
 
 	void onPlayerLogin(Player player);
 
-	void onPlayerLogOut(Player player);
+	void onPlayerLogout(Player player);
 
 	void onEnterInstance(Player player);
 
