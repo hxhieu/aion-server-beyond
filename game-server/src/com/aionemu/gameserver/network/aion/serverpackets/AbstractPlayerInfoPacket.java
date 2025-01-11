@@ -97,11 +97,11 @@ public abstract class AbstractPlayerInfoPacket extends AionServerPacket {
 		writeC(0x00); // sometimes 0x04 (4) for all chars, else 0
 		writeF(playerAppearance.getHeight());
 		writeD(pcd.getTemplateId());
-		writeD(pcd.getPosition().getMapId());// mapid for preloading map
-		writeF(pcd.getPosition().getX());
-		writeF(pcd.getPosition().getY());
-		writeF(pcd.getPosition().getZ());
-		writeD(pcd.getPosition().getHeading());
+		writeD(pcd.getMapId()); // mapid for preloading map
+		writeF(pcd.getX());
+		writeF(pcd.getY());
+		writeF(pcd.getZ());
+		writeD(pcd.getHeading());
 		writeH(pcd.getLevel());
 		writeH(0); // unk 2.5
 		writeD(pcd.getTitleId());

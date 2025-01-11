@@ -35,7 +35,6 @@ import com.aionemu.gameserver.services.PunishmentService.PunishmentType;
 import com.aionemu.gameserver.services.SkillLearnService;
 import com.aionemu.gameserver.services.item.ItemFactory;
 import com.aionemu.gameserver.world.World;
-import com.aionemu.gameserver.world.WorldPosition;
 import com.aionemu.gameserver.world.knownlist.KnownList;
 
 /**
@@ -98,17 +97,12 @@ public class PlayerService {
 			HeadhuntingDAO.storeHeadhunter(player.getObjectId());
 	}
 
-	/**
-	 * Returns the player with given objId (if such player exists)
-	 *
-	 * @param playerObjId
-	 * @param account
-	 * @return Player
-	 */
 	public static Player getPlayer(int playerObjId, Account account) {
 		// Player common data and appearance should be already loaded in account
 		PlayerAccountData playerAccountData = account.getPlayerAccountData(playerObjId);
+		PlayerCommonData pcd = playerAccountData.getPlayerCommonData();
 		Player player = new Player(playerAccountData, account);
+		player.setPosition(World.getInstance().createPosition(pcd.getMapId(), pcd.getX(), pcd.getY(), pcd.getZ(), pcd.getHeading(), 0));
 		LegionMember legionMember = LegionService.getInstance().getLegionMember(player.getObjectId());
 		if (legionMember != null) {
 			player.setLegionMember(legionMember);
@@ -187,8 +181,11 @@ public class PlayerService {
 		PlayerInitialData playerInitialData = DataManager.PLAYER_INITIAL_DATA;
 		LocationData ld = playerInitialData.getSpawnLocation(playerCommonData.getRace());
 
-		WorldPosition position = World.getInstance().createPosition(ld.getMapId(), ld.getX(), ld.getY(), ld.getZ(), ld.getHeading(), 0);
-		playerCommonData.setPosition(position);
+		playerCommonData.setMapId(ld.getMapId());
+		playerCommonData.setX(ld.getX());
+		playerCommonData.setY(ld.getY());
+		playerCommonData.setZ(ld.getZ());
+		playerCommonData.setHeading(ld.getHeading());
 
 		Player newPlayer = new Player(playerAccountData, account);
 

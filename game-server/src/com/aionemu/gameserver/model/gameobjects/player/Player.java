@@ -204,7 +204,7 @@ public class Player extends Creature {
 
 	public Player(PlayerAccountData playerAccountData, Account account) {
 		super(playerAccountData.getPlayerCommonData().getPlayerObjId(), new PlayerController(), null, playerAccountData.getPlayerCommonData(),
-			playerAccountData.getPlayerCommonData().getPosition(), false);
+			null, false);
 		this.playerAccountData = playerAccountData;
 		this.playerAccount = account;
 
@@ -1629,14 +1629,15 @@ public class Player extends Creature {
 	}
 
 	@Override
-	public WorldPosition getPosition() {
-		return getCommonData().getPosition();
-	}
-
-	@Override
 	public void setPosition(WorldPosition position) {
+		super.setPosition(position);
 		getMoveController().resetLastPositionFromClient(); // if we don't reset it, material collision handlers (such as shields) affect you on teleport
-		getCommonData().setPosition(position);
+		getCommonData().setMapId(position.getMapId());
+		getCommonData().setX(position.getX());
+		getCommonData().setY(position.getY());
+		getCommonData().setZ(position.getZ());
+		getCommonData().setHeading(position.getHeading());
+		getCommonData().setWorldOwnerId(position.getMapRegion() == null ? 0 : position.getWorldMapInstance().getOwnerId());
 	}
 
 	public int getRobotId() {
