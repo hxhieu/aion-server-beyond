@@ -102,7 +102,9 @@ public class PlayerService {
 		PlayerAccountData playerAccountData = account.getPlayerAccountData(playerObjId);
 		PlayerCommonData pcd = playerAccountData.getPlayerCommonData();
 		Player player = new Player(playerAccountData, account);
+		int oldOwnerId = pcd.getWorldOwnerId();
 		player.setPosition(World.getInstance().createPosition(pcd.getMapId(), pcd.getX(), pcd.getY(), pcd.getZ(), pcd.getHeading(), 0));
+		pcd.setWorldOwnerId(oldOwnerId);
 		LegionMember legionMember = LegionService.getInstance().getLegionMember(player.getObjectId());
 		if (legionMember != null) {
 			player.setLegionMember(legionMember);
