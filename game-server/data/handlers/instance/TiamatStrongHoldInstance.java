@@ -233,13 +233,13 @@ public class TiamatStrongHoldInstance extends GeneralInstanceHandler {
 				spawn(800433, 725.93f, 1319.9f, 490.7f, (byte) 61);
 			}
 		} else if (zone.getAreaTemplate().getZoneName() == ZoneName.get("GLORIOUS_NEXUS_300510000")) {
-			player.getEffectController().removeEffect(2784);
+			player.getEffectController().removeEffect(300);
 		}
 	}
 
 	@Override
 	public void onLeaveInstance(Player player) {
-		player.getEffectController().removeEffect(2784);
+		player.getEffectController().removeEffect(300);
 	}
 
 	@Override
