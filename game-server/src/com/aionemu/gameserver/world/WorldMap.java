@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.aionemu.gameserver.instance.handlers.GeneralInstanceHandler;
 import com.aionemu.gameserver.model.templates.world.WorldMapTemplate;
 import com.aionemu.gameserver.world.zone.ZoneAttributes;
 
@@ -26,7 +27,10 @@ public class WorldMap implements Iterable<WorldMapInstance> {
 		this.worldOptions = worldMapTemplate.getFlags();
 
 		for (int i = 1; i <= getInstanceCount(); i++) {
-			WorldMapInstanceFactory.createWorldMapInstance(this, 0);
+			if (isInstanceType()) // default instances are inaccessible but its handler methods are sometimes called via MainWorldMapInstance, e.g. on relog
+				WorldMapInstanceFactory.createWorldMapInstance(this, 0, GeneralInstanceHandler::new, 0);
+			else
+				WorldMapInstanceFactory.createWorldMapInstance(this, 0);
 		}
 	}
 

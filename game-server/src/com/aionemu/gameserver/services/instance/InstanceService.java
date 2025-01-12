@@ -95,7 +95,7 @@ public class InstanceService {
 
 		map.removeWorldMapInstance(instanceId);
 
-		log.info("Destroying instance:" + worldId + " " + instanceId);
+		log.info("Destroying " + instance);
 
 		TemporarySpawnEngine.onInstanceDestroy(instance); // first unregister all temporary spawns, then despawn mobs
 		for (VisibleObject obj : instance) {
@@ -257,17 +257,15 @@ public class InstanceService {
 	}
 
 	public static void onLeaveInstance(Player player) {
-		WorldMapInstance registeredInstance = getRegisteredInstance(player.getWorldId(), getLastRegisteredId(player));
-		if (registeredInstance != null) { // don't get instance via player.getPosition since he maybe isn't registered with it anymore (login after dc)
-			registeredInstance.getInstanceHandler().onLeaveInstance(player);
-			if (!registeredInstance.isPersonal()) {
-				if (registeredInstance.getMaxPlayers() == 1) // solo instance
-					PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LEAVE_INSTANCE(getDestroyDelaySeconds(registeredInstance) / 60));
-				else if (registeredInstance.getRegisteredTeam() != null && registeredInstance.getRegisteredTeam().getMembers().isEmpty())
-					PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LEAVE_INSTANCE_PARTY(0));
-				else if (registeredInstance.getPlayersInside().size() <= 1)
-					PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LEAVE_INSTANCE_PARTY(getDestroyDelaySeconds(registeredInstance) / 60));
-			}
+		WorldMapInstance instance = player.getWorldMapInstance();
+		instance.getInstanceHandler().onLeaveInstance(player);
+		if (instance.getRegisteredCount() > 0) {
+			if (instance.getMaxPlayers() == 1) // solo instance
+				PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LEAVE_INSTANCE(getDestroyDelaySeconds(instance) / 60));
+			else if (instance.getRegisteredTeam() != null && instance.getRegisteredTeam().getMembers().isEmpty())
+				PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LEAVE_INSTANCE_PARTY(0));
+			else if (instance.getPlayersInside().size() <= 1)
+				PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LEAVE_INSTANCE_PARTY(getDestroyDelaySeconds(instance) / 60));
 		}
 		removeRestrictedItemsFromInventoryAndStorage(player, item -> item.getItemTemplate().isItemRestrictedToWorld(player.getWorldId()));
 
