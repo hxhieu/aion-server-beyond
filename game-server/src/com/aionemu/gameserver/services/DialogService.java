@@ -45,7 +45,6 @@ import com.aionemu.gameserver.services.teleport.TeleportService;
 import com.aionemu.gameserver.services.trade.PricesService;
 import com.aionemu.gameserver.skillengine.model.DispelSlotType;
 import com.aionemu.gameserver.utils.PacketSendUtility;
-import com.aionemu.gameserver.utils.ThreadPoolManager;
 import com.aionemu.gameserver.world.zone.ZoneInstance;
 
 /**
@@ -64,13 +63,6 @@ public class DialogService {
 
 			if (npc.getObjectTemplate().supportsAction(DialogAction.OPEN_LEGION_WAREHOUSE) && player.isLegionMember())
 				player.getLegion().getLegionWarehouse().unsetInUse(player.getObjectId());
-
-			ThreadPoolManager.getInstance().schedule(() -> {
-				if (npc.getTarget() == null && !npc.getMoveController().isInMove()) {
-					npc.getPosition().setH(npc.getSpawn().getHeading());
-					PacketSendUtility.broadcastPacket(npc, new SM_HEADING_UPDATE(npc));
-				}
-			}, 1200);
 		}
 
 		Mailbox mailbox = player.getMailbox();
