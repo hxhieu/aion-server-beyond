@@ -1321,16 +1321,6 @@ public class ShugoImperialTombInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onLeaveInstance(Player player) {
-		List.of(21094, 21095, 21096, 21103, 21104, 21105).forEach(id -> player.getEffectController().removeEffect(id));
-		// Delete Keys and Tags after leaving instance
-		player.getInventory().decreaseByItemId(185000129, player.getInventory().getItemCountByItemId(185000129));
-		player.getInventory().decreaseByItemId(185000129, player.getInventory().getItemCountByItemId(182006989));
-		player.getInventory().decreaseByItemId(185000129, player.getInventory().getItemCountByItemId(182006990));
-		player.getInventory().decreaseByItemId(185000129, player.getInventory().getItemCountByItemId(182006991));
-	}
-
-	@Override
 	public boolean onDie(final Player player, Creature lastAttacker) {
 		PacketSendUtility.sendPacket(player, new SM_DIE(player, 8));
 		return true;

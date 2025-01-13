@@ -117,10 +117,9 @@ public class TheHexwayInstance extends GeneralInstanceHandler {
 
 	@Override
 	public void onLeaveInstance(Player player) {
-		if (player != null && player.isOnline()) {
-			playerStageMapping.remove(player.getObjectId());
-			PacketSendUtility.sendPacket(player, new SM_QUEST_ACTION(0, 0));
-		}
+		super.onLeaveInstance(player);
+		playerStageMapping.remove(player.getObjectId());
+		PacketSendUtility.sendPacket(player, new SM_QUEST_ACTION(0, 0));
 	}
 
 	@Override

@@ -8,11 +8,11 @@ import com.aionemu.gameserver.instance.handlers.GeneralInstanceHandler;
 import com.aionemu.gameserver.instance.handlers.InstanceID;
 import com.aionemu.gameserver.model.flyring.FlyRing;
 import com.aionemu.gameserver.model.gameobjects.Creature;
+import com.aionemu.gameserver.model.gameobjects.Item;
 import com.aionemu.gameserver.model.gameobjects.Npc;
 import com.aionemu.gameserver.model.gameobjects.Summon;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.geometry.Point3D;
-import com.aionemu.gameserver.model.items.storage.Storage;
 import com.aionemu.gameserver.model.summons.SummonMode;
 import com.aionemu.gameserver.model.summons.UnsummonType;
 import com.aionemu.gameserver.model.templates.flyring.FlyRingTemplate;
@@ -48,13 +48,6 @@ public class TalocsHollowInstance extends GeneralInstanceHandler {
 		addItems(player);
 	}
 
-	@Override
-	public void onLeaveInstance(Player player) {
-		removeItems(player);
-		player.getEffectController().removeEffect(10251);
-		player.getEffectController().removeEffect(10252);
-	}
-
 	private void addItems(Player player) {
 		QuestState qs1 = player.getQuestStateList().getQuestState(10032);
 		QuestState qs2 = player.getQuestStateList().getQuestState(20032);
@@ -72,17 +65,18 @@ public class TalocsHollowInstance extends GeneralInstanceHandler {
 		}
 	}
 
-	private void removeItems(Player player) {
-		int[] items = new int[] { 164000099, // Taloc's Tears
-			164000137, // Shishir's Powerstone
-			164000138, // Gellmar's Wardstone
-			164000139, // Neith's Sleepstone
-			185000088, // Shishir's Corrosive Fluid
-			185000108 // Dorkin's Pocket Knife
-		};
-		Storage storage = player.getInventory();
-		for (int item : items)
-			storage.decreaseByItemId(item, storage.getItemCountByItemId(item));
+	@Override
+	protected boolean isRestrictedToInstance(Item item) {
+		switch (item.getItemId()) {
+			case 164000099: // Taloc's Tears
+			case 164000137: // Shishir's Powerstone
+			case 164000138: // Gellmar's Wardstone
+			case 164000139: // Neith's Sleepstone
+			case 185000088: // Shishir's Corrosive Fluid
+			case 185000108: // Dorkin's Pocket Knife
+				return true;
+		}
+		return super.isRestrictedToInstance(item);
 	}
 
 	@Override

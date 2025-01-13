@@ -238,11 +238,6 @@ public class TiamatStrongHoldInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onLeaveInstance(Player player) {
-		player.getEffectController().removeEffect(300);
-	}
-
-	@Override
 	public void handleUseItemFinish(Player player, Npc npc) {
 		if (npc.getNpcId() == 701494)
 			instance.setDoorState(22, true);

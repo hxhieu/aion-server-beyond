@@ -179,14 +179,6 @@ public class AturamSkyFortressInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public void onLeaveInstance(Player player) {
-		player.getEffectController().removeEffect(19502);
-		player.getEffectController().removeEffect(19520);
-		player.getEffectController().removeEffect(21807);
-		player.getEffectController().removeEffect(21808);
-	}
-
-	@Override
 	public void onInstanceDestroy() {
 		isInstanceDestroyed = true;
 	}

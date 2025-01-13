@@ -1,7 +1,6 @@
 package com.aionemu.gameserver.services.instance;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +11,9 @@ import com.aionemu.gameserver.configs.main.MembershipConfig;
 import com.aionemu.gameserver.dataholders.DataManager;
 import com.aionemu.gameserver.instance.InstanceEngine;
 import com.aionemu.gameserver.instance.handlers.InstanceHandler;
-import com.aionemu.gameserver.model.gameobjects.Item;
 import com.aionemu.gameserver.model.gameobjects.VisibleObject;
 import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.house.House;
-import com.aionemu.gameserver.model.items.storage.Storage;
 import com.aionemu.gameserver.model.team.GeneralTeam;
 import com.aionemu.gameserver.model.templates.housing.BuildingType;
 import com.aionemu.gameserver.model.templates.world.WorldMapTemplate;
@@ -252,8 +249,6 @@ public class InstanceService {
 	public static void onEnterInstance(Player player) {
 		player.getPosition().getWorldMapInstance().getInstanceHandler().onEnterInstance(player);
 		AutoGroupService.getInstance().onEnterInstance(player);
-		removeRestrictedItemsFromInventoryAndStorage(player,
-			item -> item.getItemTemplate().hasWorldRestrictions() && !item.getItemTemplate().isItemRestrictedToWorld(player.getWorldId()));
 	}
 
 	public static void onLeaveInstance(Player player) {
@@ -267,23 +262,9 @@ public class InstanceService {
 			else if (instance.getPlayersInside().size() <= 1)
 				PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_LEAVE_INSTANCE_PARTY(getDestroyDelaySeconds(instance) / 60));
 		}
-		removeRestrictedItemsFromInventoryAndStorage(player, item -> item.getItemTemplate().isItemRestrictedToWorld(player.getWorldId()));
 
 		if (AutoGroupConfig.AUTO_GROUP_ENABLE)
 			AutoGroupService.getInstance().onLeaveInstance(player);
-	}
-
-	private static void removeRestrictedItemsFromInventoryAndStorage(Player player, Predicate<Item> conditionForItemRemoval) {
-		if (conditionForItemRemoval == null)
-			return;
-		for (Item item : player.getInventory().getItems())
-			if (conditionForItemRemoval.test(item))
-				player.getInventory().decreaseByObjectId(item.getObjectId(), item.getItemCount());
-		for (Storage storage : player.getPetBags()) {
-			for (Item item : storage.getItems())
-				if (conditionForItemRemoval.test(item))
-					storage.decreaseByObjectId(item.getObjectId(), item.getItemCount());
-		}
 	}
 
 	public static void onEnterZone(Player player, ZoneInstance zone) {

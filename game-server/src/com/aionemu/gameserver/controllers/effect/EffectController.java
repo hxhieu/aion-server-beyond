@@ -390,6 +390,18 @@ public class EffectController {
 		});
 	}
 
+	public void removeInstanceEffects() {
+		removeEffects(abnormalEffectMap, effect -> {
+			if (effect.getDispelCategory() == DispelCategoryType.NPC_BUFF)
+				return true;
+			for (EffectTemplate et : effect.getEffectTemplates()) {
+				if (et instanceof TransformEffect te && te.getTransformType() == TransformType.FORM1)
+					return true;
+			}
+			return false;
+		});
+	}
+
 	private void removeEffects(Map<String, Effect> mapForEffect, Predicate<Effect> predicate) {
 		for (Effect effect : filterEffects(mapForEffect, predicate))
 			effect.endEffect();

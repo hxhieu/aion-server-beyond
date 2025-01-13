@@ -388,6 +388,7 @@ public abstract class PvPArenaInstance extends GeneralInstanceHandler {
 
 	@Override
 	public void onLeaveInstance(Player player) {
+		super.onLeaveInstance(player);
 		clearDebuffs(player);
 		PvPArenaPlayerReward playerReward = getPlayerSpecificReward(player);
 		if (playerReward != null) {

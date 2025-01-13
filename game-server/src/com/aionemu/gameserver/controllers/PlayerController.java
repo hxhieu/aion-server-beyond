@@ -247,8 +247,6 @@ public class PlayerController extends CreatureController<Player> {
 					&& getOwner().getWorldType() != WorldType.PANESTERRA || getOwner().isInInstance()) {
 					ef.endEffect();
 				}
-			} else if (ef.getSkillTemplate().getDispelCategory() == DispelCategoryType.NPC_BUFF) {
-				ef.endEffect();
 			}
 		}
 	}

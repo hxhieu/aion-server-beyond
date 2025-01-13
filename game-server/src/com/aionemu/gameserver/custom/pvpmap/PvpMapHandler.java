@@ -378,6 +378,7 @@ public class PvpMapHandler extends GeneralInstanceHandler {
 
 	@Override
 	public void onLeaveInstance(Player player) {
+		super.onLeaveInstance(player);
 		updateJoinOrLeaveTime(player);
 	}
 

@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.aionemu.gameserver.ai.NpcAI;
 import com.aionemu.gameserver.ai.manager.WalkManager;
-import com.aionemu.gameserver.controllers.effect.PlayerEffectController;
 import com.aionemu.gameserver.instance.handlers.GeneralInstanceHandler;
 import com.aionemu.gameserver.instance.handlers.InstanceID;
 import com.aionemu.gameserver.model.Race;
@@ -360,17 +359,6 @@ public class NightmareCircus extends GeneralInstanceHandler {
 		PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_REBIRTH_MASSAGE_ME());
 		TeleportService.teleportTo(player, instance, 473.54022f, 567.6342f, 201.83635f, (byte) 118);
 		return true;
-	}
-
-	@Override
-	public void onLeaveInstance(Player player) {
-		removeEffects(player);
-	}
-
-	private void removeEffects(Player player) {
-		PlayerEffectController effectController = player.getEffectController();
-		effectController.removeEffect(player.getRace() == Race.ELYOS ? 21469 : 21471);
-		effectController.removeEffect(player.getRace() == Race.ELYOS ? 21470 : 21472);
 	}
 
 	@Override

@@ -116,6 +116,7 @@ public class BasicPvpInstance extends GeneralInstanceHandler {
 
 	@Override
 	public void onLeaveInstance(Player player) {
+		super.onLeaveInstance(player);
 		PvpInstancePlayerReward reward = instanceScore.getPlayerReward(player.getObjectId());
 		if (reward != null && instanceScore.getInstanceProgressionType() != InstanceProgressionType.END_PROGRESS)
 			instanceScore.removePlayerReward(reward);
