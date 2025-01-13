@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.aionemu.gameserver.instance.handlers.GeneralInstanceHandler;
 import com.aionemu.gameserver.instance.handlers.InstanceID;
+import com.aionemu.gameserver.model.Race;
 import com.aionemu.gameserver.model.flyring.FlyRing;
 import com.aionemu.gameserver.model.gameobjects.Creature;
 import com.aionemu.gameserver.model.gameobjects.Item;
@@ -53,16 +54,13 @@ public class TalocsHollowInstance extends GeneralInstanceHandler {
 		QuestState qs2 = player.getQuestStateList().getQuestState(20032);
 		if ((qs1 != null && qs1.getStatus() == QuestStatus.START) || (qs2 != null && qs2.getStatus() == QuestStatus.START))
 			return;
-		switch (player.getRace()) {
-			case ELYOS:
-				ItemService.addItem(player, 160001286, 1);
-				ItemService.addItem(player, 164000099, 1);
-				break;
-			case ASMODIANS:
-				ItemService.addItem(player, 160001287, 1);
-				ItemService.addItem(player, 164000099, 1);
-				break;
-		}
+		addMissingItems(player, 164000099); // Taloc's Tears
+		addMissingItems(player, player.getRace() == Race.ELYOS ? 160001286 : 160001287); // Taloc Fruit
+	}
+
+	private void addMissingItems(Player player, int itemId) {
+		if (player.getInventory().getFirstItemByItemId(itemId) == null)
+			ItemService.addItem(player, itemId, 1);
 	}
 
 	@Override
