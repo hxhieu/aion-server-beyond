@@ -16,7 +16,6 @@ import com.aionemu.gameserver.model.gameobjects.player.Player;
 import com.aionemu.gameserver.model.house.House;
 import com.aionemu.gameserver.model.team.GeneralTeam;
 import com.aionemu.gameserver.model.templates.housing.BuildingType;
-import com.aionemu.gameserver.model.templates.world.WorldMapTemplate;
 import com.aionemu.gameserver.network.aion.serverpackets.SM_SYSTEM_MESSAGE;
 import com.aionemu.gameserver.services.AutoGroupService;
 import com.aionemu.gameserver.services.event.Event;
@@ -136,7 +135,7 @@ public class InstanceService {
 	}
 
 	private static WorldMapInstance getOrCreatePersonalInstance(int worldId, int ownerId) {
-		if (ownerId == 0)
+		if (ownerId == 0 || !WorldMapType.getWorld(worldId).isPersonal())
 			return null;
 
 		for (WorldMapInstance instance : World.getInstance().getWorldMap(worldId)) {
@@ -146,59 +145,15 @@ public class InstanceService {
 		return getNextAvailableInstance(worldId, ownerId, (byte) 0, 0, true);
 	}
 
-	public static WorldMapInstance getBeginnerInstance(int worldId, int registeredId) {
-		WorldMapInstance instance = getRegisteredInstance(worldId, registeredId);
-		if (instance == null)
-			return null;
-		return instance.isBeginnerInstance() ? instance : null;
-	}
-
-	private static int getLastRegisteredId(Player player) {
-		int lookupId;
-		boolean isPersonal = WorldMapType.getWorld(player.getWorldId()).isPersonal();
-		if (player.isInGroup()) {
-			lookupId = player.getPlayerGroup().getTeamId();
-		} else if (player.isInAlliance()) {
-			lookupId = player.getPlayerAlliance().getTeamId();
-			if (player.isInLeague()) {
-				lookupId = player.getPlayerAlliance().getLeague().getObjectId();
-			}
-		} else if (isPersonal && player.getCommonData().getWorldOwnerId() != 0) {
-			lookupId = player.getCommonData().getWorldOwnerId();
-		} else {
-			lookupId = player.getObjectId();
-		}
-		return lookupId;
-	}
-
 	public static void onPlayerLogin(Player player) {
 		int worldId = player.getWorldId();
-		int lookupId = getLastRegisteredId(player);
-		WorldMapTemplate worldTemplate = DataManager.WORLD_MAPS_DATA.getTemplate(worldId);
-		if (worldTemplate.isInstance()) {
-			boolean isPersonal = WorldMapType.getWorld(player.getWorldId()).isPersonal();
-			WorldMapInstance registeredInstance = isPersonal ? getOrCreatePersonalInstance(worldId, lookupId) : getRegisteredInstance(worldId, lookupId);
-
-			if (registeredInstance != null) {
-				if (registeredInstance.isFull()) {
-					moveToExitPoint(player);
-					return;
-				}
-				World.getInstance().setPosition(player, worldId, registeredInstance.getInstanceId(), player.getX(), player.getY(), player.getZ(),
-					player.getHeading());
-				registeredInstance.getInstanceHandler().onPlayerLogin(player);
-				return;
-			}
-
+		int ownerId = player.getCommonData().getWorldOwnerId();
+		WorldMapInstance instance = ownerId != 0 ? getOrCreatePersonalInstance(worldId, ownerId) : getRegisteredInstance(worldId, player.getObjectId());
+		if (instance == null && player.getWorldMapInstance().getTemplate().isInstance() || instance != null && instance.isFull())
 			moveToExitPoint(player);
-		} else {
-			WorldMapInstance beginnerInstance = getBeginnerInstance(worldId, lookupId);
-			if (beginnerInstance != null) {
-				// set to correct twin instanceId, not to #1
-				World.getInstance().setPosition(player, worldId, beginnerInstance.getInstanceId(), player.getX(), player.getY(), player.getZ(),
-					player.getHeading());
-			}
-		}
+		else if (instance != null) // set to correct instanceId (default on login is 1)
+			World.getInstance().setPosition(player, worldId, instance.getInstanceId(), player.getX(), player.getY(), player.getZ(), player.getHeading());
+		player.getWorldMapInstance().getInstanceHandler().onPlayerLogin(player);
 	}
 
 	public static void moveToExitPoint(Player player) {
