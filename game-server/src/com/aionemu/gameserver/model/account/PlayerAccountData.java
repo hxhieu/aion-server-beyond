@@ -136,7 +136,7 @@ public class PlayerAccountData {
 		for (Item item : equipment) {
 			byte slotType = ItemSlot.getEquipmentSlotType(item.getEquipmentSlot());
 			if (slotType != 0)
-				items.add(new VisibleItem(slotType, item.getItemId(), item.getGodStoneId(), item.getItemColor()));
+				items.add(new VisibleItem(slotType, item.getItemSkinTemplate().getTemplateId(), item.getGodStoneId(), item.getItemColor()));
 		}
 		this.visibleItems = items;
 	}

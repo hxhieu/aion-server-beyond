@@ -33,7 +33,7 @@ public class InventoryDAO {
 
 	public static final String SELECT_QUERY = "SELECT * FROM `inventory` WHERE `item_owner`=? AND `item_location`=?";
 	public static final String SELECT_ALL_QUERY = "SELECT * FROM `inventory` WHERE `item_location`=?";
-	public static final String SELECT_EQUIPPED_QUERY = "SELECT i.item_id, i.slot, i.item_color, s.item_id godstone_item_id FROM inventory i LEFT JOIN item_stones s ON s.item_unique_id = i.item_unique_id AND s.slot = 0 AND s.category = ? WHERE i.item_owner = ? AND i.item_location = ? AND i.is_equipped = 1";
+	public static final String SELECT_EQUIPPED_QUERY = "SELECT i.item_skin, i.slot, i.item_color, s.item_id godstone_item_id FROM inventory i LEFT JOIN item_stones s ON s.item_unique_id = i.item_unique_id AND s.slot = 0 AND s.category = ? WHERE i.item_owner = ? AND i.item_location = ? AND i.is_equipped = 1";
 	public static final String INSERT_QUERY = "INSERT INTO `inventory` (`item_unique_id`, `item_id`, `item_count`, `item_color`, `color_expires`, `item_creator`, `expire_time`, `activation_count`, `item_owner`, `is_equipped`, is_soul_bound, `slot`, `item_location`, `enchant`, `enchant_bonus`, `item_skin`, `fusioned_item`, `optional_socket`, `optional_fusion_socket`, `charge`, `tune_count`, `rnd_bonus`, `fusion_rnd_bonus`, `tempering`, `pack_count`, `is_amplified`, `buff_skill`, `rnd_plume_bonus`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	public static final String UPDATE_QUERY = "UPDATE inventory SET item_count=?, item_color=?, color_expires=?, item_creator=?, expire_time=?, activation_count=?, item_owner=?, is_equipped=?, is_soul_bound=?, slot=?, item_location=?, enchant=?, enchant_bonus=?, item_skin=?, fusioned_item=?, optional_socket=?, optional_fusion_socket=?, charge=?, tune_count=?, rnd_bonus=?, fusion_rnd_bonus=?, tempering=?, pack_count=?, is_amplified=?, buff_skill=?, rnd_plume_bonus=? WHERE item_unique_id=?";
 	public static final String DELETE_QUERY = "DELETE FROM inventory WHERE item_unique_id=?";
@@ -94,10 +94,10 @@ public class InventoryDAO {
 				byte slotType = ItemSlot.getEquipmentSlotType(rs.getLong("slot"));
 				if (slotType == 0)
 					continue; // skip equipment like rings and secondary weapons, as they are not visible and AbstractPlayerInfoPacket supports only 16 items
-				int itemId = rs.getInt("item_id");
+				int itemSkinId = rs.getInt("item_skin");
 				int godStoneItemId = rs.getInt("godstone_item_id");
 				Integer itemColor = (Integer) rs.getObject("item_color");
-				items.add(new PlayerAccountData.VisibleItem(slotType, itemId, godStoneItemId, itemColor));
+				items.add(new PlayerAccountData.VisibleItem(slotType, itemSkinId, godStoneItemId, itemColor));
 			}
 		} catch (Exception e) {
 			log.error("Could not load equipped items of owner " + ownerId, e);
