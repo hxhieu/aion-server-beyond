@@ -213,7 +213,8 @@ public class VisibleObjectSpawner {
 		double radian = Math.toRadians(PositionUtil.convertHeadingToAngle(owner.getHeading()));
 		Vector3f pos = GeoService.getInstance().getClosestCollision(owner, owner.getX() + (float) (Math.cos(radian) * 1),
 			owner.getY() + (float) (Math.sin(radian) * 1), owner.getZ());
-		SpawnTemplate spawn = SpawnEngine.newSingleTimeSpawn(owner.getWorldId(), npcId, pos.getX(), pos.getY(), pos.getZ(), (byte) 0);
+		byte heading = PositionUtil.getHeadingTowards(pos.getX(), pos.getY(), owner.getX(), owner.getY());
+		SpawnTemplate spawn = SpawnEngine.newSingleTimeSpawn(owner.getWorldId(), npcId, pos.getX(), pos.getY(), pos.getZ(), heading);
 		Npc functionalNpc = new Npc(new NpcController(), spawn, template);
 		functionalNpc.setKnownlist(new PlayerAwareKnownList(functionalNpc));
 		functionalNpc.setEffectController(new EffectController(functionalNpc));
