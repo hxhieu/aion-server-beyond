@@ -26,30 +26,28 @@
 			</buff>
 		</buffs>
 	</event>
-	<event name="Increased Rates A" start="2024-07-12T00:00:00" end="2024-07-14T23:59:59">
-		<login_message>Benefit from increased XP and AP rates until July 14th!</login_message>
-		<config_properties>
-			<property>gameserver.rates.xp.solo = 6.6</property>
-			<property>gameserver.rates.xp.group = 6.6</property>
-			<property>gameserver.rates.xp.quest = 6</property>
-			<property>gameserver.rates.xp.gathering = 6</property>
-			<property>gameserver.rates.xp.crafting = 6</property>
-			<property>gameserver.rates.xp.pvp = 6.6</property>
-			<property>gameserver.rates.ap.pvp.gain = 6</property>
-			<property>gameserver.rates.ap.pve = 1.5</property>
-			<property>gameserver.rates.ap.quest = 1.5</property>
-			<property>gameserver.rates.ap.dredgion = 6</property>
-		</config_properties>
+	<event name="Increased XP &amp; AP Rates" start="2025-03-17T00:00:00" end="2025-03-19T23:59:59">
+		<login_message>Benefit from increased XP and AP until Wednesday!</login_message>
+		<buffs>
+			<!-- AP Boost Effect - 30% -->
+			<!-- [Event] Marvelous XP Energy (XP +100%) -->
+			<buff skill_ids="10925 10821" permanent="true">
+				<trigger condition="ENTER_MAP" />
+			</buff>
+		</buffs>
 	</event>
-	<event name="Increased Rates B" start="2024-07-19T00:00:00" end="2024-07-21T23:59:59">
-		<login_message>Benefit from increased skill experience when gathering or crafting until July 21st!</login_message>
-		<config_properties>
-			<property>gameserver.rates.skill_xp.gathering = 10</property>
-			<property>gameserver.rates.skill_xp.crafting = 10</property>
-		</config_properties>
+	<event name="Increased Gathering &amp; Crafting XP Rates" start="2025-03-20T00:00:00" end="2025-03-21T23:59:59">
+		<login_message>Benefit from increased skill experience when gathering or crafting until Friday!</login_message>
+		<buffs>
+			<!-- [Event] Marvelous Gathering Energy (Gathering XP +100%) -->
+			<!-- [Event] Celestial Crafting Energy (Crafting XP +100%) -->
+			<buff skill_ids="10823 10824" permanent="true">
+				<trigger condition="ENTER_MAP" />
+			</buff>
+		</buffs>
 	</event>
-	<event name="Increased Drop Rates" start="2024-10-08T00:00:00" end="2024-10-10T23:59:59">
-		<login_message>Benefit from increased drop rates until October 10th!</login_message>
+	<event name="Increased Drop Rates" start="2025-03-22T00:00:00" end="2025-03-23T23:59:59">
+		<login_message>Benefit from increased drop rates until Sunday!</login_message>
 		<buffs>
 			<!-- [Event] Marvelous Item Energy (Drop Boost +20%) -->
 			<buff skill_ids="10822" permanent="true">
@@ -2924,125 +2922,6 @@
 				<gd_items>
 					<gd_item id="186000175" /><!-- [Event] Mottled Egg -->
 				</gd_items>
-			</gd_rule>
-		</event_drops>
-	</event>
-	<event name="Upgrade Arcade" start="2024-10-07T00:00:00" end="2024-10-20T23:59:59">
-		<config_properties>
-			<property>gameserver.event.arcade.enable = true</property>
-		</config_properties>
-		<event_drops>
-			<gd_rule rule_name="Global Arcade Token" level_based_chance_reduction="true" chance="1.2" dynamic_chance="true">
-				<gd_ratings>
-					<gd_rating rating="NORMAL" />
-					<gd_rating rating="ELITE" />
-				</gd_ratings>
-				<gd_items>
-					<gd_item id="188053863" /><!-- [Event] Arcade Token Bundle (1) -->
-				</gd_items>
-			</gd_rule>
-			<gd_rule rule_name="Global Arcade Token (Hero)" level_based_chance_reduction="true" chance="100">
-				<gd_ratings>
-					<gd_rating rating="HERO" />
-				</gd_ratings>
-				<gd_items>
-					<gd_item id="188053863" /><!-- [Event] Arcade Token Bundle (1) -->
-					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
-				</gd_items>
-			</gd_rule>
-			<gd_rule rule_name="Global Arcade Token (Legendary)" level_based_chance_reduction="true" chance="100" member_limit="12">
-				<gd_ratings>
-					<gd_rating rating="LEGENDARY" />
-				</gd_ratings>
-				<gd_items>
-					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
-				</gd_items>
-			</gd_rule>
-			<gd_rule rule_name="Instance Boss Arcade Token" chance="100">
-				<gd_maps>
-					<gd_map map_id="301270000" /><!-- Linkgate Foundry -->
-				</gd_maps>
-				<gd_npcs>
-					<gd_npc npc_id="233898" /><!-- Belsagos -->
-					<gd_npc npc_id="234990" /><!-- Belsagos -->
-					<gd_npc npc_id="234991" /><!-- Belsagos -->
-				</gd_npcs>
-				<gd_items>
-					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
-				</gd_items>
-			</gd_rule>
-			<gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="6">
-				<gd_maps>
-					<gd_map map_id="301110000" /><!-- Danuar_Reliquary -->
-				</gd_maps>
-				<gd_npcs>
-					<gd_npc npc_id="701795" /><!-- Treasure Box -->
-				</gd_npcs>
-				<gd_items>
-					<gd_item id="188053512" /><!-- [Event] Arcade Token Bundle -->
-				</gd_items>
-			</gd_rule><gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="6">
-				<gd_maps>
-					<gd_map map_id="301360000" /><!-- Infernal_Danuar_Reliquary -->
-				</gd_maps>
-				<gd_npcs>
-					<gd_npc npc_id="234691" /><!-- Enraged Queen Modor -->
-				</gd_npcs>
-				<gd_items>
-					<gd_item id="188053870" /><!-- [Event] Arcade Token Bundle (10) -->
-				</gd_items>
-			</gd_rule>
-			<gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="12">
-				<gd_maps>
-					<gd_map map_id="301390000" /><!-- Drakenspire_Depths -->
-				</gd_maps>
-				<gd_npcs>
-					<gd_npc npc_id="833012" /><!-- Cloak of Balaur Lord Beritra -->
-					<gd_npc npc_id="833013" /><!-- Cloak of Balaur Lord Beritra -->
-				</gd_npcs>
-				<gd_items>
-					<gd_item id="188053870" min_count="2" /><!-- [Event] Arcade Token Bundle (10) -->
-				</gd_items>
-			</gd_rule>
-		</event_drops>
-	</event>
-	<event name="Beyond Aion Broken Hearts" start="2024-02-14T00:00:00" end="2024-02-25T23:59:59" theme="VALENTINE">
-		<event_drops>
-			<gd_rule rule_name="Broken Hearts L" chance="20" level_based_chance_reduction="true">
-				<gd_items>
-					<gd_item id="188100091" /><!-- [Event] Broken Heart: L -->
-				</gd_items>
-				<gd_maps>
-					<gd_map map_id="300240000" /><!-- Aturam Sky Fortress -->
-					<gd_map map_id="300480000" /><!-- Sealed Danuar Mysticarium -->
-					<gd_map map_id="300610000" /><!-- Raksang Ruins -->
-					<gd_map map_id="301270000" /><!-- Linkgate Foundry -->
-				</gd_maps>
-			</gd_rule>
-			<gd_rule rule_name="Broken Hearts O" chance="15" dynamic_chance="true">
-				<gd_items>
-					<gd_item id="188100092" /><!-- [Event] Broken Heart: O -->
-				</gd_items>
-				<gd_maps>
-					<gd_map map_id="600090000" /><!-- Kaldor -->
-				</gd_maps>
-			</gd_rule>
-			<gd_rule rule_name="Broken Hearts V" chance="20" dynamic_chance="true">
-				<gd_items>
-					<gd_item id="188100093" /><!-- [Event] Broken Heart: V -->
-				</gd_items>
-				<gd_maps>
-					<gd_map map_id="301220000" /><!-- PvPvE-Map -->
-				</gd_maps>
-			</gd_rule>
-			<gd_rule rule_name="Broken Hearts E" chance="15" dynamic_chance="true">
-				<gd_items>
-					<gd_item id="188100094" /><!-- [Event] Broken Heart: E -->
-				</gd_items>
-				<gd_maps>
-					<gd_map map_id="210090000" /><!-- Idian Depths L -->
-					<gd_map map_id="220100000" /><!-- Idian Depths D -->
-				</gd_maps>
 			</gd_rule>
 		</event_drops>
 	</event>

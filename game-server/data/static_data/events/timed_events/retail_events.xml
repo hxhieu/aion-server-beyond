@@ -69,6 +69,48 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20160206225643/http://na.aiononline.com/en/news/events/02032016-broken-hearts.php -->
+	<event name="Broken Hearts" start="2025-02-10T00:00:00" end="2025-02-23T23:59:59" theme="VALENTINE">
+		<event_drops>
+			<gd_rule rule_name="Broken Hearts L" chance="20" level_based_chance_reduction="true">
+				<gd_maps>
+					<gd_map map_id="300240000" /><!-- Aturam Sky Fortress -->
+					<gd_map map_id="300480000" /><!-- Sealed Danuar Mysticarium -->
+					<gd_map map_id="300610000" /><!-- Raksang Ruins -->
+					<gd_map map_id="301270000" /><!-- Linkgate Foundry -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100091" /><!-- [Event] Broken Heart: L -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Broken Hearts O" chance="15" dynamic_chance="true">
+				<gd_maps>
+					<gd_map map_id="600090000" /><!-- Kaldor -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100092" /><!-- [Event] Broken Heart: O -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Broken Hearts V" chance="20" dynamic_chance="true">
+				<gd_maps>
+					<gd_map map_id="301220000" /><!-- PvPvE-Map -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100093" /><!-- [Event] Broken Heart: V -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Broken Hearts E" chance="15" dynamic_chance="true">
+				<gd_maps>
+					<gd_map map_id="210090000" /><!-- Idian Depths L -->
+					<gd_map map_id="220100000" /><!-- Idian Depths D -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100094" /><!-- [Event] Broken Heart: E -->
+				</gd_items>
+			</gd_rule>
+		</event_drops>
+	</event>
+	<!-- https://web.archive.org/web/20130215044504/http://board.en.aionfreetoplay.com/board3-news/board9-news-community/12808-valentine-s-day-city-festival-part-2-details-updated/ -->
 	<event name="Valentine's Day Inventory" start="2015-02-13T00:00:00" end="2015-02-28T23:59:59">
 		<inventory_drop item_id="186000167" startlevel="1" interval="6" />
 	</event>
@@ -497,6 +539,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20150131234822/http://na.aiononline.com/en/news/events/02122014-love-is-in-the-aether-event.php -->
 	<event name="Love is in the Aether" start="2015-02-12T00:00:00" end="2015-02-26T23:59:59">
 		<quests>
 			<maintainable>80545 80546 80547 80549 80550 80551</maintainable>
@@ -1497,6 +1540,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20141225094027/http://na.aiononline.com/en/news/events/12172014-gank-the-grankers-event.php -->
 	<event name="Gank the Grankers Inventory" start="2015-12-16T00:00:00" end="2015-12-31T23:59:59">
 		<inventory_drop item_id="186000385" startlevel="8" interval="10" />
 	</event>
@@ -2474,7 +2518,8 @@
 			</spawn_map>
 		</spawns>
 	</event>
-	<event name="Code Red: Atreia" start="2024-05-20T00:00:00" end="2024-05-26T23:59:59">
+	<!-- https://web.archive.org/web/20130609061458/http://na.aiononline.com/en/news/events/code-red-atreia.php -->
+	<event name="Code Red: Atreia" start="2025-03-03T00:00:00" end="2025-03-09T23:59:59">
 		<quests>
 			<maintainable>80324 80325 80326 80327</maintainable>
 		</quests>
@@ -3024,6 +3069,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20160403120518/http://na.aiononline.com/en/news/events/03022016-shugo-kingdom-adventure.php -->
 	<event name="Shugo Imperial Tomb" start="2024-08-12T00:00:00" end="2024-08-25T23:59:59">
 		<quests>
 			<maintainable>80275 80279 80282</maintainable>
@@ -3075,6 +3121,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20150223050058/http://na.aiononline.com/en/news/events/02042015-shugo-emperors-vault.php -->
 	<event name="Shugo Emperor's Vault" start="2024-06-17T00:00:00" end="2024-06-30T23:59:59">
 		<quests>
 			<maintainable>80689 80690 80691 80692 80693 80694 80695 80696</maintainable>
@@ -3127,12 +3174,13 @@
 			</spawn_map>
 		</spawns>
 	</event>
-	<event name="Summer Party" start="2024-07-08T00:00:00" end="2024-07-28T23:59:59">
+	<!-- https://web.archive.org/web/20140802060910/http://na.aiononline.com/en/news/events/07302014-the-summer-block-party-returns.php -->
+	<event name="Summer Block Party" start="2024-07-08T00:00:00" end="2024-07-28T23:59:59">
 		<quests>
 			<maintainable>80351 80352 80359 80360 80361 80368</maintainable>
 		</quests>
 		<event_drops>
-			<gd_rule rule_name="Summer Party Drop (Shared)" chance="20" member_limit="3" level_based_chance_reduction="true">
+			<gd_rule rule_name="Summer Block Party Drop (Shared)" chance="20" member_limit="3" level_based_chance_reduction="true">
 				<gd_maps>
 					<gd_map map_id="301220000" /><!-- PvPvE-Map -->
 					<gd_map map_id="600100000" /><!-- Levinshor -->
@@ -3141,7 +3189,7 @@
 					<gd_item id="188100124" /><!-- Ice Block -->
 				</gd_items>
 			</gd_rule>
-			<gd_rule rule_name="Summer Party Drop (Single)" chance="10">
+			<gd_rule rule_name="Summer Block Party Drop (Single)" chance="10">
 				<gd_maps>
 					<gd_map map_id="210090000" /><!-- Idian_Depths_L -->
 					<gd_map map_id="220100000" /><!-- Idian_Depths_D -->
@@ -3311,7 +3359,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
-	<event name="Block Party Part 1" start="2024-07-08T00:00:00" end="2024-07-14T23:59:59">
+	<event name="Summer Block Party Part 1" start="2024-07-08T00:00:00" end="2024-07-14T23:59:59">
 		<quests>
 			<maintainable>80353 80356 80359 80362 80365 80368</maintainable>
 		</quests>
@@ -3340,7 +3388,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
-	<event name="Block Party Part 2" start="2024-07-15T00:00:00" end="2024-07-21T23:59:59">
+	<event name="Summer Block Party Part 2" start="2024-07-15T00:00:00" end="2024-07-21T23:59:59">
 		<quests>
 			<maintainable>80354 80357 80359 80363 80366 80368</maintainable>
 		</quests>
@@ -3369,7 +3417,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
-	<event name="Block Party Part 3" start="2024-07-22T00:00:00" end="2024-07-28T23:59:59">
+	<event name="Summer Block Party Part 3" start="2024-07-22T00:00:00" end="2024-07-28T23:59:59">
 		<quests>
 			<maintainable>80355 80358 80359 80364 80367 80368</maintainable>
 		</quests>
@@ -3398,7 +3446,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
-	<event name="Block Party Part 4" start="2024-07-29T00:00:00" end="2024-08-04T23:59:59">
+	<event name="Summer Block Party Part 4" start="2024-07-29T00:00:00" end="2024-08-04T23:59:59">
 		<quests>
 			<maintainable>80359 80368</maintainable>
 		</quests>
@@ -3427,6 +3475,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20140912125551/http://na.aiononline.com/en/news/events/08272014-the-alchemy-event-returns.php -->
 	<event name="Alchemy Event" start="2024-04-12T00:00:00" end="2024-04-21T23:59:59">
 		<quests>
 			<maintainable>80344</maintainable>
@@ -3533,6 +3582,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20131013050508/http://na.aiononline.com/en/news/events/brax-cafe.php -->
 	<event name="Visit the Brax Cafe!" start="2015-10-09T00:00:00" end="2015-10-23T23:59:59" theme="BRAXCAFE">
 		<quests>
 			<maintainable>80268 80269 80270 80271</maintainable>
@@ -3600,6 +3650,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20250118172717/https://steamcommunity.com/games/261430/announcements/detail/1598126025056792842 -->
 	<event name="Lost Memories" start="2020-08-03T00:00:00" end="2020-08-16T23:59:59">
 		<quests>
 			<maintainable>80567 80568 80569 80570 80571 80572 80573 80574</maintainable>
@@ -3756,6 +3807,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20140823005014/http://na.aiononline.com/en/news/events/08132014-boiling-point-event.php -->
 	<event name="Boiling Point" start="2020-03-27T00:00:00" end="2020-04-05T23:59:59">
 		<quests>
 			<maintainable>50035 50036 50037 51035 51036 51037</maintainable>
@@ -3823,6 +3875,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20170703184348/http://na.aiononline.com:80/en/news/events/12142016-frozen-magic-event-2016.php -->
 	<event name="Frozen Magic Event" start="2024-12-16T00:00:00" end="2024-12-31T23:59:59">
 		<quests>
 			<maintainable>80575 80576 80577 80578 80579 80580</maintainable>
@@ -3940,6 +3993,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20160116181805/http://na.aiononline.com/en/news/events/01132016-jokers-wild.php -->
 	<event name="Joker's Wild Event" start="2021-10-29T00:00:00" end="2021-11-07T23:59:59">
 		<quests>
 			<maintainable>80623 80624 80625 80626 80627 80628 80629 80630 80631 80632 80633 80634</maintainable>
@@ -4248,6 +4302,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20150227104713/http://na.aiononline.com/en/news/events/02252015-legendary-symphony-event.php -->
 	<event name="Legendary Symphony" start="2022-09-30T00:00:00" end="2022-10-09T23:59:59">
 		<config_properties>
 			<property>symphony = 0</property>
@@ -4441,6 +4496,7 @@
 			</gd_rule>
 		</event_drops>
 	</event>
+	<!-- https://web.archive.org/web/20160618112400/http://na.aiononline.com/en/news/events/06152016-the-scattered-deck-returns.php -->
 	<event name="The Scattered Deck" start="2022-10-21T00:00:00" end="2022-11-13T23:59:59" theme="HALLOWEEN">
 		<spawns>
 			<!-- Sanctum -->
@@ -4472,7 +4528,8 @@
 			</gd_rule>
 		</event_drops>
 	</event>
-	<event name="Blessing Of The Magic Fountain" start="2024-04-26T00:00:00" end="2024-05-12T23:59:59">
+	<!-- https://web.archive.org/web/20160506022600/http://na.aiononline.com/en/news/events/05042016-wishing-fountain-returns.php -->
+	<event name="Wishing Fountain" start="2024-04-26T00:00:00" end="2024-05-12T23:59:59">
 		<event_drops>
 			<gd_rule rule_name="Aether Bloom Bouquet" chance="100" member_limit="6">
 				<gd_maps>
@@ -4990,6 +5047,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- Once part of a Daeva's Day Event: https://web.archive.org/web/20131016220137/http://na.aiononline.com/en/news/events/daevas-day.php-->
 	<event name="Empyrean Lord's Feathers" start="2024-09-02T00:00:00" end="2024-09-08T23:59:59">
 		<inventory_drop item_id="188052676" startlevel="10" interval="60" count="3" />
 		<event_drops>
@@ -5020,6 +5078,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20131024185809/http://na.aiononline.com/en/news/events/nightmare-circus.php -->
 	<event name="Nightmare Circus" start="2024-10-28T00:00:00" end="2024-11-03T23:59:59" theme="HALLOWEEN">
 		<quests>
 			<maintainable>80341 80342 80343</maintainable>
@@ -5164,4 +5223,182 @@
 			</spawn_map>
 		</spawns>
 	</event>
+	<!-- https://web.archive.org/web/20160510171509/http://na.aiononline.com/en/news/events/04062016-rainbow-snake-festival.php -->
+	<event name="Rainbow Snake Festival Exchange NPC" start="2025-02-03T00:00:00" end="2025-02-05T23:59:59">
+		<spawns>
+			<!-- Sanctum -->
+			<spawn_map map_id="110010000">
+				<!-- Baem Rumin -->
+				<spawn npc_id="832973" respawn_time="295">
+					<spot x="1458.5823" y="1502.069" z="573.0719" h="57" />
+				</spawn>
+			</spawn_map>
+			<!-- Pandaemonium -->
+			<spawn_map map_id="120010000">
+				<!-- Baem Rumin -->
+				<spawn npc_id="832978" respawn_time="295">
+					<spot x="1308.0011" y="1401.9735" z="208.125" h="34" />
+				</spawn>
+			</spawn_map>
+		</spawns>
+	</event>
+	<event name="Rainbow Snake Festival" start="2025-01-20T00:00:00" end="2025-02-02T23:59:59">
+		<quests>
+			<maintainable>80683 80684 80685 80686 80687 80688</maintainable>
+		</quests>
+		<inventory_drop item_id="188053673" startlevel="10" interval="20" /><!-- [Event] Coiled Gift -->
+		<spawns>
+			<!-- Sanctum -->
+			<spawn_map map_id="110010000">
+				<!-- Serpente Rumin -->
+				<spawn npc_id="832963" respawn_time="295">
+					<temporary_spawn weekdays="FRIDAY SATURDAY SUNDAY" />
+					<spot x="1458.5823" y="1502.069" z="573.0719" h="57" ai="rainbow_snake" />
+				</spawn>
+				<!-- Ahas Rumin -->
+				<spawn npc_id="832964" respawn_time="295">
+					<temporary_spawn weekdays="MONDAY TUESDAY WEDNESDAY THURSDAY" />
+					<spot x="1458.9354" y="1506.0077" z="573.0719" h="60" ai="rainbow_snake" />
+				</spawn>
+				<!-- Hebi Rumin -->
+				<spawn npc_id="832965" respawn_time="295">
+					<spot x="1458.4784" y="1504.5234" z="573.0719" h="75" />
+				</spawn>
+				<!-- Schlange Rumin -->
+				<spawn npc_id="832966" respawn_time="295">
+					<spot x="1457.8656" y="1503.8359" z="573.0719" h="14" />
+				</spawn>
+				<!-- Baem Rumin -->
+				<spawn npc_id="832973" respawn_time="295">
+					<spot x="1457.222" y="1504.7451" z="573.0719" h="107" />
+				</spawn>
+			</spawn_map>
+			<!-- Pandaemonium -->
+			<spawn_map map_id="120010000">
+				<!-- Serpente Rumin -->
+				<spawn npc_id="832974" respawn_time="295">
+					<temporary_spawn weekdays="FRIDAY SATURDAY SUNDAY" />
+					<spot x="1308.0011" y="1401.9735" z="208.125" h="34" ai="rainbow_snake" />
+				</spawn>
+				<!-- Ahas Rumin -->
+				<spawn npc_id="832975" respawn_time="295">
+					<temporary_spawn weekdays="MONDAY TUESDAY WEDNESDAY THURSDAY" />
+					<spot x="1306.3575" y="1402.8864" z="208.125" h="20" ai="rainbow_snake" />
+				</spawn>
+				<!-- Hebi Rumin -->
+				<spawn npc_id="832976" respawn_time="295">
+					<spot x="1306.2677" y="1400.6224" z="208.125" h="36" />
+				</spawn>
+				<!-- Schlange Rumin -->
+				<spawn npc_id="832977" respawn_time="295">
+					<spot x="1305.5642" y="1401.8251" z="208.125" h="107" />
+				</spawn>
+				<!-- Baem Rumin -->
+				<spawn npc_id="832978" respawn_time="295">
+					<spot x="1306.703" y="1401.6078" z="208.125" h="75" />
+				</spawn>
+			</spawn_map>
+		</spawns>
+		<event_drops>
+			<gd_rule rule_name="Colored Scales" chance="15" dynamic_chance="true">
+				<gd_worlds>
+					<gd_world wd_type="BALAUREA_HIGH" /><!-- Cygnea, Enshar, Kaldor, Levinshor, Idian Depths -->
+				</gd_worlds>
+				<gd_items>
+					<gd_item id="188100257" /><!-- [Event] Blue Scale -->
+					<gd_item id="188100258" /><!-- [Event] Yellow Scale -->
+					<gd_item id="188100259" /><!-- [Event] Red Scale -->
+				</gd_items>
+			</gd_rule>
+		</event_drops>
+	</event>
+	<!-- https://web.archive.org/web/20150319191749/http://na.aiononline.com/en/news/events/03182015-upgrade-arcade-returns.php -->
+	<event name="Upgrade Arcade" start="2024-10-07T00:00:00" end="2024-10-20T23:59:59">
+		<config_properties>
+			<property>gameserver.event.arcade.enable = true</property>
+		</config_properties>
+		<event_drops>
+			<gd_rule rule_name="Global Arcade Token" level_based_chance_reduction="true" chance="1.2" dynamic_chance="true">
+				<gd_ratings>
+					<gd_rating rating="NORMAL" />
+					<gd_rating rating="ELITE" />
+				</gd_ratings>
+				<gd_items>
+					<gd_item id="188053863" /><!-- [Event] Arcade Token Bundle (1) -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Global Arcade Token (Hero)" level_based_chance_reduction="true" chance="100">
+				<gd_ratings>
+					<gd_rating rating="HERO" />
+				</gd_ratings>
+				<gd_items>
+					<gd_item id="188053863" /><!-- [Event] Arcade Token Bundle (1) -->
+					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Global Arcade Token (Legendary)" level_based_chance_reduction="true" chance="100" member_limit="12">
+				<gd_ratings>
+					<gd_rating rating="LEGENDARY" />
+				</gd_ratings>
+				<gd_items>
+					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Instance Boss Arcade Token" chance="100">
+				<gd_maps>
+					<gd_map map_id="301270000" /><!-- Linkgate Foundry -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="233898" /><!-- Belsagos -->
+					<gd_npc npc_id="234990" /><!-- Belsagos -->
+					<gd_npc npc_id="234991" /><!-- Belsagos -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188053869" /><!-- [Event] Arcade Token Bundle (3) -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="6">
+				<gd_maps>
+					<gd_map map_id="301110000" /><!-- Danuar_Reliquary -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="701795" /><!-- Treasure Box -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188053512" /><!-- [Event] Arcade Token Bundle -->
+				</gd_items>
+			</gd_rule><gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="6">
+			<gd_maps>
+				<gd_map map_id="301360000" /><!-- Infernal_Danuar_Reliquary -->
+			</gd_maps>
+			<gd_npcs>
+				<gd_npc npc_id="234691" /><!-- Enraged Queen Modor -->
+			</gd_npcs>
+			<gd_items>
+				<gd_item id="188053870" /><!-- [Event] Arcade Token Bundle (10) -->
+			</gd_items>
+		</gd_rule>
+			<gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="12">
+				<gd_maps>
+					<gd_map map_id="301390000" /><!-- Drakenspire_Depths -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="833012" /><!-- Cloak of Balaur Lord Beritra -->
+					<gd_npc npc_id="833013" /><!-- Cloak of Balaur Lord Beritra -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188053870" min_count="2" /><!-- [Event] Arcade Token Bundle (10) -->
+				</gd_items>
+			</gd_rule>
+		</event_drops>
+	</event>
+	<!--
+	Not implemented yet:
+	5th Daeva's Day       https://web.archive.org/web/20150419112708/http://na.aiononline.com/en/news/events/09172014-daevas-day-events.php
+	Eggstravaganza        https://web.archive.org/web/20160331064620/http://na.aiononline.com/en/news/events/03162016-eggstravaganza.php
+	Purple Reign          https://web.archive.org/web/20140715191602/http://na.aiononline.com/en/news/events/07022014-purple-reign-event.php
+	Solorius Toy Festival https://web.archive.org/web/20160403073743/http://na.aiononline.com/en/news/events/12162015-solorius-toy-festival.php
+	Spring Harvest        https://web.archive.org/web/20160422022912/http://na.aiononline.com/en/news/events/04202016-spring-harvest.php
+	and more              https://web.archive.org/web/*/http://na.aiononline.com/en/news/events*
+	-->
 </timed_events>

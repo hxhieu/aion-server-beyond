@@ -11159,8 +11159,19 @@
 	<decomposable item_id="188051435" /><!-- Romantically Yours Package -->
 	<decomposable item_id="188051436" /><!-- Total Makeover Kit -->
 	<decomposable item_id="188051437" /><!-- Bridal Makeup Bundle -->
-	<decomposable item_id="188051438" /><!-- Rainbow Dye Pack II -->
 	<decomposable item_id="188051439" /><!-- Silver Medal Box -->
+	<decomposable item_id="188051438"><!-- Rainbow Dye Pack II -->
+		<items>
+			<item id="169220033" /><!-- Dye: True Red -->
+			<item id="169220034" /><!-- Dye: Hot Orange -->
+			<item id="169220035" /><!-- Dye: Hot Pink -->
+			<item id="169220036" /><!-- Dye: Rich Purple -->
+			<item id="169220037" /><!-- Dye: Olive Green -->
+			<item id="169220038" /><!-- Dye: Green Tea -->
+			<item id="169220039" /><!-- Dye: Mustard -->
+			<item id="169220040" /><!-- Dye: True Blue -->
+		</items>
+	</decomposable>
 	<decomposable item_id="188051440" /><!-- Gold Medal Box -->
 	<decomposable item_id="188051441" /><!-- Platinum Medal Box -->
 	<decomposable item_id="188051442" /><!-- Pouch of Scrolls -->
@@ -24981,8 +24992,30 @@
 	<decomposable item_id="188052713" /><!-- [Event] Gold Coin Box -->
 	<decomposable item_id="188052714" /><!-- [Event] Ailu Candy Bundle -->
 	<decomposable item_id="188052715"><!-- [Event] Summoning Stone Letter -->
-		<items>
-			<item id="164002192" /><!-- Summoning Stone: Trade Broker (Personal) -->
+		<items chance="17">
+			<item id="164002188" /><!-- Summoning Stone: Stigma Master (Personal) -->
+		</items>
+		<items chance="17">
+			<item id="164002190" /><!-- Summoning Stone: Courier (Personal) -->
+		</items>
+		<items chance="17">
+			<item id="164002192" race="ELYOS" /><!-- Summoning Stone: Trade Broker (Personal) -->
+			<item id="164002194" race="ASMODIANS" /><!-- Summoning Stone: Trade Broker (Personal) -->
+		</items>
+		<items chance="17">
+			<item id="164002196" race="ELYOS" /><!-- Summoning Stone: General Goods Merchant (Personal) -->
+			<item id="164002198" race="ASMODIANS" /><!-- Summoning Stone: General Goods Merchant (Personal) -->
+		</items>
+		<items chance="17">
+			<item id="164002200" /><!-- Summoning Stone: Warehouse Manager (Personal) -->
+		</items>
+		<items chance="8">
+			<item id="164002202" race="ELYOS" /><!-- Summoning Stone: Ancient Goblet Administrator (Personal) -->
+			<item id="164002204" race="ASMODIANS" /><!-- Summoning Stone: Ancient Goblet Administrator (Personal) -->
+		</items>
+		<items chance="7">
+			<item id="164002206" race="ELYOS" /><!-- Summoning Stone: Ancient Crown Administrator (Personal) -->
+			<item id="164002208" race="ASMODIANS" /><!-- Summoning Stone: Ancient Crown Administrator (Personal) -->
 		</items>
 	</decomposable>
 	<decomposable item_id="188052716"><!-- [Event] Lucky Scroll Pouch -->
@@ -25199,8 +25232,41 @@
 			<random_item type="MANASTONE_LEGEND_GRADE_50" />
 		</items>
 	</decomposable>
-	<decomposable item_id="188052740" /><!-- [Event] Brilliant Ancient Manastone Bundle -->
-	<decomposable item_id="188052741" /><!-- [Event] Brilliant Composite Manastone Bundle -->
+	<decomposable item_id="188052740" selectable="true"><!-- [Event] Brilliant Ancient Manastone Bundle -->
+		<items>
+			<item id="167020056" /><!-- Ancient Manastone: Accuracy +33 -->
+			<item id="167020058" /><!-- Ancient Manastone: Parry +33 -->
+			<item id="167020059" /><!-- Ancient Manastone: Block +33 -->
+			<item id="167020060" /><!-- Ancient Manastone: Physical Critical Resistance +22 -->
+			<item id="167020061" /><!-- Ancient Manastone: Magical Critical Resistance +9 -->
+			<item id="167020062" /><!-- Ancient Manastone: Physical Defense +80 -->
+			<item id="167020063" /><!-- Ancient Manastone: Attack +7 -->
+			<item id="167020064" /><!-- Ancient Manastone: Magical Accuracy +20 -->
+			<item id="167020065" /><!-- Ancient Manastone: Magic Boost +32 -->
+		</items>
+	</decomposable>
+	<decomposable item_id="188052741" selectable="true"><!-- [Event] Brilliant Composite Manastone Bundle -->
+		<items>
+			<item id="167000682" /> <!-- Manastone: Attack +5 / HP +47 -->
+			<item id="167000684" /> <!-- Manastone: Attack +5 / Accuracy +13 -->
+			<item id="167000688" /> <!-- Manastone: Crit Strike +17 / HP +47 -->
+			<item id="167000690" /> <!-- Manastone: Crit Strike +17 / Attack +2 -->
+			<item id="167000691" /> <!-- Manastone: Crit Strike +17 / Accuracy +13 -->
+			<item id="167000694" /> <!-- Manastone: Crit Strike +17 / Block +13 -->
+			<item id="167000695" /> <!-- Manastone: Crit Strike +17 / Resist Magic +7 -->
+			<item id="167000696" /> <!-- Manastone: Crit Strike +17 / Magical Accuracy +7 -->
+			<item id="167000697" /> <!-- Manastone: Magic Boost +27 / HP +47 -->
+			<item id="167000704" /> <!-- Manastone: Magic Boost +27 / Resist Magic +7 -->
+			<item id="167000705" /> <!-- Manastone: Magic Boost +27 / Magical Accuracy +7 -->
+			<item id="167000708" /> <!-- Manastone: Magical Accuracy +14 / Magic Boost +13 -->
+			<item id="167000713" /> <!-- Manastone: Magical Accuracy +14 / Crit Strike +8 -->
+			<item id="167000714" /> <!-- Manastone: Magical Accuracy +14 / Resist Magic +7 -->
+			<item id="167000749" /> <!-- Manastone: Attack +5 / Crit Strike +8 -->
+			<item id="167000750" /> <!-- Manastone: Attack +5 / Resist Magic +7 -->
+			<item id="167000751" /> <!-- Manastone: Attack +5 / Magical Accuracy +7 -->
+			<item id="167000877" /> <!-- Manastone: Magical Accuracy +14 / Attack +2 -->
+		</items>
+	</decomposable>
 	<decomposable item_id="188052742"><!-- Fortress Supplies -->
 		<items>
 			<item id="186000242" /><!-- Ceramium Medal -->
@@ -32188,9 +32254,101 @@
 	<decomposable item_id="188053669" /><!-- [Event] Ascension Supply Box -->
 	<decomposable item_id="188053670" /><!-- [Event] Weapon Box of the Distorted Balaur Lord -->
 	<decomposable item_id="188053671" /><!-- [Event] Pallasite Material Box -->
-	<decomposable item_id="188053672" /><!-- [Event] Rainbow Gift -->
-	<decomposable item_id="188053673" /><!-- [Event] Coiled Gift -->
-	<decomposable item_id="188053674" /><!-- [Event] Chromatic Gift -->
+	<decomposable item_id="188053672" selectable="true"><!-- [Event] Rainbow Gift -->
+		<items>
+			<item id="110900490" /><!-- Revelers Spotted Snake Costume (1 day) -->
+			<item id="110900495" /><!-- Revelers Rainbow Snake Costume (1 day) -->
+			<item id="110900500" /><!-- Revelers Turquoise Snake Costume (1 day) -->
+		</items>
+	</decomposable>
+	<decomposable item_id="188053673"><!-- [Event] Coiled Gift -->
+		<items>
+			<item id="188100257" /><!-- [Event] Blue Scale -->
+		</items>
+		<items>
+			<item id="188100258" /><!-- [Event] Yellow Scale -->
+		</items>
+		<items>
+			<item id="188100259" /><!-- [Event] Red Scale -->
+		</items>
+	</decomposable>
+	<decomposable item_id="188053674"><!-- [Event] Chromatic Gift -->
+		<items chance="25">
+			<item id="186000409" min_count="5" max_count="15" /><!-- Daeva's Respite Coin -->
+		</items>
+		<items chance="20">
+			<item id="160010208" min_count="5" /><!-- [Event] Sweet Chocolate -->
+		</items>
+		<items chance="6">
+			<item id="169220002" /><!-- Dye: True White -->
+		</items>
+		<items chance="6">
+			<item id="169220003" /><!-- Dye: True Black -->
+		</items>
+		<items chance="6">
+			<item id="188051438" /><!-- Rainbow Dye Pack II -->
+		</items>
+		<items chance="5">
+			<item id="188052761" /><!-- [Event] Bonus Entry Scroll Bundle -->
+		</items>
+		<items chance="5">
+			<item id="188053783" /><!-- Stigma Sack -->
+		</items>
+		<items chance="5">
+			<item id="188052715" /><!-- [Event] Summoning Stone Letter -->
+		</items>
+		<items chance="5">
+			<item id="166030005" /><!-- Tempering Solution -->
+		</items>
+		<items chance="5">
+			<item id="188052741" /><!-- [Event] Brilliant Composite Manastone Bundle -->
+		</items>
+		<items chance="2.5">
+			<item id="188052740" /><!-- [Event] Brilliant Ancient Manastone Bundle -->
+		</items>
+		<items chance="2">
+			<item id="169620111" /><!-- [Event] Rapturous Gathering Boost -->
+		</items>
+		<items chance="2">
+			<item id="169620112" /><!-- [Event] Rapturous Crafting Boost -->
+		</items>
+		<items chance="1">
+			<item id="188053321" /><!-- [Event] Empyrean Plume Chest -->
+		</items>
+		<items chance="0.5">
+			<item id="110900441" /><!-- Spotted Snake Costume -->
+		</items>
+		<items chance="0.5">
+			<item id="110900442" /><!-- Rainbow Snake Costume -->
+		</items>
+		<items chance="0.5">
+			<item id="110900443" /><!-- Turquoise Snake Costume -->
+		</items>
+		<items chance="0.5">
+			<item id="171130013" /><!-- Rainbow Field Wallpaper -->
+		</items>
+		<items chance="0.5">
+			<item id="171130015" /><!-- Rainbow Sky Wallpaper -->
+		</items>
+		<items chance="0.5">
+			<item id="169405391" player_classes="GLADIATOR TEMPLAR ASSASSIN RANGER" /><!-- Upgraded Distorted Sword of the Fierce Battle Prototype -->
+			<item id="186000409" player_classes="SORCERER SPIRIT_MASTER CLERIC CHANTER RIDER GUNNER BARD" min_count="100" /><!-- Daeva's Respite Coin -->
+		</items>
+		<items chance="0.5">
+			<item id="169405392" player_classes="TEMPLAR CLERIC CHANTER" /><!-- Upgraded Distorted Mace of the Fierce Battle Prototype -->
+			<item id="169405393" player_classes="GLADIATOR ASSASSIN RANGER" /><!-- Upgraded Distorted Dagger of the Fierce Battle Prototype -->
+			<item id="186000409" player_classes="SORCERER SPIRIT_MASTER RIDER GUNNER BARD" min_count="100" /><!-- Daeva's Respite Coin -->
+		</items>
+		<items chance="0.5">
+			<item id="169405394" player_classes="GLADIATOR TEMPLAR" /><!-- Upgraded Distorted Greatsword of the Fierce Battle Prototype -->
+			<item id="186000409" player_classes="ASSASSIN RANGER SORCERER SPIRIT_MASTER CLERIC CHANTER RIDER GUNNER BARD" min_count="100" /><!-- Daeva's Respite Coin -->
+		</items>
+		<items chance="0.5">
+			<item id="169405395" player_classes="GLADIATOR" /><!-- Upgraded Distorted Polearm of the Fierce Battle Prototype -->
+			<item id="169405396" player_classes="CLERIC CHANTER" /><!-- Upgraded Distorted Staff of the Fierce Battle Prototype -->
+			<item id="186000409" player_classes="TEMPLAR ASSASSIN RANGER SORCERER SPIRIT_MASTER RIDER GUNNER BARD" min_count="100" /><!-- Daeva's Respite Coin -->
+		</items>
+	</decomposable>
 	<decomposable item_id="188053675" /><!-- Blood Mark Box -->
 	<decomposable item_id="188053676" /><!-- Shining Blood Mark Box -->
 	<decomposable item_id="188053677" /><!-- [Event] Presto's Friendship Box -->
