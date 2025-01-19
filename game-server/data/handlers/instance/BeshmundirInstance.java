@@ -42,7 +42,7 @@ public class BeshmundirInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public float getInstanceExpMultiplier() {
+	public float getExpMultiplier() {
 		return 3f;
 	}
 

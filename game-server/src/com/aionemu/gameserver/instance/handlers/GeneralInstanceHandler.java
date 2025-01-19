@@ -126,11 +126,6 @@ public class GeneralInstanceHandler implements InstanceHandler {
 	}
 
 	@Override
-	public float getInstanceExpMultiplier() {
-		return instance != null && instance.getParent().isInstanceType() ? 1.5f : 1.25f; // instance maps * 1.5, world maps * 1.25
-	}
-
-	@Override
 	public void doReward(Player player) {
 	}
 
@@ -250,7 +245,12 @@ public class GeneralInstanceHandler implements InstanceHandler {
 	}
 
 	@Override
-	public float getInstanceApMultiplier() {
+	public float getExpMultiplier() {
+		return instance.getParent().isInstanceType() ? 1.5f : 1.25f; // on retail, instances reward more exp than regular world maps
+	}
+
+	@Override
+	public float getApMultiplier() {
 		return 1f;
 	}
 

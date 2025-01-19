@@ -51,11 +51,7 @@ public class PlayerTeamDistributionService {
 
 		long expReward = StatFunctions.calculateExperienceReward(filteredStats.highestLevel, owner);
 
-		float instanceApMultiplier = 1f;
-		if (owner.isInInstance()) {
-			instanceApMultiplier = owner.getPosition().getWorldMapInstance().getInstanceHandler().getInstanceApMultiplier();
-		}
-
+		float instanceApMultiplier = owner.getPosition().getWorldMapInstance().getInstanceHandler().getApMultiplier();
 		for (Player member : filteredStats.players) {
 			// dead players shouldn't receive AP/EP/DP
 			if (member.isDead())

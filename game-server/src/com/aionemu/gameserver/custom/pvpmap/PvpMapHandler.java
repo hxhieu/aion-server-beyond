@@ -853,7 +853,7 @@ public class PvpMapHandler extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public float getInstanceApMultiplier() {
+	public float getApMultiplier() {
 		return CustomConfig.PVP_MAP_PVE_AP_MULTIPLIER;
 	}
 }

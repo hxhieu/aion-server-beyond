@@ -15,6 +15,7 @@ import com.aionemu.gameserver.controllers.attack.AggroList;
 import com.aionemu.gameserver.controllers.attack.AttackStatus;
 import com.aionemu.gameserver.custom.pvpmap.PvpMapHandler;
 import com.aionemu.gameserver.dataholders.DataManager;
+import com.aionemu.gameserver.instance.handlers.InstanceHandler;
 import com.aionemu.gameserver.model.animations.ObjectDeleteAnimation;
 import com.aionemu.gameserver.model.drop.DropItem;
 import com.aionemu.gameserver.model.gameobjects.*;
@@ -198,10 +199,8 @@ public class NpcController extends CreatureController<Npc> {
 			return;
 		}
 
-		float instanceApMultiplier = 1f;
-		if (getOwner().isInInstance()) {
-			instanceApMultiplier = getOwner().getPosition().getWorldMapInstance().getInstanceHandler().getInstanceApMultiplier();
-		}
+		InstanceHandler instanceHandler = getOwner().getPosition().getWorldMapInstance().getInstanceHandler();
+		float apMultiplier = instanceHandler.getApMultiplier();
 		for (AggroInfo info : finalList) {
 			AionObject attacker = info.getAttacker();
 
@@ -224,12 +223,9 @@ public class NpcController extends CreatureController<Npc> {
 					rewardXp *= percentage;
 					rewardDp *= percentage;
 					rewardAp *= percentage;
-					rewardAp *= instanceApMultiplier;
+					rewardAp *= apMultiplier;
 
-					boolean shouldNotifyQuestEngine = true; // do not include pvp map
-					if (getOwner().getPosition() != null && getOwner().getPosition().getWorldMapInstance() != null
-						&& getOwner().getPosition().getWorldMapInstance().getInstanceHandler() instanceof PvpMapHandler)
-						shouldNotifyQuestEngine = false;
+					boolean shouldNotifyQuestEngine = !(instanceHandler instanceof PvpMapHandler); // do not include pvp map
 					if (shouldNotifyQuestEngine)
 						QuestEngine.getInstance().onKill(new QuestEnv(getOwner(), player, 0));
 					EventService.getInstance().onPveKill(player, getOwner());

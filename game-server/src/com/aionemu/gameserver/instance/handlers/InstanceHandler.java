@@ -96,7 +96,7 @@ public interface InstanceHandler {
 
 	boolean canEnter(Player player);
 
-	float getInstanceExpMultiplier();
+	float getExpMultiplier();
 
-	float getInstanceApMultiplier();
+	float getApMultiplier();
 }

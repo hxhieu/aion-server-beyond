@@ -304,7 +304,7 @@ public class PlayerController extends CreatureController<Player> {
 		// Effects removed with super.onDie()
 		super.onDie(lastAttacker, sendDiePacket);
 
-		if (player.isInInstance() && player.getPosition().getWorldMapInstance().getInstanceHandler().onDie(player, lastAttacker))
+		if (player.getPosition().getWorldMapInstance().getInstanceHandler().onDie(player, lastAttacker))
 			return;
 
 		MapRegion mapRegion = player.getPosition().getMapRegion();

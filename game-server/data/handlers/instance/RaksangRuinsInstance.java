@@ -43,7 +43,7 @@ public class RaksangRuinsInstance extends GeneralInstanceHandler {
 	}
 
 	@Override
-	public float getInstanceExpMultiplier() {
+	public float getExpMultiplier() {
 		return 1.8f;
 	}
 

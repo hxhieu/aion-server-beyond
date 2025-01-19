@@ -51,7 +51,7 @@ public class StatFunctions {
 	public static long calculateExperienceReward(int maxLevelInRange, Npc target) {
 		WorldMapInstance instance = target.getPosition().getWorldMapInstance();
 		int baseXP = calculateBaseExp(target);
-		float mapMulti = instance.getInstanceHandler().getInstanceExpMultiplier(); // map modifier to approach retail exp values
+		float mapMulti = instance.getInstanceHandler().getExpMultiplier(); // map modifier to approach retail exp values
 		if (instance.getParent().isInstanceType() && instance.getMaxPlayers() >= 2 && instance.getMaxPlayers() <= 6) {
 			mapMulti *= instance.getMaxPlayers(); // on retail you get mob EP * max instance member count (only for group instances)
 			mapMulti /= RatesConfig.XP_SOLO_RATES[0]; // custom: divide by regular xp rates, so they will not affect the rewarded XP
