@@ -184,11 +184,9 @@ public class Legion extends AionObject {
 		return legionLevel;
 	}
 
-	/**
-	 * @param legionLevel
-	 */
 	public void setLegionLevel(int legionLevel) {
 		this.legionLevel = legionLevel;
+		getLegionWarehouse().updateLimit(getWarehouseExpansions());
 	}
 
 	/**
@@ -376,34 +374,7 @@ public class Legion extends AionObject {
 		return legionWarehouse;
 	}
 
-	/**
-	 * Get warehouse slots
-	 *
-	 * @return warehouse slots
-	 */
-	public int getWarehouseSlots() {
-		switch (getLegionLevel()) {
-			case 1:
-				return LegionConfig.LWH_LEVEL1_SLOTS;
-			case 2:
-				return LegionConfig.LWH_LEVEL2_SLOTS;
-			case 3:
-				return LegionConfig.LWH_LEVEL3_SLOTS;
-			case 4:
-				return LegionConfig.LWH_LEVEL4_SLOTS;
-			case 5:
-				return LegionConfig.LWH_LEVEL5_SLOTS;
-			case 6:
-				return LegionConfig.LWH_LEVEL6_SLOTS;
-			case 7:
-				return LegionConfig.LWH_LEVEL7_SLOTS;
-			case 8:
-				return LegionConfig.LWH_LEVEL8_SLOTS;
-		}
-		return LegionConfig.LWH_LEVEL1_SLOTS;
-	}
-
-	public int getWarehouseLevel() {
+	public int getWarehouseExpansions() {
 		return getLegionLevel() - 1;
 	}
 
