@@ -30,6 +30,12 @@ public class ActionObserver {
 		return used.compareAndSet(false, true);
 	}
 
+	/**
+	 * Called when the observer was removed and no longer receives events
+	 */
+	public void onRemoved() {
+	}
+
 	public ObserverType getObserverType() {
 		return observerType;
 	}

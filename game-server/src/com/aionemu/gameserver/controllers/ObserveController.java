@@ -42,9 +42,13 @@ public class ObserveController {
 	}
 
 	public void removeObserver(ActionObserver observer) {
-		observers.remove(observer);
-		synchronized (onceUsedObservers) {
-			onceUsedObservers.remove(observer);
+		if (observers.remove(observer)) {
+			observer.onRemoved();
+		} else {
+			synchronized (onceUsedObservers) {
+				if (onceUsedObservers.remove(observer))
+					observer.onRemoved();
+			}
 		}
 	}
 
@@ -73,6 +77,7 @@ public class ObserveController {
 		// notify outside of lock
 		for (ActionObserver observer : tempOnceused) {
 			notifyAction(type, observer, object);
+			observer.onRemoved();
 		}
 
 		if (observers.size() > 0) {
@@ -266,8 +271,10 @@ public class ObserveController {
 	 */
 	public void clear() {
 		synchronized (onceUsedObservers) {
+			onceUsedObservers.forEach(ActionObserver::onRemoved);
 			onceUsedObservers.clear();
 		}
+		observers.forEach(ActionObserver::onRemoved);
 		observers.clear();
 		attackCalcObservers.clear();
 	}
