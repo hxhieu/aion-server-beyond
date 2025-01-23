@@ -699,16 +699,7 @@ public final class QuestService {
 						dItem = regQuestDropItem(drop, index++, 0);
 						dropItems.add(dItem);
 					}
-					for (Player p : pls) {
-						if (dItem != null) {
-							dItem.setPlayerObjId(p.getObjectId());
-						}
-						dropNpc.setAllowedLooter(p);
-						if (player.getPlayerGroup().getLootGroupRules().getLootRule() != LootRuleType.FREEFORALL) {
-							PacketSendUtility.sendPacket(p, new SM_LOOT_STATUS(npc.getObjectId(), Status.LOOT_ENABLE));
-						}
-					}
-					pls.clear();
+					allowLooting(pls, dropNpc, dItem);
 				}
 			} else if (players != null && player.isInAlliance()) {
 				List<Player> pls = new ArrayList<>();
@@ -733,16 +724,7 @@ public final class QuestService {
 						dItem = regQuestDropItem(drop, index++, 0);
 						dropItems.add(dItem);
 					}
-					for (Player p : pls) {
-						if (dItem != null) {
-							dItem.setPlayerObjId(p.getObjectId());
-						}
-						dropNpc.setAllowedLooter(p);
-						if (player.getPlayerAlliance().getLootGroupRules().getLootRule() != LootRuleType.FREEFORALL) {
-							PacketSendUtility.sendPacket(p, new SM_LOOT_STATUS(npc.getObjectId(), Status.LOOT_ENABLE));
-						}
-					}
-					pls.clear();
+					allowLooting(pls, dropNpc, dItem);
 				}
 			} else {
 				if (isQuestDrop(player, drop)) {
@@ -751,6 +733,17 @@ public final class QuestService {
 			}
 		}
 		return index;
+	}
+
+	private static void allowLooting(List<Player> players, DropNpc dropNpc, DropItem dropItem) {
+		for (Player player : players) {
+			if (dropItem != null)
+				dropItem.setPlayerObjId(player.getObjectId());
+			dropNpc.setAllowedLooter(player);
+			if (dropNpc.getLootGroupRules() != null && dropNpc.getLootGroupRules().getLootRule() != LootRuleType.FREEFORALL) {
+				PacketSendUtility.sendPacket(player, new SM_LOOT_STATUS(dropNpc.getObjectId(), Status.LOOT_ENABLE));
+			}
+		}
 	}
 
 	private static DropItem regQuestDropItem(QuestDrop drop, int index, Integer winner) {

@@ -225,12 +225,10 @@ public class PetService {
 				AuditLogger.log(pet.getMaster(), "tried to enable auto-loot on non-looting " + pet);
 				return;
 			}
-			if (pet.getMaster().isInTeam()) {
-				LootRuleType lootType = pet.getMaster().getLootGroupRules().getLootRule();
-				if (lootType == LootRuleType.FREEFORALL) {
-					PacketSendUtility.sendPacket(pet.getMaster(), SM_SYSTEM_MESSAGE.STR_MSG_LOOTING_PET_MESSAGE03());
-					return;
-				}
+			var team = pet.getMaster().getCurrentTeam();
+			if (team != null && team.getLootGroupRules().getLootRule() == LootRuleType.FREEFORALL) {
+				PacketSendUtility.sendPacket(pet.getMaster(), SM_SYSTEM_MESSAGE.STR_MSG_LOOTING_PET_MESSAGE03());
+				return;
 			}
 			PacketSendUtility.sendPacket(pet.getMaster(), SM_SYSTEM_MESSAGE.STR_MSG_LOOTING_PET_MESSAGE01());
 		}
