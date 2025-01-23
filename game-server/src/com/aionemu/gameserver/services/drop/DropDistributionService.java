@@ -54,7 +54,6 @@ public class DropDistributionService {
 	}
 
 	private void handleRoll(Player player, int roll, int itemId, DropItem requestedItem, DropNpc dropNpc) {
-		int maxRoll = 0;
 		int luck = 0;
 		if (roll == 0) {
 			PacketSendUtility.sendPacket(player, SM_SYSTEM_MESSAGE.STR_MSG_DICE_GIVEUP_ME());
@@ -73,7 +72,7 @@ public class DropDistributionService {
 				if (roll == 0) {
 					PacketSendUtility.sendPacket(member, SM_SYSTEM_MESSAGE.STR_MSG_DICE_GIVEUP_OTHER(player.getName()));
 				} else {
-					PacketSendUtility.sendPacket(member, SM_SYSTEM_MESSAGE.STR_MSG_DICE_RESULT_OTHER(player.getName(), luck, maxRoll));
+					PacketSendUtility.sendPacket(member, SM_SYSTEM_MESSAGE.STR_MSG_DICE_RESULT_OTHER(player.getName(), luck, dropNpc.getMaxRoll()));
 				}
 			}
 		}
