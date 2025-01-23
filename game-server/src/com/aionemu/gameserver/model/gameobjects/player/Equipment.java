@@ -73,6 +73,8 @@ public class Equipment implements Persistable {
 		ItemTemplate itemTemplate = item.getItemTemplate();
 		if (itemTemplate.isTwoHandWeapon()) // client only sends main+sub slot when equipping via right click / double click
 			slot = ItemSlot.MAIN_OR_SUB.getSlotIdMask();
+		else if (itemTemplate.isOneHandWeapon() && !hasDualWieldingSkills())
+			slot = ItemSlot.MAIN_HAND.getSlotIdMask();
 
 		if (!itemTemplate.isClassSpecific(owner.getPlayerClass())) {
 			PacketSendUtility.sendPacket(owner, STR_CANNOT_USE_ITEM_INVALID_CLASS());
