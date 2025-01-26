@@ -38,8 +38,6 @@ public class CM_OBJECT_SEARCH extends AionClientPacket {
 			return;
 		}
 		SpawnSearchResult searchResult = DataManager.SPAWNS_DATA.getNearestSpawnByNpcId(activePlayer, npcId, activePlayer.getWorldId());
-		if (searchResult == null)
-			searchResult = DataManager.SPAWNS_DATA.getFirstSpawnByNpcId(activePlayer.getWorldId(), npcId);
 		if (searchResult != null)
 			sendPacket(new SM_SHOW_NPC_ON_MAP(activePlayer, npcId, searchResult.getWorldId(), searchResult.getSpot().getX(), searchResult.getSpot().getY(),
 				searchResult.getSpot().getZ()));

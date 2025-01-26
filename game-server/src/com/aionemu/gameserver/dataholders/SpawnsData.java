@@ -369,15 +369,10 @@ public class SpawnsData extends AbstractLockManager {
 	 * first search: current map
 	 * second search: all maps of players race
 	 * third search: all other maps
-	 * 
-	 * @param player
-	 * @param npcId
-	 * @param worldId
-	 * @return
 	 */
 	public SpawnSearchResult getNearestSpawnByNpcId(Player player, int npcId, int worldId) {
 		List<SpawnGroup> spawns = getSpawnsForNpc(worldId, npcId);
-		if (spawns == null) { // -> there are no spawns for this npcId on the current map
+		if (spawns.isEmpty()) { // -> there are no spawns for this npcId on the current map
 			// search all maps of players race
 			for (WorldMapTemplate template : DataManager.WORLD_MAPS_DATA) {
 				if (template.getMapId() == worldId)
@@ -385,7 +380,7 @@ public class SpawnsData extends AbstractLockManager {
 				if ((template.getWorldType() == WorldType.ELYSEA && player.getRace() == Race.ELYOS)
 					|| (template.getWorldType() == WorldType.ASMODAE && player.getRace() == Race.ASMODIANS)) {
 					spawns = getSpawnsForNpc(template.getMapId(), npcId);
-					if (spawns != null) {
+					if (!spawns.isEmpty()) {
 						worldId = template.getMapId();
 						break;
 					}
@@ -394,22 +389,18 @@ public class SpawnsData extends AbstractLockManager {
 
 			// -> there are no spawns for this npcId on all maps of players race
 			// search all other maps
-			if (spawns == null) {
+			if (spawns.isEmpty()) {
 				for (WorldMapTemplate template : DataManager.WORLD_MAPS_DATA) {
 					if ((template.getMapId() == worldId) || (template.getWorldType() == WorldType.ELYSEA && player.getRace() == Race.ELYOS)
 						|| (template.getWorldType() == WorldType.ASMODAE && player.getRace() == Race.ASMODIANS)) {
 						continue;
 					}
 					spawns = getSpawnsForNpc(template.getMapId(), npcId);
-					if (spawns != null) {
+					if (!spawns.isEmpty()) {
 						worldId = template.getMapId();
 						break;
 					}
 				}
-			}
-
-			if (spawns == null) {
-				return null;
 			}
 		}
 
