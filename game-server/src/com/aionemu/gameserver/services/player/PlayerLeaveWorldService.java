@@ -132,6 +132,10 @@ public class PlayerLeaveWorldService {
 		player.getController().delete();
 		player.getCommonData().setOnline(false);
 		player.getCommonData().setLastOnline(lastOnline);
+		player.getCommonData().setX(player.getX());
+		player.getCommonData().setY(player.getY());
+		player.getCommonData().setZ(player.getZ());
+		player.getCommonData().setHeading(player.getHeading());
 
 		ChatServer.getInstance().sendPlayerLogout(player);
 
