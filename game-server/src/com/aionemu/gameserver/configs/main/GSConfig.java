@@ -8,10 +8,9 @@ import com.aionemu.commons.configuration.Property;
 public class GSConfig {
 
 	/**
-	 * Gameserver
+	 * Server country code (the client checks it against its cc start parameter)<br>
+	 * 1=NA, 2=EU, 7=RU, 99=Region free (allows any client, but client will limit character names to 10 characters)
 	 */
-
-	/* Server Country Code */
 	@Property(key = "gameserver.country.code", defaultValue = "99")
 	public static int SERVER_COUNTRY_CODE;
 
