@@ -874,16 +874,16 @@ public class Effect implements StatOwner {
 	}
 
 	private long calculateTemplateDuration() {
-		long longestTemplateDuration = 0;
-		// iterate skill's effects until we can calculate a duration time, which is valid for all of them
+		// retail sets the first effect duration > 0 as the skill duration, ignoring longer durations of other effects (see 620 Armor of Attrition)
 		for (EffectTemplate et : successEffects.values()) {
 			long effectDuration = et.getDuration2() + ((long) et.getDuration1()) * getSkillLevel(); // some event skills would produce an int overflow
-			if (et.getRandomTime() > 0)
-				effectDuration -= Rnd.get(0, et.getRandomTime());
-			if (effectDuration > longestTemplateDuration)
-				longestTemplateDuration = effectDuration;
+			if (effectDuration > 0) {
+				if (et.getRandomTime() > 0)
+					effectDuration -= Rnd.get(0, et.getRandomTime());
+				return effectDuration;
+			}
 		}
-		return longestTemplateDuration;
+		return 0;
 	}
 
 	private int getCumulativeResistDurationMultiplierFor(int resistCount) {
