@@ -89,10 +89,6 @@ public abstract class CreatureLifeStats<T extends Creature> {
 		this.killingBlow = 0;
 	}
 
-	public int reduceHp(TYPE type, int value, int skillId, LOG log, Creature attacker) {
-		return reduceHp(type, value, skillId, log, attacker, true);
-	}
-
 	/**
 	 * This method is called whenever caller wants to absorb creatures' HP
 	 * 
@@ -106,11 +102,9 @@ public abstract class CreatureLifeStats<T extends Creature> {
 	 *          log type (see {@link SM_ATTACK_STATUS.LOG}) for the attack status packet to be sent
 	 * @param attacker
 	 *          attacking creature or self
-	 * @param sendDiePacket
-	 *          send SM_DIE to players
 	 * @return The HP that this creature has left. If 0, the creature died.
 	 */
-	public int reduceHp(TYPE type, int value, int skillId, LOG log, Creature attacker, boolean sendDiePacket) {
+	public int reduceHp(TYPE type, int value, int skillId, LOG log, Creature attacker) {
 		Objects.requireNonNull(attacker, "attacker");
 		if (getOwner().isInvulnerable()) {
 			if (isAboutToDie())
@@ -138,7 +132,7 @@ public abstract class CreatureLifeStats<T extends Creature> {
 		if (hpReduced > 0 || skillId != 0)
 			onReduceHp(type, hpReduced, skillId, log);
 		if (died)
-			getOwner().getController().onDie(attacker, sendDiePacket);
+			getOwner().getController().onDie(attacker);
 		if (hpReduced > 0)
 			getOwner().getObserveController().notifyHPChangeObservers(currentHp);
 		return currentHp;
@@ -219,7 +213,7 @@ public abstract class CreatureLifeStats<T extends Creature> {
 		if (hpIncreased > 0 || skillId != 0)
 			onIncreaseHp(type, hpIncreased, skillId, log);
 		if (died)
-			getOwner().getController().onDie(effector == null ? getOwner() : effector, true);
+			getOwner().getController().onDie(effector == null ? getOwner() : effector);
 		if (hpIncreased > 0) {
 			if (killingBlow != 0 && currentHp > killingBlow)
 				unsetIsAboutToDie();
@@ -415,7 +409,7 @@ public abstract class CreatureLifeStats<T extends Creature> {
 		}
 		onSetHp();
 		if (!wasDead && isDead)
-			getOwner().getController().onDie(effector, true);
+			getOwner().getController().onDie(effector);
 		if (prevHp != currentHp)
 			getOwner().getObserveController().notifyHPChangeObservers(currentHp);
 	}
