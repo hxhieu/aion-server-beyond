@@ -272,7 +272,7 @@ public class GeneralInstanceHandler implements InstanceHandler {
 
 	@Override
 	public boolean allowInstanceRevive() {
-		return instance.getTemplate().isInstance() || instance.getTemplate().getWorldType() == WorldType.PANESTERRA;
+		return instance.getTemplate().isInstance() && getClass() != GeneralInstanceHandler.class || instance.getTemplate().getWorldType() == WorldType.PANESTERRA;
 	}
 
 	protected boolean isRestrictedToInstance(Item item) {
