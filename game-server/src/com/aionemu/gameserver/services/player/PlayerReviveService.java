@@ -199,7 +199,6 @@ public class PlayerReviveService {
 		player.getLifeStats().setCurrentMpPercent(isNoResurrectPenalty ? 100 : mpPercent);
 		if (player.getCommonData().getDp() > 0 && !isNoResurrectPenalty)
 			player.getCommonData().setDp(0);
-		player.getLifeStats().triggerRestoreOnRevive();
 		if (!isNoResurrectPenalty && setSoulSickness) {
 			player.getController().updateSoulSickness(resurrectionSkill);
 		}
