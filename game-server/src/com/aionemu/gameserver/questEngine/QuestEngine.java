@@ -989,7 +989,7 @@ public class QuestEngine implements GameEngine {
 			World.getInstance().forEachPlayer(player -> {
 				boolean daily = false, weekly = false;
 				for (QuestState qs : player.getQuestStateList().getCompletedQuests()) {
-					if (qs.canRepeat()) {
+					if (qs.isStartable()) {
 						QuestTemplate template = DataManager.QUEST_DATA.getQuestById(qs.getQuestId());
 						if (!daily && template.isDaily())
 							daily = true;
