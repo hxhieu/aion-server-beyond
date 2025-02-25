@@ -28,7 +28,7 @@ public class HaramelInstance extends GeneralInstanceHandler {
 			case 216922:
 				npc.getController().delete();
 				sendMsg(SM_SYSTEM_MESSAGE.STR_MSG_IDNOVICE_HAMEROON_TREASUREBOX_SPAWN());
-				PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(0, 457));
+				PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(false, 0, 0, 457, true));
 				switch (player.getPlayerClass()) {
 					case GLADIATOR:
 					case TEMPLAR:

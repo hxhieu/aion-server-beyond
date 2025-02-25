@@ -78,7 +78,7 @@ public class BeshmundirInstance extends GeneralInstanceHandler {
 				instance.setDoorState(467, true);
 				break;
 			case 799342:
-				sendPacket(new SM_PLAY_MOVIE(0, 447));
+				sendPacket(new SM_PLAY_MOVIE(false, 0, 0, 447, true));
 				break;
 			case 216157:
 			case 216238:

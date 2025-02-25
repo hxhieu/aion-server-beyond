@@ -144,7 +144,7 @@ public class KromedesTrialInstance extends GeneralInstanceHandler {
 	private void sendMovie(Player player, int movieId) {
 		if (!sentMovies.contains(movieId)) {
 			sentMovies.add(movieId);
-			PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(0, movieId));
+			PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(false, 0, 0, movieId, true));
 		}
 	}
 

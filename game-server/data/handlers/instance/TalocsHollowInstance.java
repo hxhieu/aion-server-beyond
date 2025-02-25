@@ -112,7 +112,7 @@ public class TalocsHollowInstance extends GeneralInstanceHandler {
 						if (summon != null) {
 							if (summon.getNpcId() == 799500 || summon.getNpcId() == 799501) {
 								SummonsService.doMode(SummonMode.RELEASE, summon, UnsummonType.UNSPECIFIED);
-								PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(0, 435));
+								PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(false, 0, 0, 435, true));
 							}
 						}
 					});
@@ -126,7 +126,7 @@ public class TalocsHollowInstance extends GeneralInstanceHandler {
 			case 215488: // celestius
 				Player player = npc.getAggroList().getMostPlayerDamage();
 				if (player != null)
-					PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(0, 10021, 437, 0));
+					PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(false, 0, 10021, 437, true));
 				Npc contaminatedFragment = getNpc(700740);
 				if (contaminatedFragment != null) {
 					SpawnTemplate fragmentTemplate = contaminatedFragment.getSpawn();
@@ -155,7 +155,7 @@ public class TalocsHollowInstance extends GeneralInstanceHandler {
 	private void sendMovie(Player player, int movie) {
 		if (!movies.contains(movie)) {
 			movies.add(movie);
-			PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(0, movie));
+			PacketSendUtility.sendPacket(player, new SM_PLAY_MOVIE(false, 0, 0, movie, true));
 		}
 	}
 

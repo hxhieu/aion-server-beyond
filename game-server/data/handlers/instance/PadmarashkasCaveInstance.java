@@ -68,7 +68,7 @@ public class PadmarashkasCaveInstance extends GeneralInstanceHandler {
 	@Override
 	public void onEnterZone(Player player, ZoneInstance zone) {
 		if (zone.getAreaTemplate().getZoneName() == ZoneName.get("PADMARASHKAS_NEST_320150000") && moviePlayed.compareAndSet(false, true))
-			PacketSendUtility.broadcastToMap(instance, new SM_PLAY_MOVIE(0, 488));
+			PacketSendUtility.broadcastToMap(instance, new SM_PLAY_MOVIE(false, 0, 0, 488, true));
 	}
 
 	@Override

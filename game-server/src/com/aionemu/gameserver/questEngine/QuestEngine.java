@@ -64,7 +64,6 @@ public class QuestEngine implements GameEngine {
 	private final Map<ZoneName, List<Integer>> questOnEnterZone = new HashMap<>();
 	private final Map<ZoneName, List<Integer>> questOnLeaveZone = new HashMap<>();
 	private final Map<String, List<Integer>> questOnPassFlyingRings = new HashMap<>();
-	private final Map<Integer, List<Integer>> questOnMovieEnd = new HashMap<>();
 	private final List<Integer> questOnTimerEnd = new ArrayList<>();
 	private final List<Integer> onInvisibleTimerEnd = new ArrayList<>();
 	private final Map<AbyssRankEnum, List<Integer>> questOnKillRanked = new EnumMap<>(AbyssRankEnum.class);
@@ -133,7 +132,6 @@ public class QuestEngine implements GameEngine {
 		questOnLogOut.clear();
 		questOnEnterZone.clear();
 		questOnLeaveZone.clear();
-		questOnMovieEnd.clear();
 		questOnTimerEnd.clear();
 		onInvisibleTimerEnd.clear();
 		questOnPassFlyingRings.clear();
@@ -506,23 +504,14 @@ public class QuestEngine implements GameEngine {
 		return true;
 	}
 
-	public boolean onMovieEnd(QuestEnv env, int movieId) {
+	public void onMovieEnd(QuestEnv env, int movieId) {
 		try {
-			List<Integer> questIds = questOnMovieEnd.get(movieId);
-			if (questIds != null) {
-				for (int questId : questIds) {
-					AbstractQuestHandler questHandler = getQuestHandlerByQuestId(questId);
-					if (questHandler != null) {
-						env.setQuestId(questId);
-						if (questHandler.onMovieEndEvent(env, movieId))
-							return true;
-					}
-				}
-			}
+			AbstractQuestHandler questHandler = getQuestHandlerByQuestId(env.getQuestId());
+			if (questHandler != null)
+				questHandler.onMovieEndEvent(env, movieId);
 		} catch (Exception ex) {
 			log.error("QE: exception in onMovieEnd", ex);
 		}
-		return false;
 	}
 
 	public void onQuestTimerEnd(QuestEnv env) {
@@ -817,10 +806,6 @@ public class QuestEngine implements GameEngine {
 
 	public void registerOnPassFlyingRings(String flyingRing, int questId) {
 		questOnPassFlyingRings.computeIfAbsent(flyingRing, k -> new ArrayList<>()).add(questId);
-	}
-
-	public void registerOnMovieEndQuest(int movieId, int questId) {
-		questOnMovieEnd.computeIfAbsent(movieId, k -> new ArrayList<>()).add(questId);
 	}
 
 	public void registerOnQuestTimerEnd(int questId) {
