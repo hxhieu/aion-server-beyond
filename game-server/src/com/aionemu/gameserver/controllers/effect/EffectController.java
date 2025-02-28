@@ -37,7 +37,7 @@ public class EffectController {
 
 	protected int abnormals;
 
-	private boolean isUnderShield = false;
+	private boolean isUnderNormalShield = false;
 	private boolean keepBuffsOnDie;
 
 	public EffectController(Creature owner) {
@@ -48,12 +48,12 @@ public class EffectController {
 		return owner;
 	}
 
-	public boolean isUnderShield() {
-		return isUnderShield;
+	public boolean isUnderNormalShield() {
+		return isUnderNormalShield;
 	}
 
-	public void setUnderShield(boolean isUnderShield) {
-		this.isUnderShield = isUnderShield;
+	public void setUnderNormalShield(boolean isUnderNormalShield) {
+		this.isUnderNormalShield = isUnderNormalShield;
 	}
 
 	public void addEffect(Effect nextEffect) {
@@ -100,14 +100,14 @@ public class EffectController {
 			}
 			List<Effect> filteredMap = nextEffect.getSkillSubType() == SkillSubType.CHANT ? getAuraEffects() : getNoShowToggleEffectsExceptAuras();
 			if (filteredMap.size() >= mts)
-				filteredMap.get(0).endEffect();
+				filteredMap.getFirst().endEffect();
 		}
 
 		// max 4 chants
 		if (nextEffect.isChant()) {
 			List<Effect> chants = filterEffects(abnormalEffectMap, Effect::isChant);
 			if (chants.size() >= 4)
-				chants.get(0).endEffect();
+				chants.getFirst().endEffect();
 		}
 		lock.writeLock().lock();
 		try {
@@ -253,7 +253,7 @@ public class EffectController {
 		List<Effect> effects = filterEffects(abnormalEffectMap,
 			e -> e.getTargetSlot() == effect.getTargetSlot() && e.getSkillTemplate().getCooldownId() == cdId);
 		if (effects.size() >= size)
-			effects.get(0).endEffect();
+			effects.getFirst().endEffect();
 		// archer buffs
 		if (cdId >= 2020 && cdId <= 2030) {
 			int count = 0;

@@ -114,7 +114,6 @@ public class SkillEngine {
 		return new PenaltySkill(template, effector, skillLevel);
 	}
 
-
 	public static SkillEngine getInstance() {
 		return skillEngine;
 	}
@@ -189,13 +188,15 @@ public class SkillEngine {
 	}
 
 	public Effect createCriticalEffect(Player attacker, Creature target, int skillId) {
+		if (target.getEffectController().isUnderNormalShield())
+			return null;
 		if (skillId != 0) {
 			SkillTemplate skillTemplate = DataManager.SKILL_DATA.getSkillTemplate(skillId);
 			if (skillTemplate.getType() == SkillType.MAGICAL) // magical skills do not stun
 				return null;
-			if (skillTemplate.hasAnyEffect(true, EffectType.PULLED, EffectType.STUMBLE, EffectType.STAGGER, EffectType.STUN,
-					EffectType.BACKDASH, EffectType.DASH, EffectType.MOVEBEHIND, EffectType.RANDOMMOVELOC, EffectType.RECALLINSTANT)
-					|| !skillTemplate.hasAnyEffect(EffectType.SKILLATKDRAININSTANT, EffectType.SKILLATTACKINSTANT))
+			if (skillTemplate.hasAnyEffect(true, EffectType.PULLED, EffectType.STUMBLE, EffectType.STAGGER, EffectType.STUN, EffectType.BACKDASH,
+				EffectType.DASH, EffectType.MOVEBEHIND, EffectType.RANDOMMOVELOC, EffectType.RECALLINSTANT)
+				|| !skillTemplate.hasAnyEffect(EffectType.SKILLATKDRAININSTANT, EffectType.SKILLATTACKINSTANT))
 				return null;
 		}
 

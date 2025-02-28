@@ -498,7 +498,11 @@ public abstract class EffectTemplate {
 		if (effected == null || effected.getGameStats() == null || effector == null || effector.getGameStats() == null)
 			return false;
 
-		// calculate cumulative resist chance for fear, sleep and paralyze if effector & effected are players
+		// Stun like effects cannot be applied as long as a shield is active
+		if (isStunState(statEnum) && effected.getEffectController().isUnderNormalShield())
+			return false;
+
+		// calculate cumulative resist chance for fear, sleep and paralyze if effector and effected are players
 		if (effector.getMaster() instanceof Player && effected instanceof Player) {
 			if (statEnum == StatEnum.FEAR_RESISTANCE && ((Player) effected).getFearCount() >= 3
 				&& ((Player) effected).validateCumulativeFearResistExpirationTime()) {
@@ -565,6 +569,13 @@ public abstract class EffectTemplate {
 		return switch (stat) {
 			case BLEED_RESISTANCE, POISON_RESISTANCE -> false;
 			default -> true;
+		};
+	}
+
+	private boolean isStunState(StatEnum stat) {
+		return switch (stat) {
+			case STUN_RESISTANCE, STUMBLE_RESISTANCE, OPENAERIAL_RESISTANCE, SPIN_RESISTANCE, STAGGER_RESISTANCE -> true;
+			default -> false;
 		};
 	}
 

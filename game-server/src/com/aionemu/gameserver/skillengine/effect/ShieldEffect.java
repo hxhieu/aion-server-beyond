@@ -40,12 +40,12 @@ public class ShieldEffect extends EffectTemplate {
 
 		AttackShieldObserver asObserver = new AttackShieldObserver(hitValueWithDelta, valueWithDelta, percent, effect, hitType, getType(), hitTypeProb);
 		effect.addObserver(effect.getEffected(), asObserver);
-		effect.getEffected().getEffectController().setUnderShield(true);
+		effect.getEffected().getEffectController().setUnderNormalShield(true);
 	}
 
 	@Override
 	public void endEffect(Effect effect) {
-		effect.getEffected().getEffectController().setUnderShield(false);
+		effect.getEffected().getEffectController().setUnderNormalShield(false);
 	}
 
 	public ShieldType getType() {

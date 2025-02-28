@@ -494,7 +494,7 @@ public class Effect implements StatOwner {
 					template.calculateSubEffect(this);
 				}
 			}
-			if (effector instanceof Player p && getAttackStatus() == AttackStatus.CRITICAL && !getEffected().getEffectController().isUnderShield() && getSubEffect() == null && !isPeriodic() && Rnd.chance() < 10) {
+			if (effector instanceof Player p && getAttackStatus() == AttackStatus.CRITICAL && getSubEffect() == null && !isPeriodic() && Rnd.chance() < 10) {
 				Effect criticalEffect = SkillEngine.getInstance().createCriticalEffect(p, getEffected(), skillTemplate.getSkillId());
 				if (criticalEffect != null && criticalEffect.getEffectResult() != EffectResult.DODGE && criticalEffect.getEffectResult() != EffectResult.RESIST) {
 					applyCriticalEffect = true;

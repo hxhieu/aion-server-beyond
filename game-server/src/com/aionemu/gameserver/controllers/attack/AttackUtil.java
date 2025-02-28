@@ -65,6 +65,7 @@ public class AttackUtil {
 		float reduceRatio = 0;
 		switch (AttackStatus.getBaseStatus(status)) {
 			case DODGE:
+			case RESIST:
 				return;
 			case BLOCK:
 				if (attacked instanceof Player p) {
@@ -232,15 +233,10 @@ public class AttackUtil {
 		boolean send = !(template instanceof DelayedSpellAttackInstantEffect) && !(template instanceof ProcAtkInstantEffect);
 		boolean shouldIncreaseByOneTimeBoost = !(template instanceof ProcAtkInstantEffect);
 
-		AttackStatus status;
-		switch (element) {
-			case NONE:
-				status = calculatePhysicalStatus(effector, effected, template, effect.getSkillLevel());
-				break;
-			default:
-				status = calculateMagicalStatus(effector, effected, template.getCritProbMod2(), true, effect.getSkillTemplate().isMcritApplied());
-				break;
-		}
+		AttackStatus status = switch (element) {
+			case NONE -> calculatePhysicalStatus(effector, effected, template, effect.getSkillLevel());
+			default -> calculateMagicalStatus(effector, effected, template.getCritProbMod2(), true, effect.getSkillTemplate().isMcritApplied());
+		};
 
 		int baseAttack = 0;
 		float bonus = 0;
@@ -336,7 +332,7 @@ public class AttackUtil {
 		if (element == SkillElement.NONE) {
 			float def = effected.getGameStats().getPDef().getBonus() + StatFunctions.getMovementModifier(effected, StatEnum.PHYSICAL_DEFENSE,
 					effected.getGameStats().getPDef().getBase());
-			damage -= def/10;
+			damage -= def / 10;
 		}
 
 		switch (AttackStatus.getBaseStatus(status)) {
@@ -398,10 +394,10 @@ public class AttackUtil {
 	private static float randomizeDamage(int randomDamageType, float damage) {
 		switch (randomDamageType) {
 			case 1:
-					switch (Rnd.get(1, 3)) {
-							case 1 -> damage *= 0.5f;
-							case 2 -> damage *= 1.5f;
-					}
+				switch (Rnd.get(1, 3)) {
+					case 1 -> damage *= 0.5f;
+					case 2 -> damage *= 1.5f;
+				}
 				break;
 			case 2:
 				if (Rnd.chance() < 70)
@@ -410,10 +406,10 @@ public class AttackUtil {
 					damage *= 2;
 				break;
 			case 3:
-					switch (Rnd.get(1, 3)) {
-							case 1 -> damage *= 1.15f;
-							case 2 -> damage *= 1.25f;
-					}
+				switch (Rnd.get(1, 3)) {
+					case 1 -> damage *= 1.15f;
+					case 2 -> damage *= 1.25f;
+				}
 				break;
 			case 4:
 				damage *= (Rnd.get(25, 100) * 0.02f);
@@ -469,7 +465,7 @@ public class AttackUtil {
 	}
 
 	public static int calculateMagicalOverTimeSkillResult(Effect effect, float skillDamage, SkillElement element, int position, boolean useMagicBoost,
-														  int criticalProb, int critAddDmg) {
+		int criticalProb, int critAddDmg) {
 		Creature effector = effect.getEffector();
 		Creature effected = effect.getEffected();
 		float damage;
@@ -558,7 +554,7 @@ public class AttackUtil {
 	public static void cancelCastOn(Creature target) {
 		target.getKnownList().forEachObject(visibleObject -> {
 			if (visibleObject instanceof Creature creature && visibleObject.getTarget() == target) {
-					if (creature.getCastingSkill() != null && creature.getCastingSkill().getFirstTarget().equals(target))
+				if (creature.getCastingSkill() != null && creature.getCastingSkill().getFirstTarget().equals(target))
 					creature.getController().cancelCurrentSkill(null);
 			}
 		});

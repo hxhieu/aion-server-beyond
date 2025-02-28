@@ -317,9 +317,9 @@ public abstract class CreatureController<T extends Creature> extends VisibleObje
 			damage += result.getDamage();
 		}
 
-		AttackStatus firstAttackStatus = AttackStatus.getBaseStatus(attackResult.get(0).getAttackStatus());
+		AttackStatus firstAttackStatus = AttackStatus.getBaseStatus(attackResult.getFirst().getAttackStatus());
 		Effect criticalEffect = null;
-		if (getOwner() instanceof Player player && firstAttackStatus == AttackStatus.CRITICAL && !target.getEffectController().isUnderShield() && Rnd.chance() < 10) {
+		if (getOwner() instanceof Player player && firstAttackStatus == AttackStatus.CRITICAL && Rnd.chance() < 10) {
 			criticalEffect = SkillEngine.getInstance().createCriticalEffect(player, target, 0);
 			if (criticalEffect != null && (criticalEffect.getEffectResult() == EffectResult.DODGE || criticalEffect.getEffectResult() == EffectResult.RESIST))
 				criticalEffect = null;
