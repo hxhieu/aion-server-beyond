@@ -190,21 +190,10 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 		return targetZ;
 	}
 
-	/**
-	 * @param targetX
-	 * @param targetY
-	 * @param targetZ
-	 * @return
-	 */
 	protected void moveToLocation(float targetX, float targetY, float targetZ) {
 		float ownerX = owner.getX();
 		float ownerY = owner.getY();
 		float ownerZ = owner.getZ();
-		boolean directionChanged = targetX != targetDestX || targetY != targetDestY || targetZ != targetDestZ;
-
-		if (directionChanged) {
-			heading = (byte) (Math.toDegrees(Math.atan2(targetY - ownerY, targetX - ownerX)) / 3);
-		}
 
 		if (owner.getAi().isLogging()) {
 			AILogger.moveinfo(owner, "OLD targetDestX: " + targetDestX + " targetDestY: " + targetDestY + " targetDestZ " + targetDestZ);
@@ -216,6 +205,10 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 			targetY = owner.getSpawn().getY();
 			targetZ = owner.getSpawn().getZ();
 		}
+
+		boolean destinationChanged = targetX != targetDestX || targetY != targetDestY || targetZ != targetDestZ;
+		if (targetX != targetDestX || targetY != targetDestY)
+			heading = PositionUtil.getHeadingTowards(ownerX, ownerY, targetX, targetY);
 
 		targetDestX = targetX;
 		targetDestY = targetY;
@@ -259,7 +252,7 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 				float geoZ = GeoService.getInstance().getZ(owner.getWorldId(), newX, newY, newZ + 2, Math.min(newZ, ownerZ) - 2, owner.getInstanceId());
 				if (!Float.isNaN(geoZ)) {
 					if (Math.abs(newZ - geoZ) > 1)
-						directionChanged = true;
+						destinationChanged = true;
 					newZ = geoZ;
 					boolean isXYDestinationReached = PositionUtil.getDistance(newX, newY, pointX, pointY) < MOVE_OFFSET;
 					if (isXYDestinationReached && !PositionUtil.isInRange(newX, newY, newZ, pointX, pointY, pointZ, MOVE_OFFSET))
@@ -274,8 +267,8 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 
 		World.getInstance().updatePosition(owner, newX, newY, newZ, heading, false);
 
-		byte newMask = getMoveMask(directionChanged);
-		if (movementMask != newMask || directionChanged) {
+		byte newMask = getMoveMask(destinationChanged);
+		if (movementMask != newMask || destinationChanged) {
 			if (movementMask != newMask) {
 				if (owner.getAi().isLogging()) {
 					AILogger.moveinfo(owner, "oldMask=" + movementMask + " newMask=" + newMask);
