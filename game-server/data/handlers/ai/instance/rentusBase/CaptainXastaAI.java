@@ -115,7 +115,6 @@ public class CaptainXastaAI extends AggressiveNpcAI {
 					Creature creature = getAggroList().getMostHated();
 					if (creature == null || creature.isDead() || !getOwner().canSee(creature)) {
 						setStateIfNot(AIState.FIGHT);
-						getMoveController().recallPreviousStep();
 						getMoveController().abortMove();
 						onGeneralEvent(AIEventType.ATTACK_FINISH);
 						onGeneralEvent(AIEventType.BACK_HOME);

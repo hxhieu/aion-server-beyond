@@ -91,8 +91,6 @@ public class CreatureEventHandler {
 				|| TribeRelationService.isAggressive(owner, creature) && (isPlayer || creature.isEnemyFrom(owner))) { // aggressive mob
 				if (validateAggro(owner, creature) && GeoService.getInstance().canSee(owner, creature)) {
 					ShoutEventHandler.onSee(ai, creature);
-					if (!ai.isInState(AIState.RETURNING))
-						owner.getMoveController().storeStep();
 					if (ai.canThink())
 						ai.onCreatureEvent(AIEventType.CREATURE_AGGRO, creature);
 				}
