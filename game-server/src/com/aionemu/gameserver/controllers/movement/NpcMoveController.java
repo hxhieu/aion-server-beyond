@@ -39,12 +39,14 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 
 	private static final Logger log = LoggerFactory.getLogger(NpcMoveController.class);
 	private static final float MOVE_OFFSET = 0.05f;
+	private static final int MAX_GEO_POINT_DISTANCE = 5;
 
 	private Destination destination = Destination.TARGET_OBJECT;
 
 	private float pointX;
 	private float pointY;
 	private float pointZ;
+	private boolean nextPointFromGeo;
 	private boolean isStop;
 
 	private LastUsedCache<Byte, Point3D> lastSteps = null;
@@ -52,7 +54,6 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 
 	private WalkerTemplate walkerTemplate;
 	private RouteStep currentStep;
-	private float cachedTargetZ;
 
 	public NpcMoveController(Npc owner) {
 		super(owner);
@@ -152,13 +153,17 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 		switch (destination) {
 			case TARGET_OBJECT:
 				VisibleObject target = owner.getTarget();// todo no target
-				if (!(target instanceof Creature))
+				if (target == null)
 					return;
 				if (!PositionUtil.isInRange(target, pointX, pointY, pointZ, MOVE_CHECK_OFFSET)) {
-					Creature creature = (Creature) target;
-					pointX = target.getX();
-					pointY = target.getY();
-					pointZ = getTargetZ(creature);
+					if (GeoDataConfig.GEO_NPC_MOVE && !owner.isInFlyingState() && target instanceof Creature creature && (nextPointFromGeo || (nextPointFromGeo = !isOnGround(creature)))) {
+						if (trySetValidGeoPoint(target.getX(), target.getY()) && nextPointFromGeo)
+							nextPointFromGeo = !isOnGround(creature);
+					} else {
+						pointX = target.getX();
+						pointY = target.getY();
+						pointZ = target.getZ();
+					}
 				}
 				moveToLocation(pointX, pointY, pointZ);
 				break;
@@ -170,24 +175,45 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 		updateLastMove();
 	}
 
+	private boolean isOnGround(Creature creature) {
+		return !creature.isFlying() && !creature.getMoveController().isJumping() && (creature.getMoveController().getMovementMask() & MovementMask.FALL) == 0;
+	}
+
 	/**
-	 * @param creature
-	 * @return
+	 * Sets pointX, pointY and pointZ to valid geo coordinates near or at given position. Tries to detect and stop at cliffs or steep hills.
+	 *
+	 * @return True if new geo point was set, false if old one was kept (either because it's still valid or needs to be rechecked at the next interval).
 	 */
-	private float getTargetZ(Creature creature) {
-		float targetZ = creature.getZ();
-		if (GeoDataConfig.GEO_NPC_MOVE && creature.isInFlyingState() && !owner.isInFlyingState()) {
-			if (owner.getGameStats().checkGeoNeedUpdate()) {
-				float lowestZ = Math.min(creature.getZ(), owner.getZ());
-				float geoZ = GeoService.getInstance().getZ(creature, creature.getZ() + 2, lowestZ - 5);
-				if (!Float.isNaN(geoZ))
-					cachedTargetZ = geoZ;
-				else
-					cachedTargetZ = lowestZ;
-			}
-			targetZ = cachedTargetZ;
+	private boolean trySetValidGeoPoint(float targetX, float targetY) {
+		if (pointX == 0 && pointY == 0 && pointZ == 0) {
+			pointX = owner.getX();
+			pointY = owner.getY();
+			pointZ = owner.getZ();
+			owner.getGameStats().setNextGeoZUpdate(0);
 		}
-		return targetZ;
+		long nowMillis = System.currentTimeMillis();
+		if (nowMillis < owner.getGameStats().getNextGeoZUpdate())
+			return false;
+		float distance2D = (float) PositionUtil.getDistance(pointX, pointY, targetX, targetY);
+		if (distance2D < MOVE_CHECK_OFFSET)
+			return false; // no need to recalculate
+		if (distance2D > MAX_GEO_POINT_DISTANCE) {
+			double angleRadians = Math.toRadians(PositionUtil.calculateAngleFrom(pointX, pointY, targetX, targetY));
+			targetX = pointX + (float) (Math.cos(angleRadians) * MAX_GEO_POINT_DISTANCE);
+			targetY = pointY + (float) (Math.sin(angleRadians) * MAX_GEO_POINT_DISTANCE);
+			distance2D = MAX_GEO_POINT_DISTANCE;
+		}
+		float maxZDiff = distance2D + MOVE_CHECK_OFFSET;
+		float geoZ = GeoService.getInstance().getZ(owner.getWorldId(), targetX, targetY, pointZ + maxZDiff, pointZ - maxZDiff, owner.getInstanceId());
+		if (Float.isNaN(geoZ)) {
+			owner.getGameStats().setNextGeoZUpdate(nowMillis + 1000);
+			return false;
+		}
+		pointX = targetX;
+		pointY = targetY;
+		pointZ = geoZ;
+		owner.getGameStats().setNextGeoZUpdate(nowMillis + 500);
+		return true;
 	}
 
 	protected void moveToLocation(float targetX, float targetY, float targetZ) {
@@ -322,6 +348,7 @@ public class NpcMoveController extends CreatureMoveController<Npc> {
 		pointX = 0;
 		pointY = 0;
 		pointZ = 0;
+		nextPointFromGeo = false;
 	}
 
 	public WalkerTemplate getWalkerTemplate() {

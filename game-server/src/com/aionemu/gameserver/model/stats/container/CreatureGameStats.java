@@ -36,7 +36,6 @@ public abstract class CreatureGameStats<T extends Creature> {
 	protected final T owner;
 	private final Map<StatEnum, List<IStatFunction>> stats = new ConcurrentHashMap<>();
 
-	private long lastGeoUpdate = 0;
 	private int attackCounter = 0;
 	private int cachedMaxHp, cachedMaxMp, cachedSpeed;
 
@@ -340,15 +339,6 @@ public abstract class CreatureGameStats<T extends Creature> {
 		synchronized (statFunctions) {
 				return new ArrayList<>(statFunctions);
 		}
-	}
-
-	public boolean checkGeoNeedUpdate() {
-		long currentTime = System.currentTimeMillis();
-		if (currentTime - lastGeoUpdate > 600) {
-			lastGeoUpdate = currentTime;
-			return true;
-		}
-		return false;
 	}
 
 	/**
