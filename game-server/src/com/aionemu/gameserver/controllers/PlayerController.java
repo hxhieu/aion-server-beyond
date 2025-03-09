@@ -385,14 +385,16 @@ public class PlayerController extends CreatureController<Player> {
 
 	@Override
 	public void attackTarget(Creature target, int time, boolean skipChecks) {
-
-		PlayerGameStats gameStats = getOwner().getGameStats();
-
 		if (!PlayerRestrictions.canAttack(getOwner(), target))
 			return;
 
-		// client handles most distance checks beforehand, but for some cases we need to check it also
-		if (!PositionUtil.isInAttackRange(getOwner(), target, getOwner().getGameStats().getAttackRange().getCurrent() / 1000f + 1)) {
+		PlayerGameStats gameStats = getOwner().getGameStats();
+		// client allows attacking from +0.̅9 meters further away
+		float attackRange = 1 + gameStats.getAttackRange().getCurrent() / 1000f;
+		// client can send CM_ATTACK before in range (even before sending CM_MOVE). we only allow it on first hit to minimize exploit potential
+		if (!target.getAggroList().isHating(getOwner()))
+			attackRange += PositionUtil.calculateMaxCoveredDistance(getOwner(), 100);
+		if (!PositionUtil.isInAttackRange(getOwner(), target, attackRange)) {
 			PacketSendUtility.sendPacket(getOwner(), SM_ATTACK_RESPONSE.TARGET_TOO_FAR_AWAY(gameStats.getAttackCounter()));
 			return;
 		}

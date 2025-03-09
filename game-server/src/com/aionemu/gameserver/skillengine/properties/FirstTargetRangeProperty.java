@@ -16,10 +16,6 @@ import com.aionemu.gameserver.world.geo.GeoService;
  */
 public class FirstTargetRangeProperty {
 
-	/**
-	 * @param skill
-	 * @param properties
-	 */
 	public static boolean set(Skill skill, Properties properties, CastState castState) {
 		float firstTargetRange = properties.getFirstTargetRange();
 		if (!skill.isFirstTargetRangeCheck())
@@ -53,7 +49,11 @@ public class FirstTargetRangeProperty {
 
 		// Add Weapon Range to distance
 		if (properties.isAddWeaponRange())
-			firstTargetRange += skill.getEffector().getGameStats().getAttackRange().getCurrent() / 1000f;
+			firstTargetRange += effector.getGameStats().getAttackRange().getCurrent() / 1000f;
+
+		// fixes first hit sometimes incorrectly not going through
+		if (effector.getMoveController().isInMove() && !firstTarget.getAggroList().isHating(effector))
+			firstTargetRange += PositionUtil.calculateMaxCoveredDistance(effector, 50);
 
 		if (!firstTarget.getEffectController().isInAnyAbnormalState(AbnormalState.CANT_MOVE_STATE)
 			&& !PositionUtil.isInAttackRange(effector, firstTarget, firstTargetRange)) {
