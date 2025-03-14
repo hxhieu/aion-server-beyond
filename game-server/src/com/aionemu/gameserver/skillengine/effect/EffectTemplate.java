@@ -499,7 +499,7 @@ public abstract class EffectTemplate {
 			return false;
 
 		// Stun like effects cannot be applied as long as a shield is active
-		if (isStunState(statEnum) && effected.getEffectController().isUnderNormalShield())
+		if (isProtectedByShield(effected, statEnum))
 			return false;
 
 		// calculate cumulative resist chance for fear, sleep and paralyze if effector and effected are players
@@ -572,9 +572,9 @@ public abstract class EffectTemplate {
 		};
 	}
 
-	private boolean isStunState(StatEnum stat) {
+	private boolean isProtectedByShield(Creature effected, StatEnum stat) {
 		return switch (stat) {
-			case STUN_RESISTANCE, STUMBLE_RESISTANCE, OPENAERIAL_RESISTANCE, SPIN_RESISTANCE, STAGGER_RESISTANCE -> true;
+			case PULLED_RESISTANCE, STUMBLE_RESISTANCE, OPENAERIAL_RESISTANCE, SPIN_RESISTANCE, STAGGER_RESISTANCE -> effected.getEffectController().isUnderNormalShield();
 			default -> false;
 		};
 	}
