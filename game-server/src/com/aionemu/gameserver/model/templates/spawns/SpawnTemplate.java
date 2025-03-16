@@ -170,6 +170,10 @@ public class SpawnTemplate {
 		return walkerIdx;
 	}
 
+	public SpawnGroup getGroup() {
+		return spawnGroup;
+	}
+
 	public boolean isTemporarySpawn() {
 		return spawnGroup.isTemporarySpawn();
 	}
@@ -190,9 +194,6 @@ public class SpawnTemplate {
 		return state;
 	}
 
-	/**
-	 * @return the creatorId
-	 */
 	public int getCreatorId() {
 		return creatorId;
 	}
