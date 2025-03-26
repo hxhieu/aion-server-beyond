@@ -163,12 +163,12 @@ public abstract class AbstractPlayerInfoPacket extends AionServerPacket {
 
 	private CharacterBanInfo getCharBanInfo(PlayerAccountData playerAccountData, AionConnection con) {
 		CharacterBanInfo cbi = playerAccountData.getCharBanInfo();
-		if (cbi != null && cbi.getEnd() > System.currentTimeMillis() / 1000)
+		long nowSeconds = System.currentTimeMillis() / 1000;
+		if (cbi != null && nowSeconds >= cbi.getEnd())
 			cbi = null;
 		if (cbi == null && SecurityConfig.MULTI_CLIENTING_RESTRICTION_MODE == SecurityConfig.MultiClientingRestrictionMode.SAME_FACTION) {
 			int cdMinutes = SecurityConfig.MULTI_CLIENTING_FACTION_SWITCH_COOLDOWN_MINUTES;
 			if (cdMinutes > 0 && MultiClientingService.checkForFactionSwitchCooldownTime(playerAccountData.getPlayerCommonData().getRace(), con) != null) {
-				long nowSeconds = System.currentTimeMillis() / 1000;
 				int durationSeconds = 61; // client will send CM_CHARACTER_LIST after this duration to update the ban info (<61s corrupts the ban info)
 				cbi = new CharacterBanInfo(nowSeconds, durationSeconds, "\n\n\n\uE026 " + cdMinutes + " minute cooldown between switching factions\n\n\n\n\n\n\n");
 			}
