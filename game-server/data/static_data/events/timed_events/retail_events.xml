@@ -2457,7 +2457,7 @@
 			</spawn_map>
 		</spawns>
 	</event>
-	<event name="April Fool's Day" start="2015-04-01T00:00:00" end="2015-04-10T23:59:59">
+	<event name="April Fool's Day" start="2025-04-01T00:00:00" end="2025-04-04T23:59:59">
 		<quests>
 			<maintainable>80328 80329 80330 80331</maintainable>
 		</quests>
@@ -5336,6 +5336,122 @@
 			</gd_rule>
 		</event_drops>
 	</event>
+	<!-- https://web.archive.org/web/20160422022912/http://na.aiononline.com/en/news/events/04202016-spring-harvest.php -->
+	<event name="Spring Harvest" start="2025-03-31T00:00:00" end="2025-04-06T23:59:59">
+		<quests>
+			<maintainable>80635 80636 80637 80638 80639 80640 80641 80642</maintainable>
+		</quests>
+		<spawns>
+			<!-- Sanctum -->
+			<spawn_map map_id="110010000">
+				<!-- Hirinerk -->
+				<spawn npc_id="832892" respawn_time="295">
+					<spot x="1448.27" y="1457.77" z="572.88" />
+				</spawn>
+				<!-- Hurunerk -->
+				<spawn npc_id="832893" respawn_time="295">
+					<spot x="1447.25" y="1461.87" z="572.88" />
+				</spawn>
+			</spawn_map>
+			<!-- Pandaemonium -->
+			<spawn_map map_id="120010000">
+				<!-- Hirinerk -->
+				<spawn npc_id="832892" respawn_time="295">
+					<spot x="1316.54" y="1428.40" z="209.09" h="80" />
+				</spawn>
+				<!-- Hurunerk -->
+				<spawn npc_id="832893" respawn_time="295">
+					<spot x="1319.34" y="1426.95" z="209.09" h="80" />
+				</spawn>
+			</spawn_map>
+		</spawns>
+		<event_drops>
+			<gd_rule rule_name="Global Fruit - Vinna" chance="20" level_based_chance_reduction="true">
+				<gd_maps>
+					<gd_map map_id="210070000" /><!-- Cygnea -->
+					<gd_map map_id="220080000" /><!-- Enshar -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100248" /><!-- [Event] Vinna -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Global Fruit - Pineapple" chance="80" level_based_chance_reduction="true">
+				<gd_maps>
+					<gd_map map_id="210070000" /><!-- Cygnea -->
+					<gd_map map_id="220080000" /><!-- Enshar -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100249" /><!-- [Event] Pineapple -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Global Fruit - Rubus" chance="40" level_based_chance_reduction="true">
+				<gd_maps>
+					<gd_map map_id="210070000" /><!-- Cygnea -->
+					<gd_map map_id="220080000" /><!-- Enshar -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100250" /><!-- [Event] Rubus -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Global Fruit - Fig" chance="2.5" level_based_chance_reduction="true">
+				<gd_maps>
+					<gd_map map_id="210070000" /><!-- Cygnea -->
+					<gd_map map_id="220080000" /><!-- Enshar -->
+				</gd_maps>
+				<gd_items>
+					<gd_item id="188100251" /><!-- [Event] Fig -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Instance Boss Fruit - Fig" chance="100">
+				<gd_maps>
+					<gd_map map_id="300610000" /><!-- Raksang_Ruins -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="236306" /><!-- Reviver Nasto -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188100251" min_count="4" /><!-- [Event] Fig -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Instance Boss Fruit - Fig" chance="100" member_limit="6">
+				<gd_maps>
+					<gd_map map_id="301130000" /><!-- Sauro_Supply_Base -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="230857" /><!-- Guard Captain Ahuradim -->
+					<gd_npc npc_id="230858" /><!-- Brigade General Sheba -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188100251" min_count="6" /><!-- [Event] Fig -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Instance Boss Fruit - Fig" chance="100" member_limit="6">
+				<gd_maps>
+					<gd_map map_id="301140000" /><!-- Seized_Danuar_Sanctuary -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="235619" /><!-- Warmage Suyaroka -->
+					<gd_npc npc_id="235620" /><!-- Chief Medic Tagnu -->
+					<gd_npc npc_id="235621" /><!-- Virulent Ukahim -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188100251" min_count="6" /><!-- [Event] Fig -->
+				</gd_items>
+			</gd_rule>
+			<gd_rule rule_name="Instance Boss Fruit - Fig" chance="100" member_limit="12">
+				<gd_maps>
+					<gd_map map_id="301390000" /><!-- Drakenspire_Depths -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="833012" /><!-- Beritra -->
+					<gd_npc npc_id="833013" /><!-- Cloak of Balaur Lord Beritra -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188100251" min_count="10" /><!-- [Event] Fig -->
+				</gd_items>
+			</gd_rule>
+		</event_drops>
+	</event>
 	<!-- https://web.archive.org/web/20150319191749/http://na.aiononline.com/en/news/events/03182015-upgrade-arcade-returns.php -->
 	<event name="Upgrade Arcade" start="2024-10-07T00:00:00" end="2024-10-20T23:59:59">
 		<config_properties>
@@ -5392,16 +5508,16 @@
 					<gd_item id="188053512" /><!-- [Event] Arcade Token Bundle -->
 				</gd_items>
 			</gd_rule><gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="6">
-			<gd_maps>
-				<gd_map map_id="301360000" /><!-- Infernal_Danuar_Reliquary -->
-			</gd_maps>
-			<gd_npcs>
-				<gd_npc npc_id="234691" /><!-- Enraged Queen Modor -->
-			</gd_npcs>
-			<gd_items>
-				<gd_item id="188053870" /><!-- [Event] Arcade Token Bundle (10) -->
-			</gd_items>
-		</gd_rule>
+				<gd_maps>
+					<gd_map map_id="301360000" /><!-- Infernal_Danuar_Reliquary -->
+				</gd_maps>
+				<gd_npcs>
+					<gd_npc npc_id="234691" /><!-- Enraged Queen Modor -->
+				</gd_npcs>
+				<gd_items>
+					<gd_item id="188053870" /><!-- [Event] Arcade Token Bundle (10) -->
+				</gd_items>
+			</gd_rule>
 			<gd_rule rule_name="Instance Boss Arcade Token" chance="100" member_limit="12">
 				<gd_maps>
 					<gd_map map_id="301390000" /><!-- Drakenspire_Depths -->
@@ -5422,7 +5538,6 @@
 	Eggstravaganza        https://web.archive.org/web/20160331064620/http://na.aiononline.com/en/news/events/03162016-eggstravaganza.php
 	Purple Reign          https://web.archive.org/web/20140715191602/http://na.aiononline.com/en/news/events/07022014-purple-reign-event.php
 	Solorius Toy Festival https://web.archive.org/web/20160403073743/http://na.aiononline.com/en/news/events/12162015-solorius-toy-festival.php
-	Spring Harvest        https://web.archive.org/web/20160422022912/http://na.aiononline.com/en/news/events/04202016-spring-harvest.php
 	and more              https://web.archive.org/web/*/http://na.aiononline.com/en/news/events*
 	-->
 </timed_events>

@@ -187,6 +187,14 @@
 			80632 [XML] [Event/Daily] Four of a Kind
 			80633 [XML] [Event/Daily] Lost Card
 			80634 [XML] [Event/Daily] Lost Card
+			80635 [XML] [Event/Daily] [Event] Much Salad, Such Fruit
+			80636 [XML] [Event/Daily] [Event] Vinna Off the Vine
+			80637 [XML] [Event/Daily] [Event] Easy Squeezy Rubus
+			80638 [XML] [Event/Daily] [Event] Best Apple is Pineapple
+			80639 [XML] [Event/Daily] [Event] Much Salad, Such Fruit
+			80640 [XML] [Event/Daily] [Event] Vinna Off the Vine
+			80641 [XML] [Event/Daily] [Event] Easy Squeezy Rubus
+			80642 [XML] [Event/Daily] [Event] Best Apple is Pineapple
 			80645 [XML] [Event] Efforts for Honor 1
 			80646 [XML] [Event] Efforts for Honor 2
 			80647 [XML] [Event] Efforts for Honor 3
@@ -352,7 +360,14 @@
 	<item_collecting id="80632" start_npc_ids="832879"/>
 	<item_collecting id="80633" start_npc_ids="832880"/>
 	<item_collecting id="80634" start_npc_ids="832881"/>
-	<item_collecting id="80645" start_npc_ids="832913"/>
+	<item_collecting id="80635" start_npc_ids="832892"/>
+	<item_collecting id="80636" start_npc_ids="832893"/>
+	<item_collecting id="80637" start_npc_ids="832893"/>
+	<item_collecting id="80638" start_npc_ids="832893"/>
+	<item_collecting id="80639" start_npc_ids="832892"/>
+	<item_collecting id="80640" start_npc_ids="832893"/>
+	<item_collecting id="80641" start_npc_ids="832893"/>
+	<item_collecting id="80642" start_npc_ids="832893"/>
 	<item_collecting id="80646" start_npc_ids="832913"/>
 	<item_collecting id="80647" start_npc_ids="832913"/>
 	<item_collecting id="80648" start_npc_ids="832913"/>
