@@ -29634,17 +29634,17 @@
 		<items chance="0.125">
 			<item id="188053618" /><!-- Honorable Elim's Idian Bundle -->
 		</items>
-		<items chance="6.5">
-			<item id="166500002" min_count="3" /><!-- Amplification Stone -->
+		<items chance="5.5">
+			<item id="166500002" min_count="5" /><!-- Amplification Stone -->
 		</items>
-		<items chance="6.5">
-			<item id="166020000" min_count="3" /><!-- Omega Enchantment Stone -->
+		<items chance="5.5">
+			<item id="166020000" min_count="5" /><!-- Omega Enchantment Stone -->
 		</items>
 		<items chance="2.5">
 			<item id="188053610" min_count="3" /><!-- [Event] Level 70 Composite Manastone Bundle -->
 		</items>
-		<items chance="0.1">
-			<item id="188052075" /><!-- [Event] Tahabata Weapon Box -->
+		<items chance="2">
+			<item id="188052827" /><!-- Dynatoum's Equipment Chest -->
 		</items>
 		<items chance="1">
 			<item id="166200010" /><!-- Mythic Armor Tuning Scroll -->
@@ -29652,11 +29652,8 @@
 		<items chance="1">
 			<item id="166200009" /><!-- Mythic Weapon Tuning Scroll -->
 		</items>
-		<items chance="0.1">
-			<item id="190100139" /><!-- Sleek Hovercycle -->
-		</items>
-		<items chance="0.05">
-			<item id="187060177" /><!-- Aether Glider -->
+		<items chance="0.35">
+			<item id="188053206" /><!-- [Event] Stormwing's Eternal Armor Chest -->
 		</items>
 		<items chance="0.025">
 			<item id="165020015" /><!-- Armor Wrapping Scroll (Eternal/Lv. 65 and lower) -->

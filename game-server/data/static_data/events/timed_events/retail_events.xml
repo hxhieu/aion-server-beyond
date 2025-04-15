@@ -3808,53 +3808,33 @@
 		</spawns>
 	</event>
 	<!-- https://web.archive.org/web/20140823005014/http://na.aiononline.com/en/news/events/08132014-boiling-point-event.php -->
-	<event name="Boiling Point" start="2020-03-27T00:00:00" end="2020-04-05T23:59:59">
+	<event name="Boiling Point" start="2025-04-16T00:00:00" end="2025-04-30T23:59:59">
 		<quests>
 			<maintainable>50035 50036 50037 51035 51036 51037</maintainable>
 		</quests>
 		<event_drops>
-			<gd_rule rule_name="Boiling Point Rolled Dumpling" chance="100" member_limit="6" level_based_chance_reduction="true">
+			<gd_rule rule_name="Boiling Point Rolled Dumpling" chance="10" level_based_chance_reduction="true">
 				<gd_items>
 					<gd_item id="186000387" /><!-- [Event] Rolled Dumpling -->
 				</gd_items>
-				<gd_ratings>
-					<gd_rating rating="ELITE" />
-					<gd_rating rating="HERO" />
-				</gd_ratings>
-				<gd_zones>
-					<gd_zone zone="TWILIGHT_DRANA_FARM_220070000" />
-					<gd_zone zone="VISCUM_SWAMP_220070000" />
-					<gd_zone zone="HANARKAND_210050000" />
-					<gd_zone zone="HANARKAND_GATE_210050000" />
-					<gd_zone zone="HANARKAND_OBSERVATION_POST_210050000" />
-					<gd_zone zone="HANARKAND_ORACLE_CHAMBER_210050000" />
-					<gd_zone zone="HANARKAND_PLAINS_210050000" />
-					<gd_zone zone="HANARKAND_PRISON_ENTRANCE_210050000" />
-					<gd_zone zone="HANARKAND_PROTECTION_ALTAR_210050000" />
-				</gd_zones>
+				<gd_maps>
+					<gd_map map_id="210050000" /><!-- Inggison -->
+					<gd_map map_id="220070000" /><!-- Gelkmaros -->
+				</gd_maps>
 			</gd_rule>
-			<gd_rule rule_name="Boiling Point Bone Broth" chance="100" member_limit="6" level_based_chance_reduction="true">
+			<gd_rule rule_name="Boiling Point Bone Broth" chance="100" level_based_chance_reduction="true">
 				<gd_items>
 					<gd_item id="186000388" min_count="10" /><!-- [Event] Bone Broth -->
 				</gd_items>
 				<gd_maps>
 					<gd_map map_id="301270000" /><!-- Linkgate Foundry -->
+					<gd_map map_id="300610000" /><!-- Raksang_Ruins -->
 				</gd_maps>
 				<gd_npcs>
 					<gd_npc npc_id="233898" /><!-- Belsagos -->
 					<gd_npc npc_id="234990" /><!-- Belsagos -->
 					<gd_npc npc_id="234991" /><!-- Belsagos -->
-				</gd_npcs>
-			</gd_rule>
-			<gd_rule rule_name="Boiling Point Bone Broth" chance="100" member_limit="6" level_based_chance_reduction="true">
-				<gd_items>
-					<gd_item id="186000388" min_count="25" /><!-- [Event] Bone Broth -->
-				</gd_items>
-				<gd_maps>
-					<gd_map map_id="300700000" /><!-- The Hexway -->
-				</gd_maps>
-				<gd_npcs>
-					<gd_npc npc_id="219610" /><!-- Adjutant Galamat -->
+					<gd_npc npc_id="236306" /><!-- Reviver Nasto -->
 				</gd_npcs>
 			</gd_rule>
 		</event_drops>
