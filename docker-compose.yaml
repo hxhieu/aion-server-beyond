@@ -1,0 +1,37 @@
+services:
+  chat:
+    image: aion-beyond:local
+    working_dir: /aion-server/chat-server
+    command:
+      - ./start.sh
+    volumes:
+      - ./config/mycs.properties:/aion-server/chat-server/config/mycs.properties
+    ports:
+      - "10241:10241"
+      - "9021:9021"
+
+  login:
+    image: aion-beyond:local
+    depends_on:
+      - chat
+    working_dir: /aion-server/login-server
+    command:
+      - ./start.sh
+    volumes:
+      - ./config/myls.properties:/aion-server/login-server/config/myls.properties
+    ports:
+      - "2106:2106"
+      - "9014:9014"
+
+  game:
+    image: aion-beyond:local
+    depends_on:
+      - chat
+      - login
+    working_dir: /aion-server/game-server
+    command:
+      - ./start.sh
+    volumes:
+      - ./config/mygs.properties:/aion-server/game-server/config/mygs.properties
+    ports:
+      - "7777:7777"
